@@ -1,0 +1,33 @@
+# --- Data (GISAID-governed; never push) ---
+# Raw downloads, merged full set, and per-sequence derived tables.
+data/Raw/
+data/full/
+data/processed/
+Raw/
+*.fasta
+*.fas
+*.fa
+
+# --- Source paper (copyright; keep local) ---
+*.pdf
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+*.egg-info/
+
+# --- R ---
+.Rhistory
+.RData
+.Rproj.user/
+
+# --- OS / editor ---
+.DS_Store
+*.swp
+
+# --- Results ---
+# Aggregate summaries (grouped by year/subtype/lineage) and figures ARE committed:
+# they contain no per-sequence GISAID data. Nothing to ignore here.
