@@ -155,3 +155,70 @@ build("notebooks/04_turnover_model.ipynb", [
                   'imp.plot.barh(color="#6baed6"); plt.title("feature importance (subtype)"); plt.show()'),
 ])
 print("done")
+
+# ---- 05 within vs between lineage, growth, founder, robustness ----
+build("notebooks/05_trend_decomposition.ipynb", [
+    new_markdown_cell("# 05 — Is the trend evolution or lineage replacement?\n\n"
+                      "A rising overall trend can come from genomes changing **inside** lineages, "
+                      "or from high-value lineages **replacing** low-value ones. Adding lineage "
+                      "fixed effects absorbs the replacement part, leaving the within-lineage slope.\n\n"
+                      "Also covers lineage growth rate, founder composition, and robustness checks."),
+    new_code_cell(SETUP + "from rsv import trends"),
+    new_code_cell('d = pd.read_csv("../data/processed/rsv_features.tsv", sep="\\t")\n'
+                  'd = d[(d.year>=2015)&(d.year<=2026)]\n'
+                  'F = ["gc_content","oe_CG","oe_GC","oe_GG","oe_CC"]\n'
+                  'print(len(d), "sequences")'),
+    new_markdown_cell("## Step 1 — decomposition\n"
+                      "Opposite signs between `slope_total` and `slope_within` mean the raw "
+                      "trend is an artefact of turnover (a Simpson's paradox)."),
+    new_code_cell('dec = pd.concat([trends.decompose_trend(s,f).assign(Subtype=sub)\n'
+                  '                 for sub,s in d.groupby("Subtype") for f in F], ignore_index=True)\n'
+                  'dec[["Subtype","feature","slope_total","slope_within","pct_from_turnover"]].round(6)'),
+    new_markdown_cell("## Per-lineage slopes\nDo individual lineages move in the same direction?"),
+    new_code_cell('sl = trends.per_lineage_slopes(d, "oe_CG")\n'
+                  'print(f"{len(sl)} lineages, {sl.sig.sum()} significant")\n'
+                  'sl.groupby("Subtype").agg(n=("slope","size"), median_slope=("slope","median"),\n'
+                  '                          n_positive=("slope", lambda x:(x>0).sum()))'),
+    new_markdown_cell("## Step 3 — lineage growth rate vs composition\n"
+                      "Growth rate = logistic change in a lineage's share of its subtype per year."),
+    new_code_cell('growth = trends.lineage_growth_rate(d)\n'
+                  'tab, corr = trends.growth_vs_composition(d, growth, F)\n'
+                  'from statsmodels.stats.multitest import multipletests\n'
+                  'corr["p_adj"] = multipletests(corr["p"], method="fdr_bh")[1]\n'
+                  'corr.sort_values("p").round(4)'),
+    new_markdown_cell("## Step 4 — founder composition vs later success\n"
+                      "Tree-free analogue of the paper's 'earliest viruses' analysis: does a "
+                      "lineage's founding composition predict how successful it later becomes?"),
+    new_code_cell('fnd = trends.founder_composition(d, F)\n'
+                  '_, fres = trends.founder_vs_success(fnd, growth, F)\n'
+                  'fres.head(10).round(4)'),
+    new_markdown_cell("## Step 5 — robustness"),
+    new_code_cell('rob = trends.robustness(d, "oe_CG")\n'
+                  'rob[["Subtype","scenario","n","slope_total","p_total","slope_within","p_within"]].round(6)'),
+])
+
+# ---- 06 per-gene ----
+build("notebooks/06_per_gene.ipynb", [
+    new_markdown_cell("# 06 — Composition gene by gene\n\n"
+                      "Each genome is aligned to its subtype's annotated reference and cut into "
+                      "the 10 RSV genes, so we can see which gene carries the signal. Alignment "
+                      "keeps insertions, so the ON1/BA G-gene duplications are retained."),
+    new_code_cell(SETUP + "from rsv import trends"),
+    new_code_cell('g = pd.read_csv("../data/processed/rsv_gene_features.tsv", sep="\\t")\n'
+                  'g = g[(g.year>=2015)&(g.year<=2026)]\n'
+                  'print(len(g), "gene-rows;", g["Accession ID"].nunique(), "sequences")\n'
+                  'GENES = ["NS1","NS2","N","P","M","SH","G","F","M2","L"]\n'
+                  'g.groupby(["Subtype","gene"]).agg(n=("gc_content","size"),\n'
+                  '   gc=("gc_content","mean"), oe_CG=("oe_CG","mean")).round(4)'),
+    new_markdown_cell("### Which genes carry the within-lineage CpG O/E trend?"),
+    new_code_cell('rows=[]\n'
+                  'for (sub,gene),s in g.groupby(["Subtype","gene"]):\n'
+                  '    if len(s)<500 or s.Lineage.nunique()<3: continue\n'
+                  '    r=trends.decompose_trend(s,"oe_CG"); r.insert(0,"gene",gene); r.insert(0,"Subtype",sub)\n'
+                  '    rows.append(r)\n'
+                  'gd=pd.concat(rows,ignore_index=True)\n'
+                  'from statsmodels.stats.multitest import multipletests\n'
+                  'gd["p_within_adj"]=multipletests(gd["p_within"],method="fdr_bh")[1]\n'
+                  'gd["gene"]=pd.Categorical(gd["gene"],GENES,ordered=True)\n'
+                  'gd.sort_values(["Subtype","gene"])[["Subtype","gene","n","slope_total","slope_within","p_within_adj"]].round(6)'),
+])

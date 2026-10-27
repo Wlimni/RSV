@@ -23,6 +23,24 @@ around **lineage turnover as the transmission proxy**:
 A positive signal would make composition a candidate feature for monitoring which RSV
 lineages are gaining ground, and a template to later extend to other viruses (e.g. mpox).
 
+## Headline results
+
+See [docs/FINDINGS.md](docs/FINDINGS.md) for the full write-up and caveats.
+
+1. **The raw time trend is mostly lineage replacement.** Splitting it into within- and
+   between-lineage parts reverses the sign for RSV-B (total +0.00065/yr, within-lineage
+   −0.00052/yr) — a Simpson's paradox. Within lineages, CpG O/E declines, matching the
+   direction Ye et al. report for influenza.
+2. **RSV-B's within-lineage decline is robust** to excluding 2020–21 and to region
+   adjustment; **RSV-A's is not** and appears to be a sampling artefact.
+3. **RSV-A has almost eliminated CpG from NS1 and NS2**, its two interferon-antagonist
+   genes: 0.16 and 0.76 CpG per gene versus 1.94 and 5.64 in RSV-B, with 84.8% of RSV-A
+   genomes carrying no CpG at all in NS1 — at identical GC content.
+4. **In RSV-B the surface glycoproteins G and F gain CpG** within lineages while internal
+   genes lose it.
+5. Lineage-level growth and founder-composition tests do **not** survive multiple-testing
+   correction (only 14 B / 32 A lineages) and are reported as exploratory.
+
 ## Data
 
 - **Source:** GISAID EpiRSV, downloaded in 8 date-range batches (RSV-A and RSV-B),
@@ -37,16 +55,21 @@ accession list for acknowledgement is produced by the pipeline and kept local.
 ## Layout
 
 ```
-src/rsv/          core functions (composition metrics, I/O + QC) imported by everything
-scripts/          command-line steps (merge raw batches, build feature table)
+src/rsv/          core functions imported by everything
+  composition.py  GC content, dinucleotide frequencies, O/E ratios
+  io.py           FASTA/metadata loading and QC filtering
+  trends.py       within/between-lineage decomposition, growth rates, robustness
+  genes.py        align to reference and cut out the 10 RSV genes
+scripts/          command-line steps (merge, features, per-gene, analyses)
 notebooks/        exploration and analysis (import from src/rsv)
-R/                publication-quality figures (ggplot2), fed from the feature table
+R/                publication-quality figures (ggplot2)
 data/             GISAID data + derived tables  (git-ignored)
   Raw/            raw per-batch downloads
   full/           merged RSV_full.fasta + metadata
-  processed/      rsv_features.tsv (analysis-ready)
-results/figures/  generated figures (committed)
-docs/             notes
+  processed/      rsv_features.tsv, rsv_gene_features.tsv
+  reference/      public NCBI reference genomes (committed)
+results/          aggregate summary tables + figures/ (committed)
+docs/FINDINGS.md  results write-up with caveats
 PLAN.md           roadmap / working plan
 ```
 
@@ -59,14 +82,24 @@ pip install -r requirements.txt
 python3 -I scripts/merge_gisaid_batches.py --raw data/Raw --out data/full
 
 # 2. QC + composition features -> data/processed/rsv_features.tsv
-python3 -I scripts/build_features.py
+.venv/bin/python scripts/build_features.py
 
-# 3. explore / analyse
+# 3. per-gene features (aligns to reference with mafft; ~15 min)
+.venv/bin/python scripts/build_gene_features.py
+
+# 4. analyses -> results/*.tsv
+.venv/bin/python scripts/run_trend_analysis.py
+.venv/bin/python scripts/run_gene_analysis.py
+
+# 5. explore / analyse interactively
 jupyter lab notebooks/
 
-# 4. figures
-Rscript R/figures.R
+# 6. figures -> results/figures/
+Rscript R/figures.R && Rscript R/figures_trends.R && Rscript R/figures_genes.R
 ```
+
+Requires `mafft` on PATH for the per-gene step. The isolated `.venv` is used because
+Anaconda's NumPy 2.x conflicts with its NumPy 1.x-compiled extensions.
 
 ## Method notes
 

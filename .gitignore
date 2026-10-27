@@ -8,6 +8,11 @@ Raw/
 *.fas
 *.fa
 
+# Public NCBI reference genomes are NOT GISAID data - keep them for reproducibility.
+!data/reference/
+!data/reference/*.fasta
+!data/reference/*.gb
+
 # --- Source paper (copyright; keep local) ---
 *.pdf
 
