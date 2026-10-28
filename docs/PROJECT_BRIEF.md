@@ -25,8 +25,8 @@ pass QC (length 14,900-15,400 nt, <=1% ambiguous, complete date).
   (NC_038235.1 for A, NC_001781.1 for B); 330,380 gene records. Insertions retained, so the
   ON1/BA G-gene duplications survive (validated: G recovers at 969 nt vs the 897 nt
   reference, exactly the +72 nt ON1 duplication).
-- Trend decomposition, lineage growth rates, robustness scenarios, and a codon-level test of
-  whether CpG depletion is protein-constrained.
+- Decomposition of temporal trends into within-lineage change versus lineage replacement,
+  with robustness scenarios for uneven sequencing effort.
 
 GISAID data is not redistributed; the repo holds code, aggregate summaries and figures only.
 
@@ -60,25 +60,13 @@ Figure: `results/figures/fig5_within_vs_between.png`, `fig8_robustness.png`
 | N | 6.86 | 6.09 | 0% |
 | L | 41.2 | 38.2 | 0% |
 
-NS1 GC content is 0.305 (A) vs 0.303 (B), so this is CpG-specific avoidance, not a GC effect.
+NS1 GC content is 0.305 (A) vs 0.303 (B), so this is CpG-specific avoidance rather than a GC
+effect. Whether the NS1 protein sequence itself constrains CpG placement has not been tested
+here; that check was dropped to keep the analysis descriptive.
 
 Figure: `results/figures/fig11_cpg_depletion.png`, `fig9_gene_composition.png`
 
-### 3. That depletion is selected on the RNA, not imposed by the protein
-
-Each gene was compared against the min and max CpG achievable by synonymous recoding of the
-same protein (DP over codons, codon-boundary CpG handled).
-
-The NS1 protein permits ~50 CpG dinucleotides. RSV-A carries 0.14. In 86.8% of RSV-A genomes
-no removable CpG remains in NS1 - the gene is at the synonymous floor.
-
-Two qualifications: CpG suppression is genome-wide in RSV (every gene sits at 3-12% of its
-achievable range); what distinguishes RSV-A NS1/NS2 is reaching the floor completely. And it
-is not simply "A suppresses more than B" - RSV-B does the same to SH (23.5% at the floor).
-
-Figure: `results/figures/fig12_synonymous_cpg.png`
-
-### 4. Lineage-level tests are underpowered
+### 3. Lineage-level tests are underpowered
 
 Growth-rate and founder-composition correlations do not survive Benjamini-Hochberg
 correction. Strongest: RSV-B founding CpG O/E vs growth rate (rho = +0.69, p = 0.0065,
@@ -143,7 +131,8 @@ than per-genome classification, and downsample the sustained groups.
 2. **Are Nipah and Hendra an acceptable sporadic class?** They are the clearest available
    case but differ in reservoir, route and pathology, not only transmission outcome.
 3. **Is the NS1/NS2 CpG result worth developing separately?** It does not address host
-   transmission but is the most defensible finding, with a natural experimental follow-up
+   transmission but is the clearest pattern we found. Developing it would mean first testing
+   whether the protein sequence permits CpG at those positions, then experimental work
    (restore CpG in NS1, assay replication in ZAP-competent vs ZAP-deficient cells).
 4. **Should the RSV work be written up as a methods-and-negative-result component**, given
    the headline temporal trend proved to be a turnover artefact?
@@ -152,7 +141,7 @@ than per-genome classification, and downsample the sustained groups.
 
 - At n = 32,059, p-values indicate only that an effect is not noise. Composition effect sizes
   are small in absolute terms; direction and consistency across scenarios are the evidence.
-- The ZAP interpretation of findings 2-3 is a hypothesis consistent with sequence data. No
+- The ZAP interpretation of finding 2 is a hypothesis consistent with sequence data. No
   mechanism has been tested.
 - Sampling is Europe-weighted; the 2020-21 bottleneck distorts counts. Trends are reported
   with and without region adjustment.

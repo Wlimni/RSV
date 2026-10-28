@@ -2,8 +2,8 @@
 # Script Name: figures_genes.R
 # Purpose:     Per-gene composition figures — baseline composition across the 10 RSV genes,
 #              and which genes carry the within-lineage CpG O/E trend.
-# Inputs:      results/gene_summary.tsv, results/gene_decomposition.tsv
-# Outputs:     results/figures/fig9_gene_composition.png, fig10_gene_trends.png
+# Inputs:      results/gene_summary.tsv, results/cpg_depletion_by_gene.tsv
+# Outputs:     results/figures/fig9_gene_composition.png, fig11_cpg_depletion.png
 # Notes:       Run after run_gene_analysis.py.  Rscript R/figures_genes.R
 
 suppressPackageStartupMessages({
@@ -44,42 +44,6 @@ p2 <- ggplot(s, aes(gene, oe_CG, colour = Subtype, group = Subtype)) +
        x = "Gene (genome order 3' to 5')", y = "Mean CpG O/E")
 f9 <- (p1 / p2) + plot_layout(guides = "collect")
 ggsave("results/figures/fig9_gene_composition.png", f9, width = 8, height = 6.5, dpi = 300)
-
-## ---- Fig 10: which genes carry the within-lineage trend -----------------------
-d <- fread("results/gene_decomposition.tsv")
-d <- d[feature == "oe_CG"]
-d[, gene := factor(gene, levels = GENES)]
-m <- melt(d, id.vars = c("Subtype", "gene", "p_within_adj"),
-          measure.vars = c("slope_total", "slope_within"),
-          variable.name = "model", value.name = "slope")
-se <- melt(d, id.vars = c("Subtype", "gene"),
-           measure.vars = c("se_total", "se_within"), value.name = "se")
-m[, se := se$se]
-m[, model := factor(fifelse(model == "slope_total", "total", "within"),
-                    levels = c("total", "within"))]
-m[, star := fifelse(model == "within" & p_within_adj < 0.05, "*", "")]
-
-f10 <- ggplot(m, aes(gene, slope, fill = model)) +
-  geom_hline(yintercept = 0, linewidth = .4, colour = "grey20") +
-  geom_col(position = position_dodge(.72), width = .64,
-           colour = "grey20", linewidth = .22) +
-  geom_errorbar(aes(ymin = slope - 1.96 * se, ymax = slope + 1.96 * se),
-                position = position_dodge(.72), width = .18, linewidth = .32) +
-  geom_text(aes(label = star, y = slope + sign(slope) * 1.5 * se),
-            position = position_dodge(.72), size = 4, colour = "grey10") +
-  facet_wrap(~ paste0("RSV-", Subtype), ncol = 1, scales = "free_y") +
-  scale_fill_manual(values = pal2, name = NULL,
-                    labels = c("Total (raw)", "Within-lineage")) +
-  scale_y_continuous(labels = label_number(scale = 1e3, accuracy = .5)) +
-  labs(title = "Which genes drive the CpG O/E trend?",
-       subtitle = "Within-lineage slope isolates evolution from lineage replacement",
-       x = "Gene (genome order 3' to 5')",
-       y = expression("CpG O/E slope per year " (10^-3)),
-       caption = "Error bars = 95% CI. * = within-lineage slope significant after Benjamini-Hochberg correction.") +
-  theme(legend.position = "top")
-ggsave("results/figures/fig10_gene_trends.png", f10, width = 8.5, height = 7, dpi = 300)
-
-cat("gene figures written to results/figures/\n")
 
 ## ---- Fig 11: CpG depletion per gene, RSV-A vs RSV-B ---------------------------
 cp <- fread("results/cpg_depletion_by_gene.tsv")

@@ -3,7 +3,7 @@
 # Purpose:     Publication-quality figures of RSV genome composition (GC content and
 #              GC-dinucleotide O/E ratios) by subtype, lineage and year.
 # Inputs:      data/processed/rsv_features.tsv  (per-sequence features; local, git-ignored)
-# Outputs:     results/figures/*.png  and  results/*_summary.tsv (aggregates, committed)
+# Outputs:     results/figures/fig1..fig3 *.png, results/yearly_composition_summary.tsv
 # Notes:       Run from repo root: Rscript R/figures.R
 
 suppressPackageStartupMessages({
@@ -64,18 +64,5 @@ p_cg <- ggplot(yr, aes(year, oeCG, colour = Subtype, fill = Subtype)) +
   labs(title = "CpG O/E ratio over time", x = "Collection year", y = "Mean CpG O/E")
 f3 <- (p_gc / p_cg) + plot_layout(guides = "collect")
 ggsave("results/figures/fig3_yearly_trends.png", f3, width = 7, height = 7, dpi = 200)
-
-## Fig 4 — composition of the top lineages --------------------------------------
-top <- d[, .N, by = .(Subtype, Lineage)][order(-N)][, head(.SD, 6), by = Subtype]
-dl <- d[top, on = .(Subtype, Lineage)]
-dl[, Lineage := factor(Lineage, levels = top[order(Subtype, -N), Lineage])]
-f4 <- ggplot(dl, aes(Lineage, oe_CG, fill = Subtype)) +
-  geom_boxplot(outlier.size = .2, alpha = .8) +
-  scale_fill_manual(values = pal) +
-  facet_wrap(~ Subtype, scales = "free_x") +
-  labs(title = "CpG O/E ratio across the most common lineages",
-       x = NULL, y = "CpG O/E") +
-  theme(axis.text.x = element_text(angle = 40, hjust = 1))
-ggsave("results/figures/fig4_lineage_composition.png", f4, width = 9, height = 4.5, dpi = 200)
 
 cat("Figures written to results/figures/\n")

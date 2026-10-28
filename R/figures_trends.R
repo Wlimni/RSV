@@ -1,15 +1,13 @@
 #!/usr/bin/env Rscript
 # Script Name: figures_trends.R
-# Purpose:     Literature-style figures for the within/between-lineage decomposition,
-#              per-lineage trends, lineage growth vs composition, and robustness checks.
-# Inputs:      results/decomposition.tsv, per_lineage_slopes.tsv, growth_vs_composition.tsv,
-#              robustness.tsv, and data/processed/rsv_features.tsv (local)
-# Outputs:     results/figures/fig5..fig8 *.png
+# Purpose:     Figures for the within/between-lineage trend split and its robustness checks.
+# Inputs:      results/decomposition.tsv, results/robustness.tsv
+# Outputs:     results/figures/fig5_within_vs_between.png, fig8_robustness.png
 # Notes:       Run from repo root: Rscript R/figures_trends.R
 
 suppressPackageStartupMessages({
   library(data.table); library(ggplot2); library(patchwork)
-  library(ggrepel); library(scales)
+  library(scales)
 })
 
 dir.create("results/figures", recursive = TRUE, showWarnings = FALSE)
@@ -60,53 +58,6 @@ f5 <- ggplot(m, aes(feature, slope, fill = model)) +
        caption = "Error bars = 95% CI. Within-lineage slope is the year coefficient after adding lineage fixed effects.") +
   theme(axis.text.x = element_text(angle = 30, hjust = 1), legend.position = "top")
 ggsave("results/figures/fig5_within_vs_between.png", f5, width = 9, height = 4.8, dpi = 300)
-
-## ---- Fig 6: per-lineage CpG O/E slopes (forest plot) ---------------------------
-sl <- fread("results/per_lineage_slopes.tsv")
-sl[, Lineage := factor(Lineage, levels = sl[order(Subtype, slope), Lineage])]
-f6 <- ggplot(sl, aes(slope, Lineage, colour = Subtype)) +
-  geom_vline(xintercept = 0, linetype = 2, colour = "grey40") +
-  geom_errorbarh(aes(xmin = slope - 1.96 * se, xmax = slope + 1.96 * se),
-                 height = 0, linewidth = .5) +
-  geom_point(aes(size = n, shape = sig)) +
-  scale_colour_manual(values = pal) +
-  scale_shape_manual(values = c(`FALSE` = 1, `TRUE` = 19),
-                     labels = c("n.s.", "p < 0.05"), name = NULL) +
-  scale_size_continuous(range = c(1.2, 4), name = "sequences") +
-  scale_x_continuous(labels = label_number(scale = 1e3, accuracy = .5)) +
-  facet_grid(Subtype ~ ., scales = "free_y", space = "free_y") +
-  labs(title = "CpG O/E change per year, measured inside each lineage",
-       subtitle = "Most lineages sit left of zero: CpG O/E declines as a lineage ages",
-       x = expression("Slope per year " (10^-3)), y = NULL,
-       caption = "Lineages with >=100 sequences spanning >=4 years. Bars = 95% CI.")
-ggsave("results/figures/fig6_per_lineage_slopes.png", f6, width = 7.5, height = 8, dpi = 300)
-
-## ---- Fig 7: lineage growth rate vs composition ---------------------------------
-gv <- fread("results/growth_vs_composition.tsv")
-cr <- fread("results/growth_composition_corr.tsv")
-gl <- melt(gv, id.vars = c("Subtype", "Lineage", "n", "growth_rate"),
-           measure.vars = c("oe_CG", "oe_GG"), variable.name = "feature", value.name = "val")
-gl[, feature := lab_feat[as.character(feature)]]
-lab <- cr[feature %in% c("oe_CG", "oe_GG")]
-lab[, feature := lab_feat[feature]]
-lab[, txt := sprintf("rho = %+.2f\np = %.3f", rho, p)]
-
-f7 <- ggplot(gl, aes(val, growth_rate)) +
-  geom_hline(yintercept = 0, linetype = 2, colour = "grey60") +
-  geom_smooth(method = "lm", se = TRUE, colour = "grey30", fill = "grey85", linewidth = .5) +
-  geom_point(aes(colour = Subtype, size = n), alpha = .85) +
-  geom_text_repel(aes(label = Lineage), size = 2.4, colour = "grey25",
-                  max.overlaps = 8, segment.size = .2) +
-  geom_text(data = lab, aes(label = txt), x = -Inf, y = Inf,
-            hjust = -0.15, vjust = 1.2, size = 3, colour = "grey20") +
-  facet_grid(paste0("RSV-", Subtype) ~ feature, scales = "free") +
-  scale_colour_manual(values = pal, guide = "none") +
-  scale_size_continuous(range = c(1.3, 4.5), name = "sequences") +
-  labs(title = "Do faster-growing lineages have different genome composition?",
-       subtitle = "Growth rate = logistic change in a lineage's share of its subtype per year",
-       x = "Lineage mean O/E ratio", y = "Growth rate (logit / year)",
-       caption = "Each point is one lineage. Spearman correlation shown per panel; p-values are uncorrected.")
-ggsave("results/figures/fig7_growth_vs_composition.png", f7, width = 9, height = 6.5, dpi = 300)
 
 ## ---- Fig 8: robustness of the CpG O/E trend ------------------------------------
 rb <- fread("results/robustness.tsv")
