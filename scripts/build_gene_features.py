@@ -5,7 +5,8 @@ Purpose:     Step 2 of the plan — per-gene composition. Aligns every genome to
              dinucleotide O/E ratios for each gene separately.
 Inputs:      data/full/RSV_full.fasta, data/processed/rsv_features.tsv (for metadata),
              data/reference/NC_038235.1.{gb,fasta} (A), data/reference/NC_001781.1.{gb,fasta} (B)
-Outputs:     data/processed/rsv_gene_features.tsv  (one row per sequence per gene)
+Outputs:     data/processed/rsv_gene_features.tsv (one row per sequence per gene, plus a
+             GENOME row per sequence holding the ten coding regions concatenated)
 Notes:       Alignment keeps insertions, so the ON1 (A) and BA (B) G-gene duplications are
              retained. Sequences are processed in chunks to bound memory.
              Run: .venv/bin/python scripts/build_gene_features.py [--chunk 2000] [--max-per-subtype N]
@@ -22,6 +23,7 @@ args = ap.parse_args()
 
 REF = {"A": ("data/reference/NC_038235.1.fasta", "data/reference/NC_038235.1.gb"),
        "B": ("data/reference/NC_001781.1.fasta", "data/reference/NC_001781.1.gb")}
+GENE_ORDER = ["NS1", "NS2", "N", "P", "M", "SH", "G", "F", "M2", "L"]
 
 meta = pd.read_csv("data/processed/rsv_features.tsv", sep="\t",
                    usecols=["Accession ID", "Subtype", "Lineage", "year", "region"])
@@ -45,9 +47,19 @@ for sub, grp in meta.groupby("Subtype"):
             for acc, s in d.items():
                 if len(s) < 50:          # skip genes missing from a partial genome
                     continue
-                f = composition.all_features(s)
+                f = composition.all_features(s, coding=True)
                 f.update({"Accession ID": acc, "Subtype": sub, "gene": gene})
                 rows.append(f)
+        # Genome-level row: the ten coding regions concatenated in genome order.
+        # The paper defines "genomic" GC, GC3 and GC12 over the coding regions rather
+        # than the raw genome, so the frame stays well defined.
+        for acc in aligned:
+            cat = "".join(per_gene[g].get(acc, "") for g in GENE_ORDER if g in per_gene)
+            if len(cat) < 1000:
+                continue
+            f = composition.all_features(cat, coding=True)
+            f.update({"Accession ID": acc, "Subtype": sub, "gene": "GENOME"})
+            rows.append(f)
         done = min(i + args.chunk, len(accs))
         el = time.time() - t0
         print(f"  {done}/{len(accs)}  ({el:.0f}s elapsed, {el/done*len(accs)-el:.0f}s left)", flush=True)

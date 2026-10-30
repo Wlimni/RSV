@@ -1,123 +1,126 @@
-# RSV genomic composition and transmission dynamics
+# RSV genome composition over time
 
-Analysis of nucleotide-composition features (GC content and GC-related dinucleotide
-frequencies) across human RSV-A and RSV-B genomes from GISAID, and how those features
-relate to lineage turnover and time.
+Does genome composition change over time within human RSV lineages, and does the pattern
+differ between RSV-A and RSV-B?
 
-This adapts the method of Ye et al. 2026 (*Nature Microbiology*, "Genomic features
+The method is adapted from Ye et al. 2026 (*Nature Microbiology*, "Genomic features
 associated with sustained mammalian transmission of avian influenza A viruses",
-doi:10.1038/s41564-025-02257-4) from influenza A to RSV.
-
-## Biological question
-
-The influenza paper separated persistent mammalian lineages from bird-only / sporadic
-lineages using declining GC content and GC-dinucleotide (CpG, GpC, GpG, CpC) frequencies.
-RSV has no host contrast here — every GISAID record is human — so we reframe the question
-around **lineage turnover as the transmission proxy**:
-
-- Does genome composition drift systematically over time (2015–2026)?
-- Do lineages that expand and dominate (e.g. A.D.1, B.D.E) differ in composition from
-  those that fade out?
-- Can composition predict a sequence's lineage and collection year?
-
-A positive signal would make composition a candidate feature for monitoring which RSV
-lineages are gaining ground, and a template to later extend to other viruses (e.g. mpox).
+doi:10.1038/s41564-025-02257-4), which found GC content and GC-containing dinucleotide
+frequencies declining within influenza lineages that had established sustained transmission
+in mammals.
 
 ## Headline results
 
-See [docs/FINDINGS.md](docs/FINDINGS.md) for the full write-up and caveats.
+**The influenza pattern does not transfer to RSV.** Stated plainly, because the temporal
+result is mostly negative:
 
-1. **The raw time trend is mostly lineage replacement.** Splitting it into within- and
-   between-lineage parts reverses the sign for RSV-B (total +0.00065/yr, within-lineage
-   −0.00052/yr) — a Simpson's paradox. Within lineages, CpG O/E declines, matching the
-   direction Ye et al. report for influenza.
-2. **RSV-B's within-lineage decline is robust** to excluding 2020–21 and to region
-   adjustment; **RSV-A's is not** and appears to be a sampling artefact.
-3. **RSV-A has almost eliminated CpG from NS1 and NS2**, its two interferon-antagonist
-   genes: 0.16 and 0.76 CpG per gene versus 1.94 and 5.64 in RSV-B, with 84.8% of RSV-A
-   genomes carrying no CpG at all in NS1 — at identical GC content. This is the clearest
-   pattern in the project.
-4. **Composition varies strongly between genes.** The G gene is the most GC-rich and most
-   distinctive region, which makes it the natural one to focus on.
+1. **No consistent CpG trend.** Lineages disagree in direction — A.D.1 and B.D.E rise,
+   A.D.3 and A.D.5 fall. All twelve influenza lineages in the source paper moved the same
+   way; these do not.
+2. **The CpG result fails its own sensitivity check.** Defining lineages one level finer
+   flips the median direction, so lineage granularity drives it rather than biology.
+3. **GC3 and GC12 move in opposite directions** — GC3 rises in 6 of 8 lineages, GC12 falls
+   in 6 of 8. Influenza had both falling, GC3 about 5.65x faster. Synonymous and
+   non-synonymous sites are under different pressure in RSV, but this is not that signature.
+4. **Geography does not explain it.** Slopes keep their direction after region adjustment.
+5. **All effects are small**, around 1e-4 per year.
 
-The analysis is deliberately kept descriptive — observing patterns, not modelling them.
+This is a reasonable biological outcome rather than a failed analysis. RSV has circulated in
+humans for a very long time and is already adapted; the influenza result came from lineages
+that had recently entered a *new* host and were still adjusting. No such transition exists
+inside human RSV.
+
+**The clearest signal in the project is not temporal.** In RSV-A the two interferon
+antagonist genes, NS1 and NS2, carry almost no CpG at all (0.16 and 0.76 per gene, against
+1.94 and 5.64 in RSV-B), at effectively identical GC content, and about 85% of RSV-A genomes
+contain no CpG anywhere in NS1. Genes N and L behave the same in both subtypes, so this is
+not a general A-versus-B difference. See notebook 04. This is an observation about sequence,
+not a demonstrated mechanism.
+
+## Start here
+
+The **notebooks are the pipeline** and are written to be read in order. Each section ends
+with a figure.
+
+| Notebook | Covers |
+|---|---|
+| `01_data.ipynb` | the dataset, quality control, and four known problems with it |
+| `02_features.ipynb` | what GC content, dinucleotide O/E, GC3 and GC12 actually measure |
+| `03_lineage_trends.ipynb` | **the core analysis** — composition over time within lineages |
+| `04_genes.ipynb` | composition gene by gene, and the NS1/NS2 contrast |
 
 ## Data
 
-- **Source:** GISAID EpiRSV, downloaded in 8 date-range batches (RSV-A and RSV-B),
-  complete / high-coverage only, low-coverage excluded.
-- **Merged set:** 33,040 genomes (15,458 A / 17,582 B), 2001–2026, mostly 2018+.
-- **QC-passing:** 33,038 (length 14,900–15,400 bp, ambiguous bases ≤1%, full collection date).
+GISAID EpiRSV, downloaded in eight date-range batches. 33,040 genomes merged, 33,038 pass
+quality control (length 14,900-15,400 nt, at most 1% ambiguous bases, complete collection
+date).
 
-**GISAID data is not redistributed in this repository.** All of `data/` is git-ignored.
-To reproduce, download the batches into `data/Raw/` and regenerate (see below). A GISAID
-accession list for acknowledgement is produced by the pipeline and kept local.
+The analysis window is **2015-01-01 to 2025-12-31**, giving 29,050 genomes in 8 lineages.
+Two bounds, both set after auditing the data:
+
+- **2026 is excluded** because deposition lag leaves its later months nearly empty
+  (18 genomes in September 2026, against an all-year September average near 1,400).
+- **Pre-2015 is excluded** because it is about 3% of the data and RSV-A has essentially no
+  sequences before 2010.
+
+Sequencing geography shifted heavily over the period, including inside single lineages, so
+**region is included as a covariate** and results are reported with and without it.
+
+**GISAID data is not redistributed here.** All of `data/` is git-ignored except the public
+NCBI reference genomes. Accession IDs are stripped from notebook outputs. To reproduce,
+download the batches into `data/Raw/` and run the pipeline below.
 
 ## Layout
 
-The **notebooks are the main pipeline** and are written to be read: every step has a
-markdown cell explaining what it does, and each figure is generated by the matching R
-script and shown inline.
-
 ```
-notebooks/        READ THESE FIRST - the documented analysis, start at 01
-  01_data_overview.ipynb   what the data is, QC, sampling bias
-  02_composition.ipynb     GC and the four dinucleotides, whole genome
-  03_gene_regions.ipynb    composition gene by gene; focus on G, NS1, NS2
-  04_trends.ipynb          change over time, and why the raw trend misleads
-  05_summary.ipynb         what we found and what this dataset cannot answer
+notebooks/        the documented analysis - read these first
 src/rsv/          core functions the notebooks import
-  composition.py  GC content, dinucleotide frequencies, O/E ratios
-  io.py           FASTA/metadata loading and QC filtering
+  composition.py  GC content, dinucleotide frequencies and O/E, GC3/GC12, UpA
+  io.py           loading and quality control
   genes.py        align to reference and cut out the 10 RSV genes
-  trends.py       within-lineage change vs lineage replacement, robustness
-scripts/          command-line steps (merge, features, per-gene, analyses)
-R/                figure scripts (ggplot2), called from the notebooks
-data/             GISAID data + derived tables  (git-ignored)
-  Raw/            raw per-batch downloads
-  full/           merged RSV_full.fasta + metadata
-  processed/      rsv_features.tsv, rsv_gene_features.tsv
+  lineage.py      lineage truncation, decimal dates, within-lineage regression
+scripts/          command-line stages
+R/figures.R       all five figures
+results/          summary tables and figures (committed; no per-sequence data)
+data/             GISAID data and derived tables (git-ignored)
   reference/      public NCBI reference genomes (committed)
-results/          aggregate summary tables + figures/ (committed)
-docs/FINDINGS.md  results write-up with caveats
-PLAN.md           roadmap / working plan
 ```
 
 ## Reproduce
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt           # needs mafft on PATH
 
-# 1. merge raw batches -> data/full/
-python3 -I scripts/merge_gisaid_batches.py --raw data/Raw --out data/full
+python scripts/merge_gisaid_batches.py --raw data/Raw --out data/full
+python scripts/build_features.py          # QC + whole-genome composition
+python scripts/build_gene_features.py     # per-gene via alignment, ~20 min
+python scripts/run_gene_analysis.py       # per-gene summary
+python scripts/run_lineage_analysis.py    # the core within-lineage trends
 
-# 2. QC + composition features -> data/processed/rsv_features.tsv
-.venv/bin/python scripts/build_features.py
-
-# 3. per-gene features (aligns to reference with mafft; ~15 min)
-.venv/bin/python scripts/build_gene_features.py
-
-# 4. analyses -> results/*.tsv
-.venv/bin/python scripts/run_trend_analysis.py
-.venv/bin/python scripts/run_gene_analysis.py
-
-# 5. read the analysis (figures are regenerated and shown inside)
-jupyter lab notebooks/
+jupyter lab notebooks/                    # notebooks call R themselves
 ```
 
-The notebooks call the R scripts themselves, so you do not need to run them separately.
-To regenerate every figure on its own: `Rscript R/figures.R && Rscript R/figures_trends.R
-&& Rscript R/figures_genes.R`.
-
-Requires `mafft` on PATH for the per-gene step. The isolated `.venv` is used because
-Anaconda's NumPy 2.x conflicts with its NumPy 1.x-compiled extensions.
+The project uses an isolated `.venv`, because the Anaconda installation on the original
+machine has a NumPy version conflict that breaks some scientific packages.
 
 ## Method notes
 
 - **GC content** = (G+C) / valid ACGT bases.
-- **Dinucleotide frequency** = count(XY) / valid ACGT dinucleotide positions, for the four
-  GC-related dinucleotides CpG, GpC, GpG, CpC.
-- **O/E ratio** = freq(XY) / (freq(X)·freq(Y)); <1 indicates suppression (e.g. CpG).
-- Ambiguous bases and gaps are excluded from all counts.
-- Whole-genome composition first; per-gene features are a planned extension (needs
-  alignment/annotation).
+- **Dinucleotide O/E** = f(XY) / (f(X) x f(Y)). Below 1 means the pair is suppressed.
+  Reported for CpG, GpC, GpG, CpC, and UpA.
+- **UpA is exploratory.** It is not used in the source paper; it is included because the
+  RNA-virus literature treats it as CpG's companion motif (Greenbaum et al. 2008,
+  *PLoS Pathogens* 4:e1000079).
+- **GC3 / GC12** = GC at the third codon position, versus the first and second. Third
+  positions are mostly synonymous, so comparing the two separates pressure on the RNA from
+  pressure on the protein.
+- **Genome level** means the ten coding regions concatenated, which is how the paper defines
+  genomic GC, GC3 and GC12 and keeps the reading frame defined.
+- Gene extraction aligns each genome to its subtype's annotated reference with MAFFT,
+  keeping insertions, so the ON1 and BA G-gene duplications survive. Verified: the G gene
+  recovers at 969 nt against an 897 nt reference, exactly the known 72 nt duplication.
+- Trends are fitted **separately inside each lineage**, against decimal collection date.
+  Fitting across pooled data would let one lineage replacing another masquerade as change.
+- Lineage labels are truncated to three levels (`A.D.1`, `B.D.E`), requiring at least 5
+  years and 200 genomes. Full labels are too fine to support a regression; level 4 is run
+  as a sensitivity check.

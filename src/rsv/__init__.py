@@ -1,2 +1,2 @@
-"""RSV genomic composition analysis package."""
-from . import composition, io  # noqa: F401
+"""RSV genome composition analysis."""
+from . import composition, io, genes, lineage  # noqa: F401

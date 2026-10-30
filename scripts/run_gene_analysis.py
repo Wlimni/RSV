@@ -1,9 +1,9 @@
 """
 Script Name: run_gene_analysis.py
-Purpose:     Summarise genome composition gene by gene, and measure how depleted of CpG
-             each gene is. Descriptive only - no modelling.
+Purpose:     Summarise genome composition gene by gene. Descriptive only - the trend
+             fitting happens in run_lineage_analysis.py.
 Inputs:      data/processed/rsv_gene_features.tsv
-Outputs:     results/gene_summary.tsv, results/cpg_depletion_by_gene.tsv
+Outputs:     results/gene_summary.tsv
 Notes:       Run after build_gene_features.py.
              Run: .venv/bin/python scripts/run_gene_analysis.py
 """
@@ -15,31 +15,21 @@ GENE_ORDER = ["NS1", "NS2", "N", "P", "M", "SH", "G", "F", "M2", "L"]
 os.makedirs("results", exist_ok=True)
 
 g = pd.read_csv("data/processed/rsv_gene_features.tsv", sep="\t")
+g = g[g.gene != "GENOME"]
 print(f"{len(g)} gene-rows, {g['Accession ID'].nunique()} genomes, {g.gene.nunique()} genes")
 
 summ = (g.groupby(["Subtype", "gene"])
           .agg(n=("gc_content", "size"), length=("valid_len", "median"),
-               gc=("gc_content", "mean"),
-               freq_CG=("freq_CG", "mean"), freq_GC=("freq_GC", "mean"),
-               freq_GG=("freq_GG", "mean"),
-               oe_CG=("oe_CG", "mean"), oe_GG=("oe_GG", "mean")).reset_index())
+               gc=("gc_content", "mean"), gc3=("gc3", "mean"), gc12=("gc12", "mean"),
+               per1k_CG=("per1k_CG", "mean"), per1k_GG=("per1k_GG", "mean"),
+               oe_CG=("oe_CG", "mean"), oe_GG=("oe_GG", "mean"),
+               cpg_per_gene=("freq_CG", "mean"),
+               pct_zero_cpg=("freq_CG", lambda s: (s == 0).mean() * 100)).reset_index())
+summ["cpg_per_gene"] = summ["cpg_per_gene"] * summ["length"]
 summ["gene"] = pd.Categorical(summ["gene"], GENE_ORDER, ordered=True)
 summ = summ.sort_values(["Subtype", "gene"])
 summ.to_csv("results/gene_summary.tsv", sep="\t", index=False)
+
 print("\n=== Composition by gene ===")
 print(summ.round(4).to_string(index=False))
-
-# how much CpG each gene actually carries, and how often it carries none at all
-dep = (g.groupby(["Subtype", "gene"])
-         .apply(lambda s: pd.Series({
-             "cpg_per_gene": (s.freq_CG * s.valid_len).mean(),
-             "pct_zero_cpg": (s.freq_CG == 0).mean() * 100,
-             "oe_CG": s.oe_CG.mean(),
-             "gc": s.gc_content.mean()}), include_groups=False)
-         .reset_index())
-dep["gene"] = pd.Categorical(dep["gene"], GENE_ORDER, ordered=True)
-dep = dep.sort_values(["Subtype", "gene"])
-dep.to_csv("results/cpg_depletion_by_gene.tsv", sep="\t", index=False)
-print("\n=== CpG depletion by gene ===")
-print(dep.round(3).to_string(index=False))
-print("\nwrote results/gene_summary.tsv, results/cpg_depletion_by_gene.tsv")
+print("\nwrote results/gene_summary.tsv")
