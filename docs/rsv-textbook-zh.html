@@ -1,0 +1,633 @@
+<title>RSV 基因組學入門</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* 版面:單欄閱讀、編號章節、圖片置中附圖說 */
+  :root {
+    --bg: #fcfcfd;
+    --surface: #ffffff;
+    --ink: #15181e;
+    --ink-soft: #596273;
+    --rule: #e1e5ec;
+    --accent: #1F5C8B;
+    --accent-soft: #eaf1f7;
+    --warn: #8a5a00;
+    --warn-bg: #fdf6e8;
+    --key-bg: #f2f6fa;
+    --font-h: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+    --font-b: "Noto Serif TC", "PingFang TC", Georgia, serif;
+    --font-m: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1115; --surface: #161922; --ink: #e8ebf1; --ink-soft: #9aa3b4;
+      --rule: #272c38; --accent: #7ab3dc; --accent-soft: #16202b;
+      --warn: #e6bb6c; --warn-bg: #221c10; --key-bg: #171d26;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1115; --surface: #161922; --ink: #e8ebf1; --ink-soft: #9aa3b4;
+    --rule: #272c38; --accent: #7ab3dc; --accent-soft: #16202b;
+    --warn: #e6bb6c; --warn-bg: #221c10; --key-bg: #171d26;
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--font-b); font-size: 1.0625rem; line-height: 1.95;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 0 5rem;
+  }
+  .wrap { max-width: 44rem; margin: 0 auto; }
+
+  header.cover { padding-block: 3.5rem 2rem; border-bottom: 3px solid var(--ink); }
+  .kicker { font-family: var(--font-h); font-size: .78rem; font-weight: 700;
+            letter-spacing: .18em; color: var(--accent); margin: 0 0 1rem; }
+  h1 { font-family: var(--font-h); font-weight: 700; font-size: clamp(1.9rem, 6vw, 2.8rem);
+       line-height: 1.25; letter-spacing: -.01em; margin: 0 0 .8rem; text-wrap: balance; }
+  .sub { font-size: 1.12rem; color: var(--ink-soft); margin: 0 0 1.8rem;
+         line-height: 1.8; text-wrap: balance; }
+  .byline { font-family: var(--font-h); font-size: .85rem; color: var(--ink-soft); margin: 0; }
+
+  .part { margin-top: 4rem; padding: 1.4rem 0 .8rem; border-top: 2px solid var(--accent); }
+  .part .pn { font-family: var(--font-h); font-size: .78rem; font-weight: 700;
+              letter-spacing: .18em; color: var(--accent); }
+  .part h2 { font-family: var(--font-h); font-size: clamp(1.45rem, 4vw, 1.9rem); font-weight: 700;
+             margin: .35rem 0 .5rem; text-wrap: balance; }
+  .part p { color: var(--ink-soft); margin: 0; }
+
+  h3 { font-family: var(--font-h); font-size: 1.25rem; font-weight: 700;
+       margin: 2.6rem 0 .8rem; line-height: 1.5; text-wrap: balance; }
+  h3 .num { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: .5rem; }
+  h4 { font-family: var(--font-h); font-size: 1.02rem; font-weight: 500; margin: 1.8rem 0 .5rem; }
+  p { margin: 0 0 1.05rem; }
+  strong { font-weight: 700; }
+  .en { font-family: var(--font-h); font-weight: 500; color: var(--accent); }
+  code { font-family: var(--font-m); font-size: .88em; background: var(--key-bg);
+         padding: .1em .35em; border-radius: 3px; }
+
+  ul, ol { margin: 0 0 1.05rem; padding-left: 1.5rem; }
+  li { margin-bottom: .5rem; }
+
+  figure { margin: 1.8rem 0; }
+  figure img { width: 100%; max-width: 100%; display: block; border: 1px solid var(--rule);
+               border-radius: 3px; background: #fff; }
+  figcaption { font-family: var(--font-h); font-size: .84rem; color: var(--ink-soft);
+               margin-top: .6rem; line-height: 1.75; }
+  figcaption b { color: var(--ink); font-weight: 700; }
+
+  .scroll { overflow-x: auto; margin: 1.4rem 0; }
+  table { border-collapse: collapse; width: 100%; font-family: var(--font-h); font-size: .88rem; }
+  th, td { text-align: left; padding: .6rem .8rem; border-bottom: 1px solid var(--rule);
+           vertical-align: top; line-height: 1.7; }
+  th { font-weight: 700; font-size: .8rem; color: var(--ink-soft);
+       border-bottom: 1.5px solid var(--ink); }
+  td.n, th.n { text-align: right; font-family: var(--font-m); font-variant-numeric: tabular-nums; }
+
+  .key { background: var(--key-bg); border-left: 3px solid var(--accent);
+         padding: 1.1rem 1.25rem; margin: 1.5rem 0; border-radius: 0 3px 3px 0; }
+  .key .lbl { font-family: var(--font-h); font-size: .8rem; font-weight: 700;
+              color: var(--accent); margin: 0 0 .5rem; }
+  .key p:last-child { margin-bottom: 0; }
+
+  .warn { background: var(--warn-bg); border-left: 3px solid var(--warn);
+          padding: 1.1rem 1.25rem; margin: 1.5rem 0; border-radius: 0 3px 3px 0; }
+  .warn .lbl { font-family: var(--font-h); font-size: .8rem; font-weight: 700;
+               color: var(--warn); margin: 0 0 .5rem; }
+  .warn p:last-child { margin-bottom: 0; }
+
+  .toc { background: var(--surface); border: 1px solid var(--rule); border-radius: 4px;
+         padding: 1.3rem 1.5rem; margin: 2rem 0; }
+  .toc h4 { margin-top: 0; font-weight: 700; }
+  .toc ol { font-family: var(--font-h); font-size: .9rem; padding-left: 1.4rem; margin-bottom: 0; }
+  .toc > ol > li { margin-bottom: .55rem; font-weight: 700; }
+  .toc ol ol { font-weight: 400; margin-top: .35rem; padding-left: 1.2rem; }
+  .toc ol ol li { margin-bottom: .2rem; color: var(--ink-soft); }
+
+  .eq { font-family: var(--font-m); font-size: .97rem; text-align: center;
+        background: var(--key-bg); padding: .9rem 1rem; border-radius: 4px; margin: 1.2rem 0;
+        overflow-x: auto; line-height: 1.6; }
+
+  footer { margin-top: 4rem; padding-top: 1.4rem; border-top: 1px solid var(--rule);
+           font-family: var(--font-h); font-size: .85rem; color: var(--ink-soft); line-height: 1.8; }
+  a { color: var(--accent); }
+</style>
+
+<div class="wrap">
+
+<header class="cover">
+  <p class="kicker">零基礎入門指南</p>
+  <h1>RSV 基因組學:從零開始</h1>
+  <p class="sub">這個病毒是什麼、我們怎樣讀它的 genome(基因組)、以及這個項目到底量度了什麼 —— 不預設任何病毒學背景。</p>
+  <p class="byline">RSV 基因組成分項目 &middot; github.com/Wlimni/RSV</p>
+</header>
+
+<div class="toc">
+  <h4>目錄</h4>
+  <ol>
+    <li>第一部分 —— 認識病毒
+      <ol>
+        <li>什麼是病毒</li>
+        <li>認識 RSV</li>
+        <li>RSV 病毒顆粒的結構</li>
+        <li>基因組:十個基因</li>
+        <li>每個基因做什麼</li>
+        <li>RSV 怎樣複製自己</li>
+        <li>兩個亞型:A 型與 B 型</li>
+        <li>Lineage(譜系):家族樹的分支</li>
+        <li>RSV 的季節性與歷年變化</li>
+        <li>怎樣預防 RSV</li>
+      </ol>
+    </li>
+    <li>第二部分 —— 怎樣讀基因組
+      <ol start="11">
+        <li>基因組就是一段很長的文字</li>
+        <li>序列從哪裡來</li>
+        <li>參考基因組與序列比對</li>
+        <li>GC content(GC 含量)</li>
+        <li>Dinucleotide(二核苷酸),以及 CpG 為何特別</li>
+        <li>Observed/Expected(實際值與期望值之比)</li>
+        <li>Codon(密碼子),與特別的第三個位置</li>
+        <li>宿主為什麼在意 CpG</li>
+      </ol>
+    </li>
+    <li>第三部分 —— 怎樣看懂數字
+      <ol start="19">
+        <li>趨勢、斜率與直線擬合</li>
+        <li>Confidence interval(信賴區間)</li>
+        <li>為什麼數據量大時 p 值會失效</li>
+        <li>Confounding(混淆)</li>
+        <li>差點騙到我們的陷阱</li>
+      </ol>
+    </li>
+    <li>第四部分 —— 這個項目做了什麼
+      <ol start="24">
+        <li>研究問題的由來</li>
+        <li>步驟一 —— 收集基因組</li>
+        <li>步驟二 —— 品質控制</li>
+        <li>步驟三 —— 量度基因組成分</li>
+        <li>步驟四 —— 切分成十個基因</li>
+        <li>步驟五 —— 定義 lineage</li>
+        <li>步驟六 —— 擬合趨勢</li>
+        <li>結果</li>
+        <li>我們發現了什麼、沒發現什麼</li>
+        <li>下一步</li>
+      </ol>
+    </li>
+    <li>名詞對照表</li>
+  </ol>
+</div>
+
+<!-- ===================== PART I ===================== -->
+<div class="part">
+  <div class="pn">第一部分</div>
+  <h2>認識病毒</h2>
+  <p>在任何基因組分析說得通之前,你需要先知道 RSV 到底是什麼。</p>
+</div>
+
+<h3><span class="num">1.</span>什麼是病毒</h3>
+<p>病毒不是細胞,按一般定義也不算活著。它是一包被蛋白質包裹的遺傳指令,自己什麼都做不到 —— 沒有產生能量的方法,也沒有製造蛋白質的機器。放在枱面上,它就只是靜靜躺著。</p>
+<p>它唯一能做的,是進入一個活細胞,然後把自己的指令交出去。細胞本身的機器會讀這些指令,製造出新的病毒顆粒,通常犧牲掉細胞原本該做的工作。最後細胞釋放或破裂,新顆粒再去感染其他細胞。</p>
+<p>遺傳指令有兩種形式。有些病毒用 <span class="en">DNA(去氧核糖核酸)</span>,跟你自己的基因是同一種分子;另一些用 <span class="en">RNA(核糖核酸)</span>,一種很相近的分子。RSV 屬於 RNA 病毒。</p>
+<p>這一點比聽起來重要:複製 RNA 的酵素比複製 DNA 的出錯率高得多。所以 RNA 病毒突變得很快,這也是它們能夠一季一季地改變的原因。</p>
+
+<h3><span class="num">2.</span>認識 RSV</h3>
+<p><span class="en">RSV(呼吸道合胞病毒)</span>全寫是 Respiratory Syncytial Virus。「Respiratory(呼吸道)」是因為它感染氣道;「Syncytial(合胞)」是因為被感染的細胞會融合成一團多核的大細胞,叫做 <span class="en">syncytium(合胞體)</span>,這是它對組織做的一件很有辨識度的事。</p>
+<p>它極之常見。基本上每個小朋友兩歲前都會感染過 RSV,而且因為對它的免疫力維持不久,人一生中會重複感染。健康成人感染起來像一場重感冒;但對嬰兒、長者和免疫力弱的人,它可以造成 bronchiolitis(細支氣管炎)和肺炎,是全球嬰兒住院的主要原因之一。</p>
+<p>所以 RSV 並不是什麼罕見的病毒。它是一個長期存在於人類社會、非常普通的病毒 —— 這一點請記住,因為它最後會成為理解本項目結果的關鍵。</p>
+
+<h3><span class="num">3.</span>RSV 病毒顆粒的結構</h3>
+<p>RSV 顆粒大致呈球形,也會形成長絲狀。由外到內分三層。</p>
+<figure>
+  <img src="figures/t2_virion.png" alt="RSV 病毒顆粒示意圖:外層包膜上有 F 與 G 蛋白突起,內部是被 N 蛋白包裹的捲曲 RNA 基因組。">
+  <figcaption><b>圖 1.</b> RSV 顆粒的三層結構。外面的突起是免疫系統最先看到的部分,也是新預防藥物的靶點。</figcaption>
+</figure>
+<p>最外層是 <span class="en">envelope(包膜)</span>,一層油脂膜,是病毒離開上一個細胞時「順手帶走」的。膜上插著蛋白質突起,其中兩種很重要:<strong>G</strong> 負責抓住人類細胞的表面,<strong>F</strong> 則把病毒與細胞的膜拉在一起融合,好讓內容物送進去。</p>
+<p>裡面是基因組,但它從不裸露。整條基因組被大量 <strong>N</strong> 蛋白包裹,形成一條柔軟捲曲的結構,叫 <span class="en">nucleocapsid(核衣殼)</span>。跟著一起進去的還有病毒一進細胞就要用的酵素。</p>
+
+<h3><span class="num">4.</span>基因組:十個基因</h3>
+<p>RSV 的 genome(基因組)是一條大約 <strong>15,200 個字母長</strong>的 RNA。寫出來就是一串大約 15,200 個字元,來自四個字母的字母表:A、C、G、T。</p>
+<div class="key">
+  <p class="lbl">關於字母的小註</p>
+  <p>RNA 實際上用 U(尿嘧啶)代替 DNA 的 T(胸腺嘧啶)。但序列資料庫習慣一律用 DNA 字母儲存,所以你從頭到尾都會看到 T,本項目也一樣。論文寫「UpA」而我們寫「TpA」時,指的是同一個東西。</p>
+</div>
+<p>基因組分成十個 <span class="en">gene(基因)</span>,每一個是一段編碼一種蛋白質的字母。它們的排列順序永遠相同。</p>
+<figure>
+  <img src="figures/t1_genome_map.png" alt="RSV 基因組圖譜,十個基因由 NS1 到 L 按比例繪出,NS1 與 NS2 以紅色標示,G 與 F 以藍色標示。">
+  <figcaption><b>圖 2.</b> 十個 RSV 基因,按實際長度比例繪製。留意單單 <b>L</b> 一個基因就佔了整個基因組約 43%。</figcaption>
+</figure>
+<p>最後那一點值得停下來想一想。如果你計算整個基因組的平均值,L 基因就貢獻了接近一半。一個只發生在 NS1 這種小基因上的真實變化,在全基因組平均值裡幾乎看不見。這正是本項目要逐個基因分開量度的原因。</p>
+
+<h3><span class="num">5.</span>每個基因做什麼</h3>
+<div class="scroll">
+<table>
+  <thead><tr><th>基因</th><th class="n">長度</th><th>功能</th></tr></thead>
+  <tbody>
+    <tr><td><strong>NS1</strong></td><td class="n">420</td><td>阻斷 interferon(干擾素),即細胞的抗病毒警報</td></tr>
+    <tr><td><strong>NS2</strong></td><td class="n">375</td><td>同樣阻斷干擾素,與 NS1 配合</td></tr>
+    <tr><td>N</td><td class="n">1,176</td><td>包裹整條基因組</td></tr>
+    <tr><td>P</td><td class="n">726</td><td>複製酵素的搭檔</td></tr>
+    <tr><td>M</td><td class="n">771</td><td>基質蛋白,維持顆粒結構</td></tr>
+    <tr><td>SH</td><td class="n">195</td><td>最小的基因,在膜上形成通道</td></tr>
+    <tr><td><strong>G</strong></td><td class="n">969</td><td>把病毒黏附到細胞上。變異最快的基因</td></tr>
+    <tr><td><strong>F</strong></td><td class="n">1,725</td><td>融合膜。nirsevimab 與疫苗的靶點</td></tr>
+    <tr><td>M2</td><td class="n">585</td><td>調控轉錄</td></tr>
+    <tr><td><strong>L</strong></td><td class="n">6,498</td><td>複製基因組的酵素。遠比其他基因大</td></tr>
+  </tbody>
+</table>
+</div>
+<p>其中四個在本項目裡反覆出現。</p>
+<p><strong>NS1 與 NS2</strong> 是病毒對你免疫系統的反擊。當細胞偵測到病毒,它會釋放 <span class="en">interferon(干擾素)</span> —— 一種化學警報,叫鄰近細胞開啟防禦。NS1 和 NS2 會干擾這個訊號,替病毒爭取時間在身體反應過來之前先複製。</p>
+<p><strong>G</strong> 在外面,所以抗體不斷攻擊它,因此它比任何其他 RSV 基因變得都快。它還有一個特點:某些 lineage 的 G 基因裡多插了 72 個字母,這在把基因組對齊時會造成技術上的麻煩。</p>
+<p><strong>F</strong> 同樣在外面,但比 G 保守得多,因為它的形狀必須精確才能完成融合。正是這份保守性,令藥廠選它而不是 G 作為靶點。</p>
+
+<h3><span class="num">6.</span>RSV 怎樣複製自己</h3>
+<p>簡單講一下,因為這個機制解釋了為何有些基因表達得比其他多。</p>
+<ol>
+  <li><strong>G</strong> 蛋白把顆粒黏到細胞表面。</li>
+  <li><strong>F</strong> 蛋白融合兩層膜,把包裹好的基因組釋放進去。</li>
+  <li><strong>L</strong> 酵素從基因組的一端 —— 3' 端 —— 開始讀,逐個基因轉錄。</li>
+  <li>細胞自己的核糖體讀這些轉錄本,製造病毒蛋白。</li>
+  <li>新的基因組與蛋白在細胞表面組裝,新顆粒出芽離開。</li>
+</ol>
+<div class="key">
+  <p class="lbl">為什麼基因順序重要</p>
+  <p>因為 L 嚴格由一端開始讀,而且偶爾會掉下來,所以排在前面的基因被轉錄的次數遠多於後面的。NS1 和 NS2 排第一第二,所以在感染早期會被大量製造 —— 剛好合適,因為它們的工作正是在警報響起之前把它關掉。L 排最後,製造量最少,但這沒問題,因為酵素只需要一點點。</p>
+</div>
+
+<h3><span class="num">7.</span>兩個亞型:A 型與 B 型</h3>
+<p>RSV 有兩種形式,<strong>RSV-A</strong> 與 <strong>RSV-B</strong>。它們很久以前從共同祖先分開,現在在基因上已經明顯不同,雖然造成的疾病一樣。</p>
+<p>兩者同時流行,經常是一型主導一兩季之後換另一型。因為它們是分開的演化支線,本項目全程把兩者<strong>分開分析</strong>;混在一起會把真實的規律模糊掉。唯一把它們放在一起的場合,是互相比較的時候 —— 而結果最有趣的發現剛好就在那裡。</p>
+<p>給你一個差異的概念:NS1 基因在 A 型和 B 型之間,字母層面大約只有 78% 相同。即是說大概每五個字母就有一個不同。</p>
+
+<h3><span class="num">8.</span>Lineage(譜系):家族樹的分支</h3>
+<p>在每個亞型之內,RSV 繼續分化。病毒傳播時會累積突變,族群就分裂成一條條分支。每一條有名字的分支就是一個 <span class="en">lineage(譜系)</span>。</p>
+<p>Lineage 的名稱是階層式的,每一個點代表一次更細的分支:</p>
+<div class="eq">A &nbsp;&rarr;&nbsp; A.D &nbsp;&rarr;&nbsp; A.D.1 &nbsp;&rarr;&nbsp; A.D.1.5</div>
+<p>所以 <code>A.D.1.5</code> 屬於 <code>A.D.1</code>,而 <code>A.D.1</code> 屬於 <code>A.D</code>。如果你覺得這跟疫情期間 SARS-CoV-2 用的 Pango 命名很像,那是因為兩者用的是同一套概念。</p>
+<p>Lineage 不是永久的。一個新的出現、擴散、主導幾季,然後被另一個取代。這種不斷的更替是第三部分的核心,因為它可以在數據裡造出看似演化、其實不是的規律。</p>
+
+<h3><span class="num">9.</span>RSV 的季節性與歷年變化</h3>
+<p>RSV 有很強的 <span class="en">seasonality(季節性)</span>。在溫帶國家,它秋末來、冬天高峰、春天消退。南半球同樣的規律相差半年,所以全球任何時候都有某處在 RSV 季節。</p>
+<p>有兩件歷史事件在任何 RSV 數據集裡都看得很清楚:</p>
+<ul>
+  <li><strong>COVID-19,2020–21 年。</strong>封城、口罩和停課幾乎完全壓住了 RSV。之後限制解除,RSV 反季節地、而且異常猛烈地回來 —— 因為有整整兩年份的小朋友從未接觸過它。</li>
+  <li><strong>Nirsevimab,2023 年起。</strong>一種長效抗體開始廣泛給嬰兒使用。這是史上第一次,F 蛋白在整個人口層面受到大規模、刻意施加的免疫壓力。</li>
+</ul>
+
+<h3><span class="num">10.</span>怎樣預防 RSV</h3>
+<p>直到最近,基本上沒有辦法。2023 年起有兩種方式,兩者都針對 <strong>F</strong> 蛋白:</p>
+<ul>
+  <li><strong>Nirsevimab</strong>,一種直接注射給嬰兒的 <span class="en">monoclonal antibody(單株抗體)</span>。它不是疫苗:它直接提供現成的抗體,而不是教身體自己製造,效力維持大約一個季節。</li>
+  <li><strong>RSVpreF 疫苗</strong>,給長者,以及給孕婦讓保護力傳給新生兒。</li>
+</ul>
+<p>因為這些都針對 F,F 基因的任何變化現在都有直接的臨床意義。這正是本項目最有希望的下一步,見第 33 節。</p>
+
+<!-- ===================== PART II ===================== -->
+<div class="part">
+  <div class="pn">第二部分</div>
+  <h2>怎樣讀基因組</h2>
+  <p>本項目量度的每一樣東西,都是字母本身的性質。以下逐個解釋。</p>
+</div>
+
+<h3><span class="num">11.</span>基因組就是一段很長的文字</h3>
+<p>對我們而言,一個 RSV 基因組就是一串大約 15,200 個字元:</p>
+<div class="eq">ACGCGAAAAAATGCGTACAACAAACTTGCATAAACCAAAAAAATGGGG&hellip;</div>
+<p>在硬碟上它真的就只是這樣。接下來做的全部事情,都是在這串文字裡數數和比較。你不需要實驗室,只需要文字和一部電腦 —— 這正是這類研究的門檻低的原因。</p>
+<p>序列用一種叫 <span class="en">FASTA</span> 的格式儲存:一行以 <code>&gt;</code> 開頭的標題行,下面跟著字母。</p>
+
+<h3><span class="num">12.</span>序列從哪裡來</h3>
+<p>醫院從病人身上採樣,抽出病毒的 RNA,送進定序儀。結果連同樣本資料 —— 採集日期、國家、宿主、所屬 lineage —— 一起上載到共用資料庫。</p>
+<p>RSV 和流感用的資料庫是 <span class="en">GISAID</span>。它本來為流感監測而建,後來擴展到其他病毒。使用它要同意一份限制轉發的條款,所以本項目的程式碼庫裡<strong>完全沒有任何序列</strong>,只有程式碼和匯總結果。</p>
+<div class="warn">
+  <p class="lbl">這批數據是什麼,不是什麼</p>
+  <p>這是 <strong>surveillance data(監測數據)</strong>,不是設計好的研究。沒有人挑選過一個平衡的樣本,它只是各個實驗室剛好定序並上載的東西,而這取決於經費、設備和國家政策。歐洲的比重嚴重偏高;有些國家要買了定序儀之後才出現在數據裡。任何隨時間出現的規律,都可能有一部分只是「誰在定序」的規律。把這種偏差當成任何結果的預設解釋,是這個領域裡最有用的習慣。</p>
+</div>
+
+<h3><span class="num">13.</span>參考基因組與序列比對</h3>
+<p>要在幾萬個基因組之間比較同一個基因,你得知道每個基因在每條序列裡從哪裡開始、到哪裡結束。你不能直接用固定位置,因為基因組長度不一 —— 有些有插入,有些有缺失。</p>
+<p>做法是用一條 <span class="en">reference genome(參考基因組)</span>:一條研究得很透徹、已經標註好十個基因邊界的基因組。其他所有基因組都跟它對齊,這個過程叫 <span class="en">alignment(序列比對)</span>,然後把基因邊界對應過去。</p>
+<p>本項目用 MAFFT 做比對,每個亞型用一條來自公開 NCBI 資料庫的參考序列。有一個細節必須做對:比對時<strong>保留插入片段</strong>而不是把它剪掉。某些 RSV lineage 的 G 基因裡多了那 72 個字母,粗心的比對會默默把它切走 —— 剛好毀掉我們最關心的基因。我們檢查過:G 基因得出 969 個字母,而參考序列是 897 個,正好是參考長度加上那段已知的 72 字母重複。</p>
+
+<h3><span class="num">14.</span>GC content(GC 含量)</h3>
+<p>最簡單的量度。數一數有多少個字母是 G 或 C,除以總數。</p>
+<div class="eq">GC content = (G 的數目 + C 的數目) &divide; 字母總數</div>
+<p>RSV 大約是 <strong>0.33</strong>,即是說大概三分之一的基因組是 G 或 C,三分之二是 A 或 T。不同生物、不同病毒的數值差很遠,而同一條基因組之內也會逐個基因不同。</p>
+<p>定序失敗的位置會標成 <code>N</code>。我們直接跳過這些位置而不是去猜,所以它們不會扭曲計數。</p>
+
+<h3><span class="num">15.</span>Dinucleotide(二核苷酸),以及 CpG 為何特別</h3>
+<p><span class="en">Dinucleotide(二核苷酸)</span>就是相鄰的一對字母。讀 <code>ACGT</code> 會得到三對:<code>AC</code>、<code>CG</code>、<code>GT</code>。</p>
+<p>這個領域最關心的一對,是<strong>一個 C 緊接著一個 G</strong>,寫作 <strong>CpG</strong>。中間那個「p」指的是兩者之間的化學鍵,它的作用是講清楚我們指的是同一條鏈上前後相鄰的兩個字母。</p>
+<div class="warn">
+  <p class="lbl">如果你已經在人類遺傳學裡學過 CpG</p>
+  <p>你可能是在 DNA methylation(DNA 甲基化)、CpG island(CpG 島)和基因啟動子的脈絡下認識 CpG 的。<strong>那些在這裡完全不適用。</strong>RNA 病毒不會那樣被甲基化,也沒有 CpG island。CpG 對病毒之所以重要,原因完全不同,在第 18 節解釋。公式一樣,生物學不一樣。</p>
+</div>
+<p>本項目追蹤五對:<strong>CpG</strong>、<strong>GpC</strong>、<strong>GpG</strong>、<strong>CpC</strong> 和 <strong>UpA</strong>。前四對是我們參照的流感論文所用的。UpA 是額外加的,因為更廣泛的文獻把它視為 CpG 的「同伴」—— 同樣被壓抑,同樣跟免疫辨識有關 —— 但它研究得沒那麼透徹,所以我們標明它屬於探索性質。</p>
+
+<h3><span class="num">16.</span>Observed/Expected(實際值與期望值之比)</h3>
+<p>直接數 CpG 會誤導人。一條 G 和 C 很多的基因組,單憑機率就會含有更多 CpG。要問病毒是不是<em>主動迴避</em>這一對,你必須跟「純粹靠機率會出現多少」比較。</p>
+<figure>
+  <img src="figures/t3_oe_explained.png" alt="兩格示意圖:上格在一小段序列中標出每一個 CpG 對,下格把 observed/expected 的計算一步步算到 0.22。">
+  <figcaption><b>圖 3.</b> O/E 比值的完整算法。先數對數,再除以單憑鹼基組成所預測的數值。</figcaption>
+</figure>
+<p>計算方式是:</p>
+<div class="eq">O/E = CpG 的頻率 &divide; ( C 的頻率 &times; G 的頻率 )</div>
+<p>解讀方式:</p>
+<ul>
+  <li><strong>O/E 接近 1.0</strong> —— 出現次數跟機率預測差不多,沒有特別。</li>
+  <li><strong>O/E 低於 1.0</strong> —— 這一對被<em>壓抑</em>了,比機率應有的少。有什麼在把它們移除。</li>
+  <li><strong>O/E 高於 1.0</strong> —— 這一對被富集了。</li>
+</ul>
+<p>RSV 的 CpG O/E 大約是 <strong>0.24</strong>。這是很強的壓抑:病毒只帶著它自身鹼基組成所預測的四分之一左右的 CpG。另外三對含 GC 的二核苷酸都接近或高於 1.0,所以這是 CpG 專有的現象,而不是整體缺乏 G 和 C。</p>
+
+<h3><span class="num">17.</span>Codon(密碼子),與特別的第三個位置</h3>
+<p>編碼蛋白質的區域是每三個字母一組來讀。每一組三字母叫一個 <span class="en">codon(密碼子)</span>,指定一個 amino acid(氨基酸),即組成蛋白質的建築材料。</p>
+<p>遺傳密碼是<strong>冗餘</strong>的:同一個氨基酸常常有好幾個密碼子可以表示,而它們通常只差在第三個字母。<code>GCT</code>、<code>GCC</code>、<code>GCA</code>、<code>GCG</code> 全部都代表 alanine(丙氨酸)。</p>
+<figure>
+  <img src="figures/t4_codon_positions.png" alt="五個密碼子的示意圖,第一、二位置以淺色標示並標註 GC12,第三位置以深色標示並標註 GC3。">
+  <figcaption><b>圖 4.</b> 改變第一或第二個字母通常會改變蛋白質;改變第三個通常不會。</figcaption>
+</figure>
+<p>這給了我們兩個很有用的量度:</p>
+<ul>
+  <li><strong>GC3</strong> —— 只看第三個位置的 GC 含量。這些位置大多是 <span class="en">synonymous(同義)</span> 的:改了它們蛋白質不變,所以相對自由地漂移。</li>
+  <li><strong>GC12</strong> —— 第一和第二個位置的 GC 含量。這些大多是 <span class="en">non-synonymous(非同義)</span> 的:改了會改變蛋白質,所以被「蛋白質必須能用」這個要求牢牢固定住。</li>
+</ul>
+<div class="key">
+  <p class="lbl">為什麼這個比較威力很大</p>
+  <p>如果成分在 GC3 變得快、在 GC12 變得慢,那麼造成變化的東西是作用在 <strong>RNA 分子本身</strong>,而不是蛋白質 —— 因為它只改動了蛋白質不在乎的字母。如果兩者一起動,那蛋白質多半有份。這是本項目最鋒利的工具,而流感那篇論文最清晰的結果正是由它得出:GC3 下降的速度比 GC12 快約 5.65 倍。</p>
+</div>
+
+<h3><span class="num">18.</span>宿主為什麼在意 CpG</h3>
+<p>那麼,病毒為什麼要迴避某一對特定的字母?</p>
+<p>人類細胞裡有一種蛋白叫 <strong>ZAP</strong>(zinc-finger antiviral protein,鋅指抗病毒蛋白)。ZAP 會特異地結合到病毒 RNA 的 CpG 位點上,並標記那段 RNA 讓它被銷毀。實際效果是:病毒基因組裡每一個 CpG,都是免疫系統可以抓住它的把手。</p>
+<p>結果就是,長期在人類之間流行的病毒,往往帶著比機率應有更少的 CpG。它們在漫長歲月裡,把把手一個個銼掉了。這一點有實驗證據:當研究人員刻意在流感基因組裡加入額外的 CpG,病毒複製得更差,而且引發更強的免疫反應。</p>
+<div class="warn">
+  <p class="lbl">把結論講得準確</p>
+  <p>ZAP 是這個領域的主流解釋,而且證據相當充分。但請留意,它是對「序列中觀察到的規律」的一個解釋。本項目觀察到規律,但<strong>沒有證明機制</strong>。要證明 ZAP 在 RSV 裡真的負責,需要實驗室工作 —— 把 CpG 位點放回病毒裡,再量度它在有 ZAP 的細胞裡是否比在沒有 ZAP 的細胞裡長得差。寫報告時值得把這點講清楚。有趣的是,我們參照的那篇流感論文其實並沒有提到 ZAP,它只引用了 CpG 的實驗研究而沒有指名機制。</p>
+</div>
+
+<!-- ===================== PART III ===================== -->
+<div class="part">
+  <div class="pn">第三部分</div>
+  <h2>怎樣看懂數字</h2>
+  <p>四個統計概念,每一個都改變了這個項目的做法。</p>
+</div>
+
+<h3><span class="num">19.</span>趨勢、斜率與直線擬合</h3>
+<p>要問某樣東西有沒有隨時間改變,你把量度值對日期畫出來,然後穿過這些點擬合一條直線。那條線的 <span class="en">slope(斜率)</span>就是答案:每年改變多少。</p>
+<p>正斜率代表上升,負的代表下降,接近零代表沒有趨勢。本項目的斜率大約是每年 0.0001,十年下來約等於零點一個百分點。很小。</p>
+<p>斜率旁邊還有 <strong>R&sup2;</strong>,它說明這條線實際上解釋了多少散佈,數值由 0 到 1。一個斜率可以是真的,但如果點散得很開,R&sup2; 仍然可以很小 —— 而我們看到的正是這種情況。</p>
+
+<h3><span class="num">20.</span>Confidence interval(信賴區間)</h3>
+<p>由數據算出來的斜率是一個估計值,不是事實。<span class="en">95% confidence interval(95% 信賴區間)</span>是與數據相符的數值範圍。如果這個範圍包含零,你就不能排除「其實沒有趨勢」。</p>
+<p>數據越多、時間跨度越長,信賴區間就越窄。這就是為什麼本項目必須小心挑選要納入哪些 lineage:一個只觀察了五年、只有 200 條基因組的 lineage,算出來的斜率不確定到沒有用。</p>
+
+<h3><span class="num">21.</span>為什麼數據量大時 p 值會失效</h3>
+<p><span class="en">p-value(p 值)</span>只回答一個很窄的問題:假如其實完全沒有效應,你看到這麼強的規律的機率有多大?p 值小代表「大概不只是碰巧」。</p>
+<p>問題在於 p 值取決於樣本大小。有 33,000 條基因組時,幾乎任何差異 —— 無論多微小、多沒意義 —— 都會顯示為高度顯著。</p>
+<div class="key">
+  <p class="lbl">請記住這條規則</p>
+  <p>在這個樣本量下,p 值只告訴你某個效應<strong>不是雜訊</strong>。它不告訴你這個效應<strong>重要</strong>。要判斷重要性,看效應的大小,以及它在各個獨立群組裡是否都指向同一方向。留意流感那篇論文怎樣報告結果:是「每年 &minus;0.064%」,而不是 p 值。</p>
+</div>
+
+<h3><span class="num">22.</span>Confounding(混淆)</h3>
+<p><span class="en">Confounder(混淆因子)</span>是第三個因素,它跟你正在比較的兩者一起變動,造出一個其實並不存在的關聯。</p>
+<p>本項目有一個很嚴重的。2015 到 2026 年間,RSV 定序的地理分佈完全改變了:大洋洲在 2015 年提供了 38% 的基因組,到 2026 年只剩 4%;而歐洲由 18% 升到 56%。所以「時間比較晚」同時也意味著「比較可能來自歐洲」。如果歐洲和大洋洲的病毒因為無關的原因而成分不同,一個純粹地理上的差異就會表現成隨時間的趨勢。</p>
+<p>解決辦法是把地區當作 <span class="en">covariate(共變量)</span>放進模型,等於是在固定地理的前提下再問一次同樣的問題。我們兩種結果都報告;能挺過這一關的趨勢可信得多。</p>
+
+<h3><span class="num">23.</span>差點騙到我們的陷阱</h3>
+<p>這一節值得好好理解,因為本項目的早期版本真的在這裡出過錯。</p>
+<p>整個族群的平均值可以因為兩個完全不同的原因而移動:</p>
+<ol>
+  <li>個體本身真的在改變。</li>
+  <li>完全沒有任何改變,但群組的<em>比例</em>變了 —— 本來數值就高的那一組變大,數值低的那一組縮小。</li>
+</ol>
+<figure>
+  <img src="figures/t5_pooling.png" alt="同一批模擬數據的兩格圖。合併起來擬合線上升;按 lineage 分開之後,兩條線都下降。">
+  <figcaption><b>圖 5.</b> 同一批數據畫兩次。合併看,趨勢明顯上升;分成它真正的兩組之後,兩組都明顯下降。這就是 <b>Simpson's paradox(辛普森悖論)</b>。</figcaption>
+</figure>
+<p>第二種情況會產生一條看起來很有說服力的趨勢線,背後卻完全沒有演化。本項目早期跑的時候正正發生了這件事:把所有數據合併,RSV-B 的 CpG 比值看起來穩定上升;但分開在每個 lineage 之內擬合,它其實在下降。原來是一個高 CpG 的 lineage 取代了一個低 CpG 的。</p>
+<p>解決辦法是結構上的而不是統計上的:<strong>永遠在每個 lineage 之內分開擬合趨勢</strong>,不要用合併的數據。流感那篇論文也是這樣做的,這也是我們判斷這個做法正確的理由之一。</p>
+
+<!-- ===================== PART IV ===================== -->
+<div class="part">
+  <div class="pn">第四部分</div>
+  <h2>這個項目做了什麼</h2>
+  <p>六個步驟、結果,以及對哪些部分真的成功了的誠實交代。</p>
+</div>
+
+<h3><span class="num">24.</span>研究問題的由來</h3>
+<p>起點是 2026 年 Ye 等人發表在 <em>Nature Microbiology</em> 的一篇研究。他們量度了 115,520 條流感 A 型病毒基因組的 GC content 和含 GC 的二核苷酸頻率。</p>
+<p>流感 A 型天然寄居在野鳥身上。偶爾它會跳到哺乳類身上,然後出現兩種結果之一。通常是 <span class="en">sporadic(零星感染)</span>:幾個病例,然後消失。少數情況會變成 <span class="en">sustained(持續傳播)</span>,在新宿主裡立足並流行多年 —— 人類季節性流感、豬流感、狗流感全部都是這樣開始的。</p>
+<p>他們的發現是:達成持續傳播的那些 lineage,其 GC 含量和 GC 二核苷酸頻率隨時間<strong>下降</strong>;而且這些 lineage 最早期的病毒在尚未立足之前就已經是那個樣子。這令這個訊號有潛在的<em>預測</em>價值,所以他們提議把它納入大流行風險評估。</p>
+<p>這裡的任務,是測試另一個病毒家族裡是否存在類似訊號,從 RSV 開始。問題變成:</p>
+<div class="key">
+  <p class="lbl">研究問題</p>
+  <p>在每個 RSV lineage 之內,基因組成分如何隨時間改變?RSV-A 和 RSV-B 的規律是否不同?</p>
+</div>
+
+<h3><span class="num">25.</span>步驟一 —— 收集基因組</h3>
+<p>RSV 序列從 GISAID 分八批下載,按亞型和日期範圍切開,因為資料庫一次能匯出的數量有限。每一批是一個序列檔,加上最多三個獨立的 metadata 表格,要用 accession number(序號)對應起來。</p>
+<p>合併後得到 <strong>33,040 條基因組</strong>:15,458 條 RSV-A 和 17,582 條 RSV-B,採集於 2001 至 2026 年。有六條序列出現在多過一批裡,已去除重複。</p>
+
+<h3><span class="num">26.</span>步驟二 —— 品質控制</h3>
+<p>不是每條上載的序列都可用。我們只保留通過三項檢查的基因組:</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>檢查項目</th><th>門檻</th><th>理由</th></tr></thead>
+  <tbody>
+    <tr><td>長度</td><td>14,900–15,400 個字母</td><td>保留完整基因組,剔除碎片</td></tr>
+    <tr><td>模糊字母</td><td>最多 1%</td><td>N 位置會扭曲字母計數</td></tr>
+    <tr><td>採集日期</td><td>必須完整</td><td>需要用來定位時間</td></tr>
+  </tbody>
+</table>
+</div>
+<p><strong>33,040 條之中有 33,038 條通過。</strong>門檻設得寬鬆,因為下載時已經限定為完整、高覆蓋度的基因組。</p>
+<p>之後審視數據時,發現了幾個嚴重到足以改變分析方式的問題:</p>
+<p><strong>2026 年尾段不完整。</strong>下載是在 2026 年 10 月做的,但序列由採集到上載要幾個月。逐月跟 2025 年同月比較,就能把上載延遲和正常季節性分開:到五月為止,2026 年維持在前一年的 78–93%,然後六月跌到 53%、七月 29%、八月只有 5% —— 同一個月份,2025 年有 399 條,2026 年只有 18 條。那些月份是只由「上載得快的實驗室」貢獻的非隨機樣本。<em>決定:分析窗口訂為 2001 年至 2026 年 6 月底。</em></p>
+<p><strong>更早的數據全部保留。</strong>把稀疏的早年數據丟掉很誘人,但樣本量隨時間不均<strong>並不會</strong>令斜率有偏差 —— 它只是令後期的年份估計得更精確。對某些 lineage 而言,舊數據增加了好幾年的跨度,而如第 20 節所說,跨度越長斜率越精確。B.D.4 這條 lineage 就因此多了接近三年。</p>
+<p><strong>但孤立的早期基因組很危險。</strong>A.D.3 這條 lineage 本來會因為 2010 年的<em>一條</em>序列而往前多算 6.9 年。一個離其他所有點七年之遠的孤點,對擬合線有極大的槓桿作用。<em>決定:每條 lineage 都裁剪到它真正有被採樣的那段年份,把頭尾少於 5 條基因組的年份丟掉。</em>採樣充分的早期數據會留下來 —— A.D 這條 lineage 頭三年仍然保有 361 條基因組。</p>
+<p><strong>地理分佈會漂移,連在單一 lineage 之內也會。</strong>第 22 節講的混淆問題,在單條 lineage 內部依然存在 —— A.D 由早期 71% 大洋洲變成晚期 36% 歐洲。<em>決定:把地區當共變量納入,兩種結果都報告。</em></p>
+<p>還有一個問題記錄下來但沒有修正:很強的季節性,十二月的基因組數是九月的三至四倍。</p>
+<p>最終分析集:<strong>32,647 條基因組,9 條 lineage</strong>。</p>
+
+<h3><span class="num">27.</span>步驟三 —— 量度基因組成分</h3>
+<p>對每條基因組,我們計算 GC content、五種二核苷酸的頻率、它們的 O/E 比值,以及 GC3 和 GC12。模糊位置直接跳過。</p>
+<p>有一個技術要點:基因組層面的 GC3 是在<strong>十個編碼區接合起來</strong>之上計算的,而不是原始基因組。編碼區以外沒有讀框,「第三個密碼子位置」在那裡根本沒有意義。流感那篇論文基於同樣理由也是這樣做。</p>
+
+<h3><span class="num">28.</span>步驟四 —— 切分成十個基因</h3>
+<p>每條基因組跟它所屬亞型的參考序列對齊,然後按第 13 節所述切出十個基因。這產生了 <strong>363,418 筆記錄</strong> —— 33,038 條基因組乘以十一,即十個基因加上每條一筆「全編碼區」的記錄。</p>
+
+<h3><span class="num">29.</span>步驟五 —— 定義 lineage</h3>
+<p>這一步需要一個判斷。完整的 GISAID lineage 標籤太細:大部分只涵蓋約六年、幾百條基因組,而如第 20 節所說,那樣算出來的斜率不確定到不能用。</p>
+<p>把標籤截短到三層 —— 即 <code>A.D.1.5</code> 變成 <code>A.D.1</code> —— 就得到比較少但比較大的群組:</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>標籤層級</th><th class="n">群組數</th><th class="n">年份中位數</th><th class="n">基因組中位數</th></tr></thead>
+  <tbody>
+    <tr><td>完整標籤</td><td class="n">56</td><td class="n">6</td><td class="n">210</td></tr>
+    <tr><td><strong>三層</strong></td><td class="n">12</td><td class="n">10</td><td class="n">822</td></tr>
+    <tr><td>只分亞型</td><td class="n">3</td><td class="n">12</td><td class="n">15,052</td></tr>
+  </tbody>
+</table>
+</div>
+<p>再要求至少 5 年和 200 條基因組,然後裁剪到各自真正被採樣的年份,最後剩下 <strong>9 條 lineage</strong> —— 六條 RSV-A、三條 RSV-B。跨度由 8.5 年到 14.4 年,而且每一條在頭三年都至少有 31 條基因組,所以沒有任何一條擬合線是建立在一個孤立的早期點之上。</p>
+<p>選三層是一個決定,所以整個分析會在四層再跑一次作為檢驗。</p>
+
+<h3><span class="num">30.</span>步驟六 —— 擬合趨勢</h3>
+<p>基於第 23 節的理由,每個特徵都是<strong>在每條 lineage 之內分開</strong>對採集日期做迴歸。日期換算成小數年份,所以 2017 年 7 月 2 日變成約 2017.5 —— 用盡日期的精度而不是只取整年。</p>
+<p>每次擬合都跑兩遍:一次直接跑,一次固定地區。</p>
+
+<h3><span class="num">31.</span>結果</h3>
+<h4>各 lineage 之內 GC content 隨時間的變化</h4>
+<figure>
+  <img src="figures/r1.png" alt="九格散點圖,每格一條 lineage,顯示 GC 含量對採集日期,擬合線方向各不相同。">
+  <figcaption><b>圖 6.</b> 每個點是一條基因組,每一格是一條 lineage。請留意擬合線並不一致:有些上升、有些下降、有些持平。</figcaption>
+</figure>
+<p>這是核心結果,而它是一個否定的結果。在流感那份研究裡,十二條 lineage 全部朝同一方向。這裡並非如此。</p>
+
+<h4>GC 在密碼子的哪個位置改變?</h4>
+<figure>
+  <img src="figures/r2.png" alt="分組長條圖,顯示每條 lineage 的 GC、GC12 和 GC3 斜率,GC3 多數為正而 GC12 多數為負。">
+  <figcaption><b>圖 7.</b> <b>GC3 在 9 條 lineage 中有 5 條上升,而 GC12 有 6 條下降</b> —— 兩者方向相反。</figcaption>
+</figure>
+<p>在流感裡兩者都下降,GC3 快約 5.65 倍。RSV 不一樣:兩類位置朝<em>相反</em>方向移動。這本身是有意思的 —— 代表同義位點和非同義位點受到不同的壓力 —— 但這不是流感的那個特徵,不應該被說成「重現了」它。</p>
+
+<h4>各種二核苷酸</h4>
+<figure>
+  <img src="figures/r3.png" alt="多格圖,顯示 CpG、GpC、GpG、CpC 與 UpA 的斜率及信賴區間,分別以頻率和 O/E 比值呈現。">
+  <figcaption><b>圖 8.</b> 每條 lineage 之內,各二核苷酸每年的變化。上半以每千個核苷酸的頻率表示,下半以 O/E 比值表示。O/E 那一版比較重要,因為它已經校正了 GC 含量。</figcaption>
+</figure>
+
+<h4>會不會只是 GC content 在動?</h4>
+<figure>
+  <img src="figures/r4.png" alt="各 lineage 的長條圖,顯示每種二核苷酸頻率與 GC 含量的相關係數。">
+  <figcaption><b>圖 9.</b> 含 GC 的幾對相關係數大約在 0.35–0.5,所以它們帶有 GC 含量以外的資訊。UpA 呈負相關,這是預期之內的,因為它是一對 AT。</figcaption>
+</figure>
+
+<h4>逐個基因看成分</h4>
+<figure>
+  <img src="figures/r5.png" alt="跨十個基因的折線圖,顯示兩個亞型的 GC 含量與 CpG O/E,RSV-A 的 NS1 和 NS2 遠低於其他基因。">
+  <figcaption><b>圖 10.</b> 基因組並不均勻。G 基因的 GC 含量是所有基因中最高的;而在 RSV-A 裡,兩個干擾素拮抗基因的 CpG 遠低於其他一切。</figcaption>
+</figure>
+
+<h3><span class="num">32.</span>我們發現了什麼、沒發現什麼</h3>
+<h4>否定的結果</h4>
+<p>時間趨勢分析 —— 也就是主要問題 —— 沒有找到一致的規律:</p>
+<ul>
+  <li><strong>各 lineage 互相矛盾。</strong>A.D.1 和 B.D.E 上升;A.D.3 和 A.D.5 下降。</li>
+  <li><strong>結果通不過自己的穩健性檢驗。</strong>把 lineage 定義細一層,中位數方向就反轉,代表驅動結果的是分析選擇而不是生物學。</li>
+  <li><strong>GC3 與 GC12 方向相反</strong>,而不是像流感那樣一起下降。</li>
+  <li><strong>不能推給地理因素</strong> —— 9 條之中有 8 條在地區校正後仍保持方向,所以這種不一致是真實的。</li>
+  <li><strong>所有效應都很小</strong>,大約每年 0.0001。</li>
+</ul>
+<div class="key">
+  <p class="lbl">怎樣看待一個否定結果</p>
+  <p>RSV 在人類之間已經流行了非常久,早就適應了我們。流感那個結果來自<em>剛剛進入新宿主、還在調整</em>的 lineage。人類 RSV 內部並沒有相應的「轉變」正在發生。所以找不到方向性趨勢是一個合理的生物學結果,而不是分析失敗。一個誠實報告的否定結果,比一個靠挑選「剛好有效的分析方法」得來的肯定結果有價值得多。</p>
+</div>
+
+<h4>唯一真正的發現</h4>
+<p>它根本不是時間上的,而是基因之間和亞型之間的差異。</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>基因</th><th class="n">RSV-A 每基因 CpG 數</th><th class="n">RSV-B 每基因 CpG 數</th><th class="n">RSV-A 中 CpG 為零的比例</th></tr></thead>
+  <tbody>
+    <tr><td><strong>NS1</strong></td><td class="n">0.16</td><td class="n">1.94</td><td class="n">84.8%</td></tr>
+    <tr><td><strong>NS2</strong></td><td class="n">0.76</td><td class="n">5.64</td><td class="n">34.2%</td></tr>
+    <tr><td>N</td><td class="n">6.86</td><td class="n">6.09</td><td class="n">0%</td></tr>
+    <tr><td>L</td><td class="n">41.2</td><td class="n">38.2</td><td class="n">0%</td></tr>
+  </tbody>
+</table>
+</div>
+<p>在 RSV-A 裡,整條 NS1 基因平均只含 <strong>0.16</strong> 個 CpG 對,而且大約 <strong>85% 的 RSV-A 基因組,整條 NS1 裡一個 CpG 都沒有</strong>。RSV-B 的同一條基因平均有約 1.94 個。NS2 呈現同樣的規律但較弱。</p>
+<p>有四點令這個發現站得住腳:</p>
+<ul>
+  <li><strong>效應很大</strong> —— 十二倍,不是幾個百分點。</li>
+  <li><strong>有內建對照。</strong>N 和 L 在兩個亞型裡幾乎一樣,所以這不是 A 與 B 之間的普遍差異。</li>
+  <li><strong>GC content 是匹配的</strong> —— NS1 在 A 是 0.305,在 B 是 0.303 —— 所以這不是鹼基組成的副作用,而是 CpG 專有的現象。</li>
+  <li><strong>生物學上說得通。</strong>NS1 和 NS2 正是負責關掉干擾素警報的基因,而 CpG 正是宿主用來偵測病毒 RNA 的標記。負責癱瘓防禦的基因,剛好是被最徹底清除掉「防禦所尋找的標記」的基因。</li>
+</ul>
+<p>還有一個細節令它更有力。NS1 在 A 和 B 之間只有約 78% 相同,兩個版本已經分化得相當多。然而 GC content 基本維持不變,CpG 卻差了十二倍。隨機漂移會令兩者一起變動。是某種力量固定了其中一個,同時只在一個亞型裡把另一個壓下去。</p>
+<div class="warn">
+  <p class="lbl">尚未解決的問題</p>
+  <p>這件事是不是已經有人發表過?兩次文獻搜尋都沒有找到,但這是很弱的「不存在」證據。RSV <em>整體</em>的 CpG 減少是有文獻記載的 —— 2025 年一篇綜述把 RSV 列為「以 C/G 結尾的密碼子減少最明顯」的人類呼吸道病毒之一。但基因層面的亞型不對稱沒有找到。在宣稱這是新發現之前,需要透過 PubMed 和 Google Scholar 做一次正式搜尋。這一個問題就決定了這個項目到底有沒有成果。</p>
+</div>
+
+<h3><span class="num">33.</span>下一步</h3>
+<p>三個選項,按產出可報告成果的機會率排序。</p>
+<h4>一、Nirsevimab 抗藥性監測 —— 最強的選項</h4>
+<p>自 2023 年起,nirsevimab 在整個人口層面給嬰兒使用,史上第一次對 <strong>F</strong> 蛋白施加了刻意的免疫壓力。抗藥性有沒有出現,是現在多個監測團隊正在發表的、活躍而未解決的問題。</p>
+<p>本項目已經具備條件。數據橫跨 <strong>2015 至 2026 年</strong>,涵蓋推行前後,而流程已經能正確切出 F 基因。我們確認過它能可靠讀出相關的抗體結合位置,而且兩個亞型的「正常」氨基酸剛好如文獻所述不同:RSV-A 在第 201 位是 K,RSV-B 是 N —— 這正是兩個亞型需要留意的突變不一樣的原因。</p>
+<p>分析內容是:追蹤已知抗藥性相關取代在推行前後、按年份和亞型的頻率。無論結果如何都很可能可以報告:發現沒有上升本身就是一個監測結果(已有數個團隊發表過),而發現有上升則意義重大。</p>
+<h4>二、確認 NS1 發現是否為新發現</h4>
+<p>如上所述做一次系統性文獻搜尋。半天時間,而它決定了現有結果值不值得繼續發展。</p>
+<h4>三、檢驗缺失的 CpG 是否位於同義位點</h4>
+<p>如果結果是新的,自然的下一步是問:那些沒有 CpG 的位置,<em>本來能不能</em>在不改變蛋白質的前提下帶有 CpG?如果可以,那這種缺失就必定是作用在 RNA 上的選擇,而不是蛋白質的限制。標準做法是一個固定氨基酸序列、只打亂同義密碼子的 Monte Carlo 虛無模型。</p>
+
+<!-- ===================== GLOSSARY ===================== -->
+<div class="part">
+  <div class="pn">附錄</div>
+  <h2>名詞對照表</h2>
+  <p>本指南用到的所有專業名詞。</p>
+</div>
+
+<div class="scroll">
+<table>
+  <thead><tr><th>English</th><th>中文</th><th>說明</th></tr></thead>
+  <tbody>
+    <tr><td>Alignment</td><td>序列比對</td><td>把多條序列排列對齊,令相對應的位置互相對上,好讓你在不同基因組裡找到同一個基因。</td></tr>
+    <tr><td>Ambiguous base</td><td>模糊鹼基</td><td>定序無法判定字母的位置,寫作 N。</td></tr>
+    <tr><td>Amino acid</td><td>氨基酸</td><td>組成蛋白質的建築材料。</td></tr>
+    <tr><td>Bronchiolitis</td><td>細支氣管炎</td><td>小氣道發炎,RSV 在嬰兒身上的嚴重表現。</td></tr>
+    <tr><td>Codon</td><td>密碼子</td><td>編碼區中的三個字母一組,指定一個氨基酸。</td></tr>
+    <tr><td>Confidence interval</td><td>信賴區間</td><td>與數據相符的估計值範圍。95% 區間若包含零,就不能排除沒有效應。</td></tr>
+    <tr><td>Confounder</td><td>混淆因子</td><td>與比較的兩者一同變動的第三個因素,會造出並不存在的關聯。</td></tr>
+    <tr><td>Covariate</td><td>共變量</td><td>加進統計模型以固定其影響的變數。</td></tr>
+    <tr><td>CpG</td><td>CpG 二核苷酸</td><td>一個 C 緊接一個 G。抗病毒蛋白 ZAP 辨識的標記。</td></tr>
+    <tr><td>Dinucleotide</td><td>二核苷酸</td><td>序列中任何相鄰的一對字母。</td></tr>
+    <tr><td>Envelope</td><td>包膜</td><td>病毒顆粒的外層油脂膜,取自上一個宿主細胞。</td></tr>
+    <tr><td>FASTA</td><td>FASTA 格式</td><td>儲存序列的標準文字格式:一行以 &gt; 開頭的標題,然後是字母。</td></tr>
+    <tr><td>GC content</td><td>GC 含量</td><td>序列中屬於 G 或 C 的字母比例。</td></tr>
+    <tr><td>GC3 / GC12</td><td>第三位 / 第一二位 GC 含量</td><td>密碼子第三位置對比第一、二位置的 GC 含量。比較兩者可區分作用於 RNA 與作用於蛋白質的壓力。</td></tr>
+    <tr><td>Gene</td><td>基因</td><td>編碼一種蛋白質的一段基因組。RSV 有十個。</td></tr>
+    <tr><td>Genome</td><td>基因組</td><td>一個生物體的全套遺傳指令。</td></tr>
+    <tr><td>GISAID</td><td>GISAID 資料庫</td><td>本項目使用的國際病毒序列資料庫,其條款限制轉發。</td></tr>
+    <tr><td>Interferon</td><td>干擾素</td><td>細胞偵測到病毒時釋放的警報訊號。RSV 的 NS1 和 NS2 蛋白會壓制它。</td></tr>
+    <tr><td>Lineage</td><td>譜系</td><td>病毒家族樹上一條有名字的分支。標籤是階層式的,例如 A.D.1.5。</td></tr>
+    <tr><td>MAFFT</td><td>MAFFT 軟體</td><td>本項目用來把序列對齊到參考基因組的軟體。</td></tr>
+    <tr><td>Monoclonal antibody</td><td>單株抗體</td><td>實驗室製造的單一種抗體,可直接注射提供保護。</td></tr>
+    <tr><td>NCBI</td><td>NCBI 資料庫</td><td>美國的公開序列資料庫。與 GISAID 不同,它沒有轉發限制,所以參考基因組取自這裡。</td></tr>
+    <tr><td>Nirsevimab</td><td>尼塞維單抗</td><td>2023 年起使用的長效單株抗體,給嬰兒預防重症 RSV,靶點是 F 蛋白。</td></tr>
+    <tr><td>Non-synonymous</td><td>非同義</td><td>會改變所編碼蛋白質的變異。</td></tr>
+    <tr><td>Nucleocapsid</td><td>核衣殼</td><td>病毒基因組連同包裹它的蛋白質。</td></tr>
+    <tr><td>O/E ratio</td><td>實際/期望比值</td><td>實際值除以期望值。某二核苷酸實際出現的頻率,除以機率所預測的。低於 1 代表被壓抑。</td></tr>
+    <tr><td>Paramyxovirus</td><td>副黏液病毒</td><td>包含 RSV、麻疹、腮腺炎、Nipah 和 Hendra 的病毒家族。</td></tr>
+    <tr><td>p-value</td><td>p 值</td><td>若其實沒有效應,出現這麼強規律的機率。樣本極大時會失去參考價值。</td></tr>
+    <tr><td>Quality control</td><td>品質控制</td><td>分析前剔除不完整或不可靠序列的過濾步驟。</td></tr>
+    <tr><td>Reference genome</td><td>參考基因組</td><td>一條已標註好基因位置、研究透徹的基因組,用作在其他基因組中定位基因的地圖。</td></tr>
+    <tr><td>Regression</td><td>迴歸</td><td>在數據中擬合一條直線,估計一個量如何隨另一個量改變。</td></tr>
+    <tr><td>RSV</td><td>呼吸道合胞病毒</td><td>Respiratory Syncytial Virus,分 A、B 兩個亞型。</td></tr>
+    <tr><td>R squared</td><td>決定係數</td><td>擬合線解釋了數據中多少散佈,由 0 到 1。</td></tr>
+    <tr><td>Seasonality</td><td>季節性</td><td>一年之內有規律的高低起伏。</td></tr>
+    <tr><td>Simpson's paradox</td><td>辛普森悖論</td><td>合併數據中的趨勢,在分成真正的組別後消失或反轉。</td></tr>
+    <tr><td>Slope</td><td>斜率</td><td>迴歸估計出來的變化率,本項目以「每年」為單位。</td></tr>
+    <tr><td>Sporadic transmission</td><td>零星傳播</td><td>病毒感染新宿主物種幾次後消失,未能建立傳播鏈。</td></tr>
+    <tr><td>Subtype</td><td>亞型</td><td>病毒物種內的主要分支。RSV 分 A 和 B。</td></tr>
+    <tr><td>Surveillance data</td><td>監測數據</td><td>由日常公共衛生監測累積而來的數據,並非為研究而設計的樣本。</td></tr>
+    <tr><td>Sustained transmission</td><td>持續傳播</td><td>病毒在某個宿主物種中立足並持續流行多年。</td></tr>
+    <tr><td>Synonymous</td><td>同義</td><td>不改變所編碼蛋白質的序列變異。</td></tr>
+    <tr><td>Syncytium</td><td>合胞體</td><td>受感染細胞融合而成的多核團塊。RSV 的名字由此而來。</td></tr>
+    <tr><td>UpA (TpA)</td><td>UpA 二核苷酸</td><td>一個 U(或 T)後面接一個 A。被視為 CpG 的同伴標記,在本項目屬探索性質。</td></tr>
+    <tr><td>ZAP</td><td>鋅指抗病毒蛋白</td><td>Zinc-finger antiviral protein。人類蛋白,結合病毒 RNA 的 CpG 位點並標記它銷毀。</td></tr>
+  </tbody>
+</table>
+</div>
+
+<footer>
+  <p>教學示意圖以 matplotlib 繪製,結果圖以 R 的 ggplot2 製作。程式碼、匯總表格與全部圖片見 <a href="https://github.com/Wlimni/RSV">github.com/Wlimni/RSV</a>。GISAID 序列數據只儲存在本機,不包含在程式碼庫內。</p>
+  <p>參照論文:Ye et al. (2026), <em>Genomic features associated with sustained mammalian transmission of avian influenza A viruses</em>, Nature Microbiology, doi:10.1038/s41564-025-02257-4。</p>
+</footer>
+
+</div>
