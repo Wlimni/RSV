@@ -16,14 +16,14 @@ result is mostly negative:
 
 1. **No consistent CpG trend.** Lineages disagree in direction — A.D.1 and B.D.E rise,
    A.D.3 and A.D.5 fall. All twelve influenza lineages in the source paper moved the same
-   way; these do not.
+   way; these do not. 8 of 9 slopes keep their direction after region adjustment, so the
+   disagreement is real rather than a sampling artefact.
 2. **The CpG result fails its own sensitivity check.** Defining lineages one level finer
    flips the median direction, so lineage granularity drives it rather than biology.
-3. **GC3 and GC12 move in opposite directions** — GC3 rises in 6 of 8 lineages, GC12 falls
-   in 6 of 8. Influenza had both falling, GC3 about 5.65x faster. Synonymous and
+3. **GC3 and GC12 move in opposite directions** — GC3 rises in 5 of 9 lineages while GC12
+   falls in 6 of 9. Influenza had both falling, GC3 about 5.65x faster. Synonymous and
    non-synonymous sites are under different pressure in RSV, but this is not that signature.
-4. **Geography does not explain it.** Slopes keep their direction after region adjustment.
-5. **All effects are small**, around 1e-4 per year.
+4. **All effects are small**, around 1e-4 per year.
 
 This is a reasonable biological outcome rather than a failed analysis. RSV has circulated in
 humans for a very long time and is already adapted; the influenza result came from lineages
@@ -55,13 +55,19 @@ GISAID EpiRSV, downloaded in eight date-range batches. 33,040 genomes merged, 33
 quality control (length 14,900-15,400 nt, at most 1% ambiguous bases, complete collection
 date).
 
-The analysis window is **2015-01-01 to 2025-12-31**, giving 29,050 genomes in 8 lineages.
-Two bounds, both set after auditing the data:
+The analysis window runs **2001 to the end of June 2026**, giving 32,647 genomes in
+9 lineages. Set after auditing the data:
 
-- **2026 is excluded** because deposition lag leaves its later months nearly empty
-  (18 genomes in September 2026, against an all-year September average near 1,400).
-- **Pre-2015 is excluded** because it is about 3% of the data and RSV-A has essentially no
-  sequences before 2010.
+- **The 2026 tail is cut.** Month by month against 2025, 2026 runs at 78-93% through May,
+  then falls to 53% in June, 29% in July and 5% in August - 18 genomes where 2025 had 399.
+  That is deposition lag, so those months are a non-random subset.
+- **Everything earlier is kept.** Sequencing effort grows steeply over the period, but
+  uneven sample sizes across time do not bias a slope; they only make the later years more
+  precisely estimated. For several lineages the early data adds years of span, and a longer
+  span makes the slope more precise.
+- **Each lineage is trimmed to the years it was actually sampled in**, dropping leading and
+  trailing years with fewer than 5 genomes. Without this, lineage A.D.3 would gain 6.9 years
+  of span from a single 2010 genome, which would have enormous leverage on its fitted line.
 
 Sequencing geography shifted heavily over the period, including inside single lineages, so
 **region is included as a covariate** and results are reported with and without it.
@@ -122,5 +128,5 @@ machine has a NumPy version conflict that breaks some scientific packages.
 - Trends are fitted **separately inside each lineage**, against decimal collection date.
   Fitting across pooled data would let one lineage replacing another masquerade as change.
 - Lineage labels are truncated to three levels (`A.D.1`, `B.D.E`), requiring at least 5
-  years and 200 genomes. Full labels are too fine to support a regression; level 4 is run
+  years and 200 genomes, then trimmed to the years each lineage was actually sampled in. Full labels are too fine to support a regression; level 4 is run
   as a sensitivity check.

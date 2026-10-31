@@ -127,21 +127,26 @@ build("notebooks/01_data.ipynb", [
         "Four, found by auditing the data before analysing it. Two of them change what we "
         "do.\n\n"
         "---\n\n"
-        "### (a) 2026 is incomplete, so we exclude it\n\n"
-        "The download was made in October 2026, but sequences take time to be deposited. "
-        "The later months of 2026 are nearly empty, far below even the seasonal low."),
+        "### (a) The 2026 tail is incomplete, so we cut it\n\n"
+        "The download was made in October 2026, but sequences take months to be deposited. "
+        "Comparing 2026 month by month against the same months of 2025 separates deposition "
+        "lag from ordinary seasonality."),
     new_code_cell(
-        'm26 = d[d.year == 2026].date.str.slice(5, 7).value_counts().sort_index()\n'
-        'allyr = d.date.str.slice(5, 7).value_counts().sort_index()\n'
-        'cmp = pd.DataFrame({"2026": m26, "all years (mean/yr)": (allyr / 12).round(0)})\n'
-        'print(cmp.fillna(0).astype(int).to_string())\n'
+        'm = {y: d[d.date.str.startswith(str(y))].date.str.slice(5, 7).value_counts().sort_index()\n'
+        '     for y in (2025, 2026)}\n'
+        'cmp = pd.DataFrame(m).fillna(0).astype(int)\n'
+        'cmp["2026 as % of 2025"] = (cmp[2026] / cmp[2025] * 100).round(0)\n'
+        'print(cmp.to_string())\n'
         'print("\\nlast collection date:", d.date.max())'),
     new_markdown_cell(
-        "September 2026 has a couple of dozen genomes where a normal September has over a "
-        "thousand. That is deposition lag, not biology. Keeping 2026 would add a tail of "
-        "points bunched into the first half of the year, contributed only by laboratories "
-        "that deposit quickly.\n\n"
-        "**Decision: the analysis window is 2015-01-01 to 2025-12-31.**\n\n"
+        "Through May, 2026 runs at 78-93% of the previous year, which is normal. From June it "
+        "falls to 53%, July 29%, and August to 5% - eighteen genomes where 2025 had 399 in "
+        "the same month. That is deposition lag, not season: those months are a non-random "
+        "subset contributed only by laboratories that deposit quickly.\n\n"
+        "**Decision: the window runs from 2001 to the end of June 2026.** Everything earlier "
+        "is kept. Sequencing effort grows steeply over the period, but uneven sample sizes "
+        "across time do not bias a slope; they only make later years more precisely "
+        "estimated.\n\n"
         "---\n\n"
         "### (b) Where sequencing happens has shifted completely\n\n"
         "This is the more serious problem."),
@@ -174,10 +179,16 @@ build("notebooks/01_data.ipynb", [
         "partly entangled as well. For a slope measured across a decade this is minor, so "
         "we record it rather than correct it.\n\n"
         "---\n\n"
-        "### (d) Before 2015 there is too little data — already excluded\n\n"
+        "### (d) Early data is sparse, so single genomes could distort a trend\n\n"
         "Everything before 2015 is about 3% of the dataset, and **RSV-A has essentially no "
-        "sequences before 2010**, so the two subtypes do not even start at the same time. "
-        "The 2015 lower bound handles this."),
+        "sequences before 2010**. Keeping it is still worth doing, because for some lineages "
+        "it adds years of span and a longer span makes a slope more precise.\n\n"
+        "The danger is leverage. Lineage A.D.3 would otherwise reach back 6.9 extra years on "
+        "the strength of **one** genome from 2010; a point that isolated drags the fitted "
+        "line hard. So each lineage is cut back to the run of years in which it was actually "
+        "being sampled, dropping leading and trailing years holding fewer than 5 genomes. "
+        "Well-sampled early data survives: lineage A.D keeps 361 genomes in its first three "
+        "years."),
     new_markdown_cell(
         "## 1.5  Lineages\n\n"
         "GISAID assigns each genome to a **lineage**, a named branch of the RSV family tree. "

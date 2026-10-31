@@ -36,23 +36,41 @@ def decimal_date(dates):
 
 
 def prepare(df, level=3, min_years=5, min_n=200, date_col="date",
-            start=2015.0, end=2026.0):
+            start=2001.0, end=2026.5, trim=5):
     """
     Add the truncated lineage label and decimal date, restrict to the usable date window,
-    then keep only lineages with enough span and enough sequences to support a regression.
+    trim isolated dates at each end of every lineage, then keep only lineages with enough
+    span and enough sequences to support a regression.
     Returns (filtered DataFrame, summary table of the lineages kept).
 
-    The default window is 2015-01-01 to 2025-12-31. The lower bound is set because RSV-A
-    has essentially no sequences before 2010 and everything before 2015 is about 3% of the
-    data. The upper bound drops 2026, where deposition lag leaves the later months nearly
-    empty (18 genomes in September 2026 against an all-year September average near 1,400),
-    so that year would contribute a biased, early-clustered tail to every regression.
+    Window. The default runs from 2001 to the end of June 2026, which is as wide as the
+    data usefully allows. Sequencing effort grows steeply over this period, but uneven
+    sample sizes across time do not bias a regression slope; they only make the later years
+    more precisely estimated. The later months of 2026 are different and are excluded:
+    comparing like months against 2025 shows August 2026 holding 18 genomes against 399 a
+    year earlier, which is deposition lag rather than season, so those genomes are a
+    non-random subset contributed only by fast-depositing laboratories.
+
+    Trimming. Opening the window back to 2001 lets a lineage's span be set by one or two
+    very old genomes: lineage A.D.3 would otherwise reach back 6.9 extra years on the
+    strength of a single 2010 sequence. A point that isolated has enormous leverage on a
+    fitted line. So each lineage is cut back to the stretch of years over which it was
+    actually being sampled: leading and trailing years holding fewer than `trim` genomes
+    are dropped. This removes stragglers without penalising large lineages, which a
+    percentile-based trim would, and keeps genuinely well-sampled early data such as
+    lineage A.D's 327 genomes in its first three years.
     """
     d = df.copy()
     d["lineage_grp"] = truncate_lineage(d["Lineage"].astype(str), level)
     d["dec_date"] = decimal_date(d[date_col])
     d = d[d["dec_date"].notna()]
     d = d[(d["dec_date"] >= start) & (d["dec_date"] < end)]
+
+    if trim:
+        keep_idx = []
+        for _, s in d.groupby(["Subtype", "lineage_grp"]):
+            keep_idx.extend(_trim_sparse_ends(s, trim).index)
+        d = d.loc[sorted(keep_idx)]
 
     g = d.groupby(["Subtype", "lineage_grp"]).agg(
         n=("dec_date", "size"),
@@ -61,6 +79,20 @@ def prepare(df, level=3, min_years=5, min_n=200, date_col="date",
     keep = g[(g["years"] >= min_years) & (g["n"] >= min_n)].reset_index()
     d = d.merge(keep[["Subtype", "lineage_grp"]], on=["Subtype", "lineage_grp"])
     return d, keep.sort_values(["Subtype", "n"], ascending=[True, False])
+
+
+def _trim_sparse_ends(s, min_per_year):
+    """
+    Cut a lineage back to the run of years it was actually sampled in: drop leading and
+    trailing calendar years holding fewer than `min_per_year` genomes. Years inside the
+    run are left alone, so a quiet season in the middle does not split the series.
+    """
+    yrs = s["dec_date"].astype(int)
+    counts = yrs.value_counts().sort_index()
+    ok = counts[counts >= min_per_year].index
+    if len(ok) == 0:
+        return s.iloc[0:0]
+    return s[(yrs >= ok.min()) & (yrs <= ok.max())]
 
 
 def lineage_slopes(df, features, by=("Subtype", "lineage_grp"), covariates=()):

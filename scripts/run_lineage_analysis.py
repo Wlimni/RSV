@@ -12,8 +12,9 @@ Outputs:     results/lineages.tsv          the lineages analysed
              results/sensitivity_level4.tsv  same fits at a finer lineage level
 Notes:       "Genome level" means the ten coding regions concatenated, which is how the
              paper defines genomic GC, GC3 and GC12.
-             The analysis window is 2015-01-01 to 2025-12-31. 2026 is excluded because
-             deposition lag leaves its later months nearly empty.
+             The window runs 2001 to end of June 2026. The later months of 2026 are cut
+             because deposition lag makes them a non-random subset, and each lineage is
+             trimmed to the years it was actually sampled in.
              Run: .venv/bin/python scripts/run_lineage_analysis.py
 """
 import os, sys
@@ -31,7 +32,7 @@ g = pd.read_csv("data/processed/rsv_gene_features.tsv", sep="\t")
 dates = pd.read_csv("data/processed/rsv_features.tsv", sep="\t",
                     usecols=["Accession ID", "date"])
 g = g.merge(dates, on="Accession ID", how="left")
-g = g[g.year.between(2015, 2026)]   # prepare() applies the exact date window
+# prepare() applies the date window and per-lineage trimming
 print(f"{len(g)} rows covering {g['Accession ID'].nunique()} genomes")
 
 # ---- genome level (the concatenated coding regions) --------------------------------
