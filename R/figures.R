@@ -51,14 +51,16 @@ f1 <- ggplot(d, aes(dec_date, gc_content)) +
               linewidth = .6, se = TRUE, fill = "grey70") +
   geom_text(data = ann, aes(label = lbl), x = -Inf, y = Inf,
             hjust = -0.08, vjust = 1.25, size = 2.7, colour = "grey20") +
-  facet_wrap(~ panel, scales = "free_y", ncol = 4) +
+  # 9 lineages fit a 3x3 grid exactly; axes = "all_x" labels every panel rather than
+  # only the bottom of each column, which left the top row with no date axis at all
+  facet_wrap(~ panel, scales = "free_y", ncol = 3, axes = "all_x") +
   scale_colour_manual(values = pal, guide = "none") +
-  scale_x_continuous(breaks = seq(2016, 2026, 4)) +
+  scale_x_continuous(breaks = seq(2008, 2024, 4)) +
   labs(title = "GC content over time, fitted separately within each lineage",
        subtitle = "Each point is one genome. Fitting inside lineages keeps lineage replacement out of the trend.",
        x = "Collection date", y = "GC content (coding regions)",
        caption = "Shaded band is the 95% confidence interval of the fit.")
-ggsave("results/figures/fig1_lineage_trends.png", f1, width = 10, height = 5.4, dpi = 300)
+ggsave("results/figures/fig1_lineage_trends.png", f1, width = 9.5, height = 7.4, dpi = 300)
 
 ## ---- Figure 2: GC, GC3 and GC12 slopes side by side ---------------------------
 ## Mirrors Fig 2c. Third codon sites are mostly synonymous, so a steeper GC3 slope
@@ -95,7 +97,7 @@ mk <- function(feats, ylab, ttl, sub) {
     geom_hline(yintercept = 0, linewidth = .4, colour = "grey20") +
     geom_errorbar(aes(ymin = ci_lo, ymax = ci_hi), width = .18, linewidth = .4) +
     geom_point(size = 1.7) +
-    facet_wrap(~ lineage_grp, ncol = 4) +
+    facet_wrap(~ lineage_grp, ncol = 3, axes = "all_x") +
     scale_colour_manual(values = pal, guide = "none") +
     labs(title = ttl, subtitle = sub, x = NULL, y = ylab)
 }
@@ -109,7 +111,7 @@ f3b <- mk(c("oe_CG", "oe_GC", "oe_GG", "oe_CC", "oe_TA"),
           "O/E corrects for base composition, so this is not simply GC content moving")
 f3 <- (f3a / f3b) +
   plot_annotation(caption = "Error bars are 95% confidence intervals. UpA is exploratory; it is not used in the source paper.")
-ggsave("results/figures/fig3_dinucleotide_slopes.png", f3, width = 10, height = 9, dpi = 300)
+ggsave("results/figures/fig3_dinucleotide_slopes.png", f3, width = 9, height = 10.5, dpi = 300)
 
 ## ---- Figure 4: is the dinucleotide signal just GC content moving? -------------
 ## Mirrors Fig 3b.
@@ -120,14 +122,14 @@ cr[, lineage_grp := factor(lineage_grp, levels = ann[order(Subtype, -n), lineage
 f4 <- ggplot(cr, aes(dinuc, r, fill = Subtype)) +
   geom_hline(yintercept = 0, linewidth = .4, colour = "grey20") +
   geom_col(width = .66, colour = "grey25", linewidth = .22) +
-  facet_wrap(~ lineage_grp, ncol = 4) +
+  facet_wrap(~ lineage_grp, ncol = 3, axes = "all_x") +
   scale_fill_manual(values = pal, guide = "none") +
   scale_y_continuous(limits = c(-1, 1), breaks = seq(-1, 1, .5)) +
   labs(title = "Correlation of each dinucleotide frequency with GC content",
        subtitle = "Values near 1 mean the dinucleotide tracks GC content; values near 0 mean it moves independently",
        x = NULL, y = "Pearson r",
        caption = "Computed within each lineage across genomes.")
-ggsave("results/figures/fig4_gc_correlation.png", f4, width = 10, height = 5, dpi = 300)
+ggsave("results/figures/fig4_gc_correlation.png", f4, width = 9, height = 6.4, dpi = 300)
 
 cat("figures written to results/figures/\n")
 
