@@ -176,6 +176,43 @@ build("notebooks/01_data.ipynb", [
         "could partly be a trend in which part of the world was sequencing.\n"
         "- The drift happens *inside* individual lineages too, so fitting within lineages "
         "does not remove it. Lineage A.D goes from 71% Oceania early to 36% Europe late.\n\n"
+        "But a shifting region mix only matters if composition actually differs by region. "
+        "So: the composition across all years, and the same measure split by region."),
+    new_code_cell(
+        'w = d[d.year.between(2015, 2026)]\n'
+        'fig, ax = plt.subplots(1, 2, figsize=(11, 3.2))\n'
+        '\n'
+        '# left: every genome pooled by year, ignoring lineage structure entirely\n'
+        'for s in "AB":\n'
+        '    t = w[w.Subtype == s].groupby("year").oe_CG.mean()\n'
+        '    ax[0].plot(t.index, t.values, "-o", ms=4, color=PAL[s], label=f"RSV-{s}")\n'
+        'ax[0].set_xlabel("year"); ax[0].set_ylabel("mean CpG O/E")\n'
+        'ax[0].set_title("Composition across all years, pooled")\n'
+        'ax[0].legend(frameon=False)\n'
+        '\n'
+        '# right: the same measure by region, to see whether region carries any signal\n'
+        'r = w.pivot_table(index="region", columns="Subtype", values="oe_CG", aggfunc="mean")\n'
+        'r.plot.barh(ax=ax[1], color=[PAL["A"], PAL["B"]])\n'
+        'ax[1].legend(["RSV-A", "RSV-B"], frameon=False, loc="lower right")\n'
+        'ax[1].set_xlim(0.230, 0.245); ax[1].set_ylabel("")\n'
+        'ax[1].set_xlabel("mean CpG O/E"); ax[1].set_title("The same measure, by region")\n'
+        'plt.tight_layout(); plt.show()\n'
+        '\n'
+        'print("spread across regions (max - min), within subtype:")\n'
+        'for v in ["gc_content", "oe_CG"]:\n'
+        '    for s in "AB":\n'
+        '        x = w[w.Subtype == s].groupby("region")[v].mean()\n'
+        '        print(f"  {v:11s} RSV-{s}: {x.max() - x.min():.5f}")'),
+    new_markdown_cell(
+        "Both halves matter:\n\n"
+        "- **The pooled line does move** — RSV-B's CpG O/E climbs from 0.2357 in 2015 to "
+        "0.2430 in 2023. Taken at face value that is a trend, and it is exactly the kind of "
+        "number that section 3.1 explains you cannot trust, because lineages are replacing "
+        "one another underneath it.\n"
+        "- **Region carries real signal.** Within RSV-B the regional spread in CpG O/E is "
+        "**0.0070**; the largest within-lineage slope anywhere in this project is 0.0011 per "
+        "year. So the gap between two regions is worth roughly six years of trend. A shift "
+        "in which regions were sequencing can therefore imitate a time trend.\n\n"
         "**Decision: region enters the regressions as a covariate, and results are reported "
         "both ways** (notebook 03).\n\n"
         "---\n\n"
@@ -203,8 +240,41 @@ build("notebooks/01_data.ipynb", [
         "fitted line hard.\n\n"
         "**Decision: each lineage is cut back to the run of years in which it was actually "
         "being sampled**, dropping leading and trailing years holding fewer than 5 genomes. "
-        "Well-sampled early data survives — lineage A.D keeps 361 genomes in its first three "
-        "years."),
+        "The rule, and what it does to each lineage:"),
+    new_code_cell(
+        'f = pd.read_csv("../data/processed/rsv_features.tsv", sep="\\t")\n'
+        'f["lineage_grp"] = f.Lineage.astype(str).str.split(".").str[:3].str.join(".")\n'
+        'f["yr"] = f.date.str.slice(0, 4).astype(int)\n'
+        '\n'
+        'rows = []\n'
+        'for (sub, grp), s in f.groupby(["Subtype", "lineage_grp"]):\n'
+        '    counts = s.yr.value_counts().sort_index()\n'
+        '    ok = counts[counts >= 5].index                      # years holding >= 5 genomes\n'
+        '    if len(ok) == 0:\n'
+        '        continue\n'
+        '    kept = s[(s.yr >= ok.min()) & (s.yr <= ok.max())]   # keep the run between them\n'
+        '    if kept.yr.nunique() >= 5 and len(kept) >= 200:     # the inclusion rule\n'
+        '        rows.append({"Subtype": sub, "lineage": grp,\n'
+        '                     "first yr raw": s.yr.min(), "first yr kept": kept.yr.min(),\n'
+        '                     "yrs cut": kept.yr.min() - s.yr.min(),\n'
+        '                     "genomes cut": len(s) - len(kept)})\n'
+        'print(pd.DataFrame(rows).sort_values(["Subtype", "lineage"]).to_string(index=False))\n'
+        '\n'
+        '# well-sampled early data is not touched by the rule\n'
+        'ad = f[(f.Subtype == "A") & (f.lineage_grp == "A.D")]\n'
+        'c = ad.yr.value_counts().sort_index(); ok = c[c >= 5].index\n'
+        'kept = ad[(ad.yr >= ok.min()) & (ad.yr <= ok.max())]\n'
+        'dt = pd.to_datetime(kept.date)\n'
+        'print("\\nA.D genomes within 3 years of its first:",\n'
+        '      int((dt < dt.min() + pd.DateOffset(years=3)).sum()))'),
+    new_markdown_cell(
+        "**A.D.3 loses 7 years and only 1 genome** — that is the whole point of the rule: it "
+        "removes span, not data. A.D keeps **361 genomes in its first three years**, so "
+        "well-sampled early data is untouched.\n\n"
+        "This is the same rule `lineage.prepare()` applies in notebooks 03 and 04; the kept "
+        "start years here match `results/lineages.tsv` exactly. It lives in "
+        "`src/rsv/lineage.py` only because those notebooks and the analysis script all need "
+        "it."),
     new_markdown_cell(
         "## 1.5  Lineages\n\n"
         "GISAID assigns each genome to a **lineage**, a named branch of the RSV family tree. "
