@@ -513,6 +513,84 @@
   <figcaption><b>圖 10.</b> 基因組並不均勻。G 基因的 GC 含量是所有基因中最高的;而在 RSV-A 裡,兩個干擾素拮抗基因的 CpG 遠低於其他一切。</figcaption>
 </figure>
 
+<h4>跟流感那份研究逐項對照</h4>
+<p>我們用的是同一套量度方法,所以可以一項一項直接比。下表左邊是流感的結果,右邊是 RSV 的。</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>量度項目</th><th>流感(Ye et al. 2026)</th><th>RSV(本項目)</th><th class="n">結論</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Genomic GC content<br>(全基因組 GC 含量)</strong></td>
+      <td>12 條 persistent mammalian lineage(持續哺乳類譜系)<strong>全部顯著下降</strong>(P &lt; 0.01)。最快的 Ca2 是每年 −0.064%,最慢的 Hu2 是每年 −0.006%。</td>
+      <td>9 條 lineage 裡 5 條上升、4 條下降,<strong>沒有一致方向</strong>。最大的變化量是每年 0.0117%(A.D.5,下降)。</td>
+      <td class="n">未重現</td>
+    </tr>
+    <tr>
+      <td><strong>GC3 vs GC12<br>(第三位 vs 第一、二位)</strong></td>
+      <td>兩者<strong>同時下降</strong>,GC3 比 GC12 快 <strong>5.65 倍</strong>。</td>
+      <td>GC3 在 9 條中 6 條<strong>上升</strong>,GC12 在 9 條中 6 條<strong>下降</strong> —— 方向<strong>相反</strong>,比值是負數。</td>
+      <td class="n">相反</td>
+    </tr>
+    <tr>
+      <td><strong>CpG O/E</strong></td>
+      <td>12 條中有 <strong>9 條顯著下降</strong>(Hu1_2、Hu2–4、Eq、Ca2、Sw1–3)。</td>
+      <td>6 條上升、3 條下降,而且<strong>通不過穩健性檢驗</strong>:lineage 定義細一層,方向就反轉。</td>
+      <td class="n">未重現</td>
+    </tr>
+    <tr>
+      <td><strong>GpG 與 CpC O/E</strong></td>
+      <td>多數 lineage <strong>顯著上升</strong>。</td>
+      <td>方向同樣不一致。</td>
+      <td class="n">未重現</td>
+    </tr>
+    <tr>
+      <td><strong>二核苷酸頻率與 GC 含量的相關性</strong></td>
+      <td>平均相關係數:CpG <strong>0.72</strong>、GpC 0.67、GpG 0.73、CpC 0.59。</td>
+      <td>平均相關係數:CpG <strong>0.43</strong>、GpC 0.49、GpG 0.35、CpC 0.51。<strong>明顯較弱。</strong></td>
+      <td class="n">較弱</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p>換句話說,流感那份研究的三個核心結論,RSV 一個都沒有重現。這不是某一項對不上,而是整套規律都不成立。</p>
+
+<h4>為什麼 RSV 跟流感不一樣?五個可能的原因</h4>
+<p>這是整件事最值得想清楚的地方。否定結果本身沒什麼好說,但「為什麼是否定的」才是真正的內容。以下五點由最有說服力排到最弱。</p>
+
+<div class="key">
+  <p class="lbl">一、流感的訊號來自「剛換宿主」,RSV 根本沒有換過</p>
+  <p>這是最根本的一點。那份研究的 12 條 lineage,全部都是從<strong>鳥類跨到哺乳類</strong>之後才建立起來的。論文自己的結論就是:降低的 GC 含量可能是<em>達成哺乳類持續傳播的必要條件</em>。也就是說,那個下降趨勢量度的是「適應新宿主的過程」。</p>
+  <p>人類 RSV 沒有這個過程。它在人類之間已經流行了非常久,早就適應完了。既然沒有轉換,就沒有適應的過程可以量度 —— 找不到趨勢,反而是符合論文邏輯的結果。</p>
+</div>
+
+<div class="key">
+  <p class="lbl">二、觀察窗口短太多</p>
+  <p>Hu1 這條 lineage 由 1918 年一路追到 2010 年,接近<strong>九十年</strong>。我們最長的一條 lineage 只有 <strong>14.4 年</strong>,最短的 8.4 年。</p>
+  <p>用流感最慢那條(Hu2,每年 −0.006%)來算:十年只會累積 0.06% 的 GC 變化。這個量比我們資料裡的雜訊還小。所以即使 RSV 真的有一個同樣緩慢的下降趨勢,用十年的資料也<strong>看不出來</strong> —— 這叫 statistical power(統計檢定力)不足。否定結果不等於「確定沒有」,只等於「在這個時間尺度上看不到」。</p>
+</div>
+
+<div class="key">
+  <p class="lbl">三、RSV 的 GC 本來就低很多,可能已經「沒得再降」</p>
+  <p>流感基因組的 GC 含量大約在 <strong>43–46%</strong> 之間(那篇論文圖 2 的縱軸範圍就是 42–46%)。RSV 只有大約 <strong>33.5%</strong>,低了十個百分點以上。</p>
+  <p>如果「降低 GC」真的是適應哺乳類宿主的方向,那 RSV 可能早就走到了底部。一個已經在地板上的東西,量不到它繼續往下掉 —— 這是很自然的。同樣的道理也適用於 CpG —— RSV 的 CpG O/E 大約只有 0.24,壓抑已經非常深了。</p>
+</div>
+
+<div class="key">
+  <p class="lbl">四、流感會 reassortment(重配),RSV 不會</p>
+  <p>流感的基因組分成八段,不同病毒株感染同一個細胞時可以互相交換片段,這叫 reassortment(基因重配)。論文裡最快的兩個下降 —— Hu4 的 PA(每年 −0.142%)和 NP(−0.101%)—— 作者的解釋正是:這兩段是<strong>比較近期才從禽流感來的</strong>,一開始 GC 含量偏高,跟禽類病毒重疊,之後才一路降下來。</p>
+  <p>所以流感有一個「反覆注入高 GC 材料、然後慢慢衰減」的機制。RSV 的基因組是<strong>單一一條、不分段的</strong>,不會重配,也就沒有這種外來高 GC 材料的來源。沒有注入,自然也看不到衰減。</p>
+</div>
+
+<div class="key">
+  <p class="lbl">五、效應量本來就小,而且對分析選擇敏感</p>
+  <p>我們最大的 GC 變化量是每年 0.0117%,大約是流感最快那條(Ca2,每年 0.064%)的<strong>五分之一</strong>。在這麼小的效應底下,分析上的任何一個選擇都可能左右結論 —— 我們的 CpG 結果就是最好的例子:把 lineage 標籤截短到第四層而不是第三層,中位數方向就反轉了。這說明驅動那個「趨勢」的是分析選擇,不是生物學。</p>
+</div>
+
+<div class="warn">
+  <p class="lbl">一個誠實的說法</p>
+  <p>上面五個原因裡,第一和第四是<strong>生物學上的理由</strong>(RSV 真的不一樣),第二和第五是<strong>方法學上的限制</strong>(我們可能只是看不到)。第三介乎兩者之間。這兩類原因不能混為一談:前者代表「RSV 不遵守這個規律」,後者只代表「這份資料答不了這個問題」。目前我們無法完全區分這兩者,所以正確的說法是「<em>在可觀察的範圍內沒有看到</em>」,而不是「RSV 沒有這個趨勢」。</p>
+</div>
+
 <h3><span class="num">32.</span>我們發現了什麼、沒發現什麼</h3>
 <h4>否定的結果</h4>
 <p>時間趨勢分析 —— 也就是主要問題 —— 沒有找到一致的規律:</p>
@@ -530,6 +608,10 @@
 
 <h4>唯一真正的發現</h4>
 <p>它根本不是時間上的,而是基因之間和亞型之間的差異。</p>
+<figure>
+  <img src="figures/r6.png" alt="三格長條圖:左邊是四個基因的 CpG 數量(對數刻度),中間是 CpG 為零的基因組比例,右邊是 GC 含量對照,兩個亞型並列。">
+  <figcaption><b>圖 11.</b> RSV-A(藍)在 NS1 和 NS2 幾乎沒有 CpG,RSV-B(紅)則有。對照的 N 和 L 兩個基因在兩個亞型幾乎一樣,而右邊顯示 GC content 是匹配的 —— 所以這不是鹼基組成的副作用。左圖用對數刻度,否則 L 基因的四十個 CpG 會把 NS1、NS2 壓成看不見。</figcaption>
+</figure>
 <div class="scroll">
 <table>
   <thead><tr><th>基因</th><th class="n">RSV-A 每基因 CpG 數</th><th class="n">RSV-B 每基因 CpG 數</th><th class="n">RSV-A 中 CpG 為零的比例</th></tr></thead>
@@ -551,8 +633,26 @@
 </ul>
 <p>還有一個細節令它更有力。NS1 在 A 和 B 之間只有約 78% 相同,兩個版本已經分化得相當多。然而 GC content 基本維持不變,CpG 卻差了十二倍。隨機漂移會令兩者一起變動。是某種力量固定了其中一個,同時只在一個亞型裡把另一個壓下去。</p>
 <div class="warn">
-  <p class="lbl">尚未解決的問題</p>
-  <p>這件事是不是已經有人發表過?兩次文獻搜尋都沒有找到,但這是很弱的「不存在」證據。RSV <em>整體</em>的 CpG 減少是有文獻記載的 —— 2025 年一篇綜述把 RSV 列為「以 C/G 結尾的密碼子減少最明顯」的人類呼吸道病毒之一。但基因層面的亞型不對稱沒有找到。在宣稱這是新發現之前,需要透過 PubMed 和 Google Scholar 做一次正式搜尋。這一個問題就決定了這個項目到底有沒有成果。</p>
+  <p class="lbl">文獻檢查的結果</p>
+  <p>這件事是不是已經有人發表過?後來做了一次比較正式的搜尋(PubMed 加網絡搜尋),<strong>沒有找到</strong>:</p>
+  <ul>
+    <li>PubMed 用「RSV + CpG dinucleotide」只有 <strong>2 篇</strong>,而且兩篇都是講 CpG oligonucleotide(CpG 寡核苷酸)這種疫苗佐劑 —— 是同一個詞的完全不同用法。</li>
+    <li>PubMed 用「RSV + codon usage」有 <strong>14 篇</strong>,全部都是為了做疫苗而<strong>人工改寫</strong>基因組的研究,沒有一篇在講天然的成分差異。</li>
+    <li>沒有找到任何比較 RSV-A 與 RSV-B <strong>CpG 含量</strong>的研究。現有的 A/B 比較都集中在抗原性和 G 基因的序列差異。</li>
+    <li>沒有找到任何關於 <strong>ZAP</strong> 與 RSV(或任何 pneumovirus,肺病毒)的研究。ZAP 對 SARS-CoV-2、HIV、CMV 都有文獻,但 RSV 看來沒有人測過。</li>
+  </ul>
+  <p><strong>但要小心兩件事。</strong>第一,搜尋不到不等於不存在 —— 這個結果可能藏在某篇大型比較基因組學論文裡面沒被特別提出來。第二,現在用這個問題去搜尋,<strong>第一個結果就是本項目自己的 GitHub 倉庫</strong>,因為它是公開的、已經被搜尋引擎收錄了。這在談「誰先發現」的時候要先知道。</p>
+  <p><strong>反過來說,有實驗證據支持這個機制在 RSV 身上是說得通的。</strong>Liang et al.(2017, J Virol)把 RSV 的 F 基因改成 CpG 較少的版本,結果<strong>干擾素反應被削弱、病毒複製和表現量都上升</strong>。Meng et al.(2014, mBio)則正好挑中 NS1 和 NS2 這兩個基因做 codon deoptimization(密碼子去最佳化),等於獨立地指出這兩個基因就是功能上最敏感的。這些都是人工改造的實驗,但它們說明:RSV 基因裡的 CpG 數量<strong>確實會影響免疫偵測</strong>,不只是統計上的數字。</p>
+</div>
+
+<h4>那篇論文有沒有比較過兩個亞型?</h4>
+<p>這個問題值得問,因為我們的發現正是兩個亞型之間的差異。答案是:<strong>沒有直接的對應,但有結構上相同的比較。</strong></p>
+<p>那 12 條 lineage 裡有四條是人類的:Hu1(1918 年的 H1N1)、Hu2(H2N2)、Hu3(季節性 H3N2,41,978 條基因組)和 Hu4(2009 大流行 H1N1,26,452 條)。其中 <strong>Hu3 和 Hu4 是現在同時在人類之間流行的</strong> —— 這跟 RSV-A 與 RSV-B 的關係完全一樣。</p>
+<p>論文確實報告了這兩條表現不同,而且它給的解釋<strong>不是宿主生物學,而是來源歷史</strong>:整份研究中下降最快的就是 Hu4 的 PA(每年 −0.142%)和 NP(−0.101%),作者認為原因是這兩段<strong>比較近期才從禽流感來</strong>,起點的 GC 含量本來就高。</p>
+<div class="warn">
+  <p class="lbl">這對我們的發現意味著什麼</p>
+  <p>論文自己處理「同一個宿主裡兩條共同流行的譜系為何不同」時,訴諸的是<strong>演化歷史</strong>,不是當下的選擇壓力。那麼同樣的解釋也可能適用於 NS1/NS2:RSV-A 和 RSV-B 很久以前就分家了,這個十二倍的差異<strong>可能只是一個凍結下來的歷史偶然</strong>,而不是正在發生的選擇。</p>
+  <p>這是這個發現最需要先排除的替代解釋,而且有一個直接的檢驗方法:<strong>看 RSV-A 的 NS1 CpG 在各 lineage 之內是不是「還在下降」。</strong>如果還在降,代表壓力仍然在作用;如果整段觀察期都已經貼近零,那就比較像是早就固定下來的狀態。</p>
 </div>
 
 <h3><span class="num">33.</span>下一步</h3>
