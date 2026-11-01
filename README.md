@@ -55,11 +55,12 @@ GISAID EpiRSV, downloaded in eight date-range batches. 33,040 genomes merged, 33
 quality control (length 14,900-15,400 nt, at most 1% ambiguous bases, complete collection
 date).
 
-The analysis window runs **2001 to the end of June 2026**, giving 32,647 genomes in
+The analysis window runs **2001 to the end of May 2026**, giving 32,442 genomes in
 9 lineages. Set after auditing the data:
 
-- **The 2026 tail is cut.** Month by month against 2025, 2026 runs at 78-93% through May,
-  then falls to 53% in June, 29% in July and 5% in August - 18 genomes where 2025 had 399.
+- **The 2026 tail is cut.** Month by month against 2025, 2026 holds 92% of the previous
+  year through May, then falls to 53% in June, 29% in July and 4% in August - 18 genomes
+  where 2025 had 399. May is the last month at full strength, so the window ends there.
   That is deposition lag, so those months are a non-random subset.
 - **Everything earlier is kept.** Sequencing effort grows steeply over the period, but
   uneven sample sizes across time do not bias a slope; they only make the later years more

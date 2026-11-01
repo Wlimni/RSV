@@ -133,7 +133,7 @@ build("notebooks/01_data.ipynb", [
         "Four, found by auditing before analysing. Two change what we do.\n\n"
         "| | Problem | Decision |\n"
         "|---|---|---|\n"
-        "| **a** | 2026 tail incomplete (deposition lag) | cut the window at June 2026 |\n"
+        "| **a** | 2026 tail incomplete (deposition lag) | cut the window at end of May 2026 |\n"
         "| **b** | Sequencing geography shifted, even inside lineages | region as a covariate |\n"
         "| **c** | Strong seasonality | noted, not corrected |\n"
         "| **d** | Sparse early data gives single genomes high leverage | trim sparse lineage ends |\n\n"
@@ -150,12 +150,14 @@ build("notebooks/01_data.ipynb", [
         'print(cmp.to_string())\n'
         'print("\\nlast collection date:", d.date.max())'),
     new_markdown_cell(
-        "- Through May, 2026 runs at **78–93%** of the previous year — normal.\n"
-        "- June falls to **53%**, July **29%**, August **5%** — eighteen genomes where 2025 "
+        "- Through May, 2026 holds **78–93%** of the previous year’s count — normal, and May "
+        "itself is at **92%**.\n"
+        "- June falls to **53%**, July **29%**, August **4%** — eighteen genomes where 2025 "
         "had 399 in the same month.\n"
         "- That is deposition lag, not season: those months are a non-random subset "
         "contributed only by laboratories that deposit quickly.\n\n"
-        "**Decision: the window runs 2001 to the end of June 2026.** Everything earlier is "
+        "**Decision: the window runs 2001 to the end of May 2026.** May is the last month "
+        "still at full strength, so it is the natural cut. Everything earlier is "
         "kept — sequencing effort grows steeply over the period, but uneven sample sizes "
         "across time do not bias a slope, they only make later years more precisely "
         "estimated.\n\n"
@@ -323,7 +325,7 @@ build("notebooks/03_lineage_trends.ipynb", [
     new_markdown_cell(
         "## 3.1  The lineages we analyse\n\n"
         "Inclusion requires **at least 5 distinct years and at least 200 genomes**. The date "
-        "window (2001 to June 2026) and the sparse-end trimming are both applied inside "
+        "window (2001 to the end of May 2026) and the sparse-end trimming are both applied inside "
         "`lineage.prepare()`, so no extra year filter is needed here."),
     new_code_cell(
         'g = pd.read_csv("../data/processed/rsv_gene_features.tsv", sep="\\t")\n'

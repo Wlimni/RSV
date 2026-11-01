@@ -12,7 +12,7 @@ Outputs:     results/lineages.tsv          the lineages analysed
              results/sensitivity_level4.tsv  same fits at a finer lineage level
 Notes:       "Genome level" means the ten coding regions concatenated, which is how the
              paper defines genomic GC, GC3 and GC12.
-             The window runs 2001 to end of June 2026. The later months of 2026 are cut
+             The window runs 2001 to end of May 2026. The 2026 months after May are cut
              because deposition lag makes them a non-random subset, and each lineage is
              trimmed to the years it was actually sampled in.
              Run: .venv/bin/python scripts/run_lineage_analysis.py

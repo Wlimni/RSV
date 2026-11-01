@@ -36,20 +36,22 @@ def decimal_date(dates):
 
 
 def prepare(df, level=3, min_years=5, min_n=200, date_col="date",
-            start=2001.0, end=2026.5, trim=5):
+            start=2001.0, end=2026 + 151 / 365, trim=5):
     """
     Add the truncated lineage label and decimal date, restrict to the usable date window,
     trim isolated dates at each end of every lineage, then keep only lineages with enough
     span and enough sequences to support a regression.
     Returns (filtered DataFrame, summary table of the lineages kept).
 
-    Window. The default runs from 2001 to the end of June 2026, which is as wide as the
-    data usefully allows. Sequencing effort grows steeply over this period, but uneven
-    sample sizes across time do not bias a regression slope; they only make the later years
-    more precisely estimated. The later months of 2026 are different and are excluded:
-    comparing like months against 2025 shows August 2026 holding 18 genomes against 399 a
-    year earlier, which is deposition lag rather than season, so those genomes are a
-    non-random subset contributed only by fast-depositing laboratories.
+    Window. The default runs from 2001 to the end of May 2026 (`end` is 2026-06-01 and the
+    comparison is strict, so 31 May is the last day kept). Sequencing effort grows steeply
+    over this period, but uneven sample sizes across time do not bias a regression slope;
+    they only make the later years more precisely estimated. The 2026 months after May are
+    different and are excluded: measured against the same months of 2025, 2026 holds 92% of
+    the previous year's count through May, then 53% in June, 29% in July and 4% in August.
+    That is deposition lag rather than season, so those genomes are a non-random subset
+    contributed only by fast-depositing laboratories. May is the last month still at full
+    strength, which makes it the natural cut.
 
     Trimming. Opening the window back to 2001 lets a lineage's span be set by one or two
     very old genomes: lineage A.D.3 would otherwise reach back 6.9 extra years on the
