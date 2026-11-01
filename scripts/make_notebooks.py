@@ -53,22 +53,22 @@ build("notebooks/01_data.ipynb", [
     new_markdown_cell(
         "# 01 — The data\n\n"
         "---\n\n"
-        "### What this project asks\n\n"
+        "### The question\n\n"
         "Ye et al. 2026 (*Nature Microbiology*) measured GC content and GC-containing "
-        "dinucleotide frequencies across 115,520 influenza A genomes, and found that these "
-        "features **declined over time** within lineages that had achieved sustained "
-        "transmission in mammals.\n\n"
-        "We apply the same measurements to human RSV and ask:\n\n"
+        "dinucleotide frequencies across 115,520 influenza A genomes, and found both "
+        "**declined over time** within lineages that had achieved sustained transmission in "
+        "mammals.\n\n"
+        "Applying the same measurements to human RSV:\n\n"
         "> **Within each RSV lineage, how does genome composition change over time, and does "
         "the pattern differ between RSV-A and RSV-B?**\n\n"
-        "This notebook covers the dataset itself: how much there is, when and where it came "
-        "from, and what quality control removes.\n\n"
+        "This notebook covers the dataset: size, coverage in time and place, and what QC "
+        "removes.\n\n"
         "---"),
     new_code_cell(SETUP),
     new_markdown_cell(
         "## 1.1  The sequences\n\n"
         "`rsv_features.tsv` is written by `scripts/build_features.py`: one row per genome, "
-        "carrying the GISAID metadata alongside composition features."),
+        "GISAID metadata alongside composition features."),
     new_code_cell(
         'd = pd.read_csv("../data/processed/rsv_features.tsv", sep="\\t")\n'
         'print("genomes :", len(d))\n'
@@ -98,15 +98,21 @@ build("notebooks/01_data.ipynb", [
         'ax.set_title("Genome length, dashed lines mark the filter window")\n'
         'ax.legend(frameon=False); plt.tight_layout(); plt.show()'),
     new_markdown_cell(
+        "**Two genomes out of 33,040 were removed.** One RSV-B had 2.11% ambiguous bases. "
+        "The other was an RSV-B at 15,854 nt — 632 nt over the reference, carrying a "
+        "583-nt non-RSV tail past the 3' end at 49% GC against the virus's 34%, i.e. "
+        "contamination. That second case is why the length check has an upper bound and "
+        "not only a minimum."),
+    new_markdown_cell(
         "## 1.3  When and where the sequences come from\n\n"
-        "Two features of the sampling matter for everything that follows.\n\n"
-        "**Sequencing is not evenly spread over time.** It rises steeply from 2018 and dips "
-        "in 2020–21, when COVID-19 disrupted both RSV circulation and surveillance.\n\n"
-        "**Sequencing is not evenly spread over the world.** Europe contributes far more "
-        "genomes than anywhere else.\n\n"
-        "Any trend measured over calendar time is therefore partly a trend in *who was "
-        "sequencing*. This is the main reason the analysis in notebook 03 is done inside "
-        "lineages rather than across the whole dataset."),
+        "Two sampling features matter for everything downstream:\n\n"
+        "- **Not even over time** — rises steeply from 2018, dips in 2020–21 when COVID-19 "
+        "disrupted both RSV circulation and surveillance.\n"
+        "- **Not even over the world** — Europe contributes far more genomes than anywhere "
+        "else.\n\n"
+        "So any trend over calendar time is partly a trend in *who was sequencing*. This is "
+        "the main reason notebook 03 fits inside lineages rather than across the whole "
+        "dataset."),
     new_code_cell(
         'fig, ax = plt.subplots(1, 2, figsize=(11, 3.2))\n'
         'yr = d.groupby(["year", "Subtype"]).size().unstack(fill_value=0)\n'
@@ -124,10 +130,15 @@ build("notebooks/01_data.ipynb", [
         "*Grey band marks the COVID-19 disruption.*"),
     new_markdown_cell(
         "## 1.4  Known problems with this dataset\n\n"
-        "Four, found by auditing the data before analysing it. Two of them change what we "
-        "do.\n\n"
+        "Four, found by auditing before analysing. Two change what we do.\n\n"
+        "| | Problem | Decision |\n"
+        "|---|---|---|\n"
+        "| **a** | 2026 tail incomplete (deposition lag) | cut the window at June 2026 |\n"
+        "| **b** | Sequencing geography shifted, even inside lineages | region as a covariate |\n"
+        "| **c** | Strong seasonality | noted, not corrected |\n"
+        "| **d** | Sparse early data gives single genomes high leverage | trim sparse lineage ends |\n\n"
         "---\n\n"
-        "### (a) The 2026 tail is incomplete, so we cut it\n\n"
+        "### (a) The 2026 tail is incomplete\n\n"
         "The download was made in October 2026, but sequences take months to be deposited. "
         "Comparing 2026 month by month against the same months of 2025 separates deposition "
         "lag from ordinary seasonality."),
@@ -139,30 +150,30 @@ build("notebooks/01_data.ipynb", [
         'print(cmp.to_string())\n'
         'print("\\nlast collection date:", d.date.max())'),
     new_markdown_cell(
-        "Through May, 2026 runs at 78-93% of the previous year, which is normal. From June it "
-        "falls to 53%, July 29%, and August to 5% - eighteen genomes where 2025 had 399 in "
-        "the same month. That is deposition lag, not season: those months are a non-random "
-        "subset contributed only by laboratories that deposit quickly.\n\n"
-        "**Decision: the window runs from 2001 to the end of June 2026.** Everything earlier "
-        "is kept. Sequencing effort grows steeply over the period, but uneven sample sizes "
-        "across time do not bias a slope; they only make later years more precisely "
+        "- Through May, 2026 runs at **78–93%** of the previous year — normal.\n"
+        "- June falls to **53%**, July **29%**, August **5%** — eighteen genomes where 2025 "
+        "had 399 in the same month.\n"
+        "- That is deposition lag, not season: those months are a non-random subset "
+        "contributed only by laboratories that deposit quickly.\n\n"
+        "**Decision: the window runs 2001 to the end of June 2026.** Everything earlier is "
+        "kept — sequencing effort grows steeply over the period, but uneven sample sizes "
+        "across time do not bias a slope, they only make later years more precisely "
         "estimated.\n\n"
         "---\n\n"
         "### (b) Where sequencing happens has shifted completely\n\n"
-        "This is the more serious problem."),
+        "The more serious problem."),
     new_code_cell(
         'reg = pd.crosstab(d.year, d.region, normalize="index").mul(100).round(1)\n'
         'reg.loc[2015:2026]'),
     new_markdown_cell(
-        "Oceania supplied 38% of genomes in 2015 and 4% in 2026; Europe went from 18% to "
-        "56%. North America contributes nothing at all in 2017.\n\n"
-        "So **calendar time and geography are entangled**. A composition trend over time "
-        "could partly be a trend in which part of the world was sequencing.\n\n"
-        "Worse, this drift happens *inside* individual lineages too, so analysing within "
-        "lineages does not remove it. Lineage A.D goes from 71% Oceania in its early period "
-        "to 36% Europe in its late period.\n\n"
-        "**Decision: region is included as a covariate in the regressions, and results are "
-        "reported with and without it** (notebook 03).\n\n"
+        "- Oceania supplied **38%** of genomes in 2015 and **4%** in 2026; Europe went from "
+        "**18%** to **56%**. North America contributes nothing at all in 2017.\n"
+        "- So calendar time and geography are **entangled** — a composition trend over time "
+        "could partly be a trend in which part of the world was sequencing.\n"
+        "- The drift happens *inside* individual lineages too, so fitting within lineages "
+        "does not remove it. Lineage A.D goes from 71% Oceania early to 36% Europe late.\n\n"
+        "**Decision: region enters the regressions as a covariate, and results are reported "
+        "both ways** (notebook 03).\n\n"
         "---\n\n"
         "### (c) Strong seasonality — noted, not corrected\n\n"
         "RSV is seasonal, so genomes are not spread evenly through the year."),
@@ -174,28 +185,29 @@ build("notebooks/01_data.ipynb", [
         'ax.set_title("Collection month, all years pooled")\n'
         'plt.tight_layout(); plt.show()'),
     new_markdown_cell(
-        "December and November carry three to four times September. Northern and southern "
-        "hemisphere epidemics also peak at opposite times, so season and geography are "
-        "partly entangled as well. For a slope measured across a decade this is minor, so "
-        "we record it rather than correct it.\n\n"
+        "November and December carry three to four times September. The two hemispheres also "
+        "peak at opposite times, so season and geography are partly entangled as well. Minor "
+        "for a slope measured across a decade, so we record it rather than correct it.\n\n"
         "---\n\n"
-        "### (d) Early data is sparse, so single genomes could distort a trend\n\n"
-        "Everything before 2015 is about 3% of the dataset, and **RSV-A has essentially no "
-        "sequences before 2010**. Keeping it is still worth doing, because for some lineages "
-        "it adds years of span and a longer span makes a slope more precise.\n\n"
-        "The danger is leverage. Lineage A.D.3 would otherwise reach back 6.9 extra years on "
-        "the strength of **one** genome from 2010; a point that isolated drags the fitted "
-        "line hard. So each lineage is cut back to the run of years in which it was actually "
-        "being sampled, dropping leading and trailing years holding fewer than 5 genomes. "
-        "Well-sampled early data survives: lineage A.D keeps 361 genomes in its first three "
+        "### (d) Sparse early data gives single genomes high leverage\n\n"
+        "- Everything before 2015 is about 3% of the dataset, and **RSV-A has essentially no "
+        "sequences before 2010**.\n"
+        "- Keeping it is still worth doing: for some lineages it adds years of span, and a "
+        "longer span makes a slope more precise.\n"
+        "- But the leverage is dangerous — lineage A.D.3 would reach back **6.9 extra years "
+        "on the strength of one genome from 2010**, and a point that isolated drags the "
+        "fitted line hard.\n\n"
+        "**Decision: each lineage is cut back to the run of years in which it was actually "
+        "being sampled**, dropping leading and trailing years holding fewer than 5 genomes. "
+        "Well-sampled early data survives — lineage A.D keeps 361 genomes in its first three "
         "years."),
     new_markdown_cell(
         "## 1.5  Lineages\n\n"
         "GISAID assigns each genome to a **lineage**, a named branch of the RSV family tree. "
-        "The labels are hierarchical and dot-separated, so `A.D.1.5` sits inside `A.D.1`, "
-        "which sits inside `A.D`.\n\n"
-        "Lineages rise and fall over a few seasons. Notebook 03 explains why that matters "
-        "and how we choose the level to work at."),
+        "Labels are hierarchical and dot-separated: `A.D.1.5` sits inside `A.D.1`, which sits "
+        "inside `A.D`.\n\n"
+        "Lineages rise and fall over a few seasons. Notebook 03 covers why that matters and "
+        "how the level is chosen."),
     new_code_cell(
         'for s in "AB":\n'
         '    top = d[d.Subtype == s].Lineage.value_counts().head(5)\n'
@@ -210,11 +222,13 @@ build("notebooks/02_features.ipynb", [
         "---\n\n"
         "Every feature here is a property of the **letter sequence itself**, independent of "
         "what the genome codes for.\n\n"
-        "### GC content\n"
-        "The fraction of letters that are G or C.\n\n"
-        "### Dinucleotide frequency\n"
-        "How often a given pair of adjacent letters occurs. We track the four GC-containing "
-        "pairs used in the paper, plus one more:\n\n"
+        "| Feature | Definition |\n"
+        "|---|---|\n"
+        "| **GC content** | fraction of letters that are G or C |\n"
+        "| **Dinucleotide frequency** | how often a given pair of adjacent letters occurs |\n"
+        "| **O/E ratio** | observed pair frequency divided by what chance predicts |\n"
+        "| **GC3 / GC12** | GC content at the third codon position / at the first and second |\n\n"
+        "### The pairs tracked\n\n"
         "| Pair | Written | Note |\n"
         "|---|---|---|\n"
         "| C then G | CpG | the motif of interest |\n"
@@ -222,25 +236,25 @@ build("notebooks/02_features.ipynb", [
         "| G then G | GpG | |\n"
         "| C then C | CpC | |\n"
         "| T then A | UpA | **not in the paper**; added as exploratory |\n\n"
-        "### Observed / expected ratio\n"
-        "Counting pairs directly is misleading, because a GC-rich genome contains more CpG "
-        "by chance alone. So we divide by what chance predicts:\n\n"
+        "### Why O/E rather than raw counts\n\n"
+        "A GC-rich genome contains more CpG by chance alone, so we divide by chance "
+        "expectation:\n\n"
         "$$ \\mathrm{O/E}(\\mathrm{CpG}) = \\frac{f(\\mathrm{CpG})}{f(\\mathrm{C}) \\times f(\\mathrm{G})} $$\n\n"
-        "A value near **1** means as common as chance predicts; **below 1** means the virus "
-        "is avoiding that pair.\n\n"
-        "### GC3 and GC12\n"
-        "GC content split by position inside the codon. **GC3** is the third position, where "
-        "most changes are synonymous and do not alter the protein. **GC12** is the first and "
-        "second, where most changes do alter it.\n\n"
-        "Comparing how fast the two move separates pressure acting on the RNA from pressure "
-        "acting on the protein — the same logic as comparing dS with dN. The paper reports "
-        "GC3 changing **5.65× faster** than GC12 in influenza.\n\n"
+        "Near **1** = as common as chance predicts. **Below 1** = the virus is avoiding that "
+        "pair.\n\n"
+        "### Why split GC by codon position\n\n"
+        "- **GC3** — third position; most changes are synonymous and leave the protein "
+        "unchanged.\n"
+        "- **GC12** — first and second; most changes do alter the protein.\n\n"
+        "Comparing how fast the two move separates pressure on the RNA from pressure on the "
+        "protein — the same logic as dS versus dN. The paper reports GC3 changing **5.65× "
+        "faster** than GC12 in influenza.\n\n"
         "---"),
     new_code_cell(SETUP + "from rsv import composition"),
     new_markdown_cell(
         "## 2.1  The functions, on a short example\n\n"
-        "All measurements come from `src/rsv/composition.py`. Ambiguous positions are "
-        "skipped rather than guessed."),
+        "All measurements come from `src/rsv/composition.py`. Ambiguous positions are skipped "
+        "rather than guessed."),
     new_code_cell(
         'demo = "ATGGCGTTAACGCGTAAATTACGATAG"\n'
         'f = composition.all_features(demo, coding=True)\n'
@@ -248,8 +262,8 @@ build("notebooks/02_features.ipynb", [
         '    print(f"{k:12s} {f[k]:.4f}")'),
     new_markdown_cell(
         "## 2.2  The measurements across all genomes\n\n"
-        "Here `GENOME` means the ten coding regions concatenated, which is how the paper "
-        "defines genome-level GC, GC3 and GC12 — it keeps the reading frame well defined."),
+        "`GENOME` means the ten coding regions concatenated, which is how the paper defines "
+        "genome-level GC, GC3 and GC12 — it keeps the reading frame well defined."),
     new_code_cell(
         'g = pd.read_csv("../data/processed/rsv_gene_features.tsv", sep="\\t")\n'
         'genome = g[g.gene == "GENOME"]\n'
@@ -257,11 +271,11 @@ build("notebooks/02_features.ipynb", [
         'genome.groupby("Subtype")[cols].mean().round(4)'),
     new_markdown_cell(
         "### Reading that table\n\n"
-        "**CpG O/E sits far below 1 in both subtypes.** RSV carries only a fraction of the "
+        "- **CpG O/E sits far below 1 in both subtypes** — RSV carries only a fraction of the "
         "CpG pairs its base composition would predict. The other GC pairs sit near or above "
-        "1, so the effect is specific to CpG rather than a general shortage of G and C.\n\n"
-        "**GC3 is much lower than GC12**, which is typical: third positions are free to drift "
-        "because changing them usually does not change the protein."),
+        "1, so the effect is specific to CpG, not a general shortage of G and C.\n"
+        "- **GC3 is much lower than GC12** — typical, because third positions are free to "
+        "drift when changing them does not change the protein."),
     new_code_cell(
         'fig, ax = plt.subplots(1, 2, figsize=(11, 3.4))\n'
         'for s in "AB":\n'
@@ -291,38 +305,41 @@ build("notebooks/03_lineage_trends.ipynb", [
     new_markdown_cell(
         "# 03 — Composition over time, within lineages\n\n"
         "---\n\n"
-        "**This is the core analysis.** It follows Figures 2 and 3 of the paper.\n\n"
+        "**The core analysis.** Follows Figures 2 and 3 of the paper.\n\n"
         "### Why fit inside lineages\n\n"
-        "An average across the whole dataset can move for two different reasons:\n\n"
+        "A dataset-wide average can move for two different reasons:\n\n"
         "1. the genomes inside each lineage are genuinely changing, or\n"
-        "2. nothing changes, but a lineage that already had a high value grows while one "
-        "with a low value shrinks.\n\n"
+        "2. nothing changes, but a lineage that already had a high value grows while one with "
+        "a low value shrinks.\n\n"
         "The second produces a confident-looking trend with no evolution behind it. Fitting "
         "**separately inside each lineage** removes it, which is what the paper does.\n\n"
         "### Choosing the lineage level\n\n"
-        "Full GISAID labels are too fine. Most span only about 6 years with a few hundred "
-        "genomes, and a regression slope's uncertainty grows as both the time span and the "
-        "sample size shrink. Truncating the label to **three levels** gives roughly 8 "
-        "well-populated lineages spanning 2015–2026 — close to the 12 the paper used.\n\n"
+        "Full GISAID labels are too fine — most span about 6 years with a few hundred "
+        "genomes, and a slope's uncertainty grows as both span and sample size shrink. "
+        "Truncating the label to **three levels** gives 9 well-populated lineages, close to "
+        "the 12 the paper used.\n\n"
         "---"),
     new_code_cell(SETUP + "from rsv import lineage"),
     new_markdown_cell(
         "## 3.1  The lineages we analyse\n\n"
-        "Inclusion requires **at least 5 distinct years and at least 200 genomes**."),
+        "Inclusion requires **at least 5 distinct years and at least 200 genomes**. The date "
+        "window (2001 to June 2026) and the sparse-end trimming are both applied inside "
+        "`lineage.prepare()`, so no extra year filter is needed here."),
     new_code_cell(
         'g = pd.read_csv("../data/processed/rsv_gene_features.tsv", sep="\\t")\n'
         'dates = pd.read_csv("../data/processed/rsv_features.tsv", sep="\\t",\n'
         '                    usecols=["Accession ID", "date"])\n'
-        'genome = g[(g.gene == "GENOME") & g.year.between(2015, 2026)].merge(dates, on="Accession ID")\n'
+        'genome = g[g.gene == "GENOME"].merge(dates, on="Accession ID")\n'
         'gdf, keep = lineage.prepare(genome)\n'
         'print(f"{len(keep)} lineages, {len(gdf):,} genomes\\n")\n'
         'keep.round(2)'),
     new_markdown_cell(
-        "Note that all eight lineages start between 2015 and 2017 and run to 2025–2026. "
-        "Because they cover essentially the same calendar window, differences between them "
-        "are not confounded with *when* they happened to circulate.\n\n"
-        "RSV-B contributes only two lineages. They are large, so the estimates are sound, "
-        "but any A-versus-B statement rests on two groups rather than a broad survey."),
+        "Two things to note:\n\n"
+        "- **The lineages do not cover the same calendar window.** B.D runs 2006–2016 while "
+        "B.D.E runs 2018–2026, so they barely overlap. Comparisons between lineages are "
+        "therefore partly comparisons between different periods.\n"
+        "- **RSV-B contributes three lineages, and one of them (B.D) is small** at 342 "
+        "genomes. Any A-versus-B statement rests on a narrow base."),
     new_markdown_cell(
         "## 3.2  Trend of each feature within each lineage\n\n"
         "Each feature is regressed against the **decimal collection date**, inside each "
@@ -343,10 +360,10 @@ build("notebooks/03_lineage_trends.ipynb", [
     new_code_cell('show("fig1_lineage_trends.png")'),
     new_markdown_cell(
         "## 3.3  Where along the codon is GC changing?\n\n"
-        "This is the sharpest test available. If composition is being pushed by something "
-        "acting on the RNA, the effect should be strongest at **third codon positions**, "
-        "where changes are mostly synonymous. If it reflects protein-level constraint, the "
-        "first and second positions should move comparably."),
+        "The sharpest test available:\n\n"
+        "- pressure acting on the **RNA** → strongest effect at third codon positions, where "
+        "changes are mostly synonymous\n"
+        "- pressure acting on the **protein** → first and second positions move comparably"),
     new_code_cell(
         'piv = (slopes[slopes.feature.isin(["gc_content", "gc3", "gc12"])]\n'
         '       .pivot_table(index=["Subtype", "lineage_grp"], columns="feature", values="slope"))\n'
@@ -354,18 +371,19 @@ build("notebooks/03_lineage_trends.ipynb", [
         'piv.round(6)'),
     new_code_cell('show("fig2_gc3_vs_gc12.png")'),
     new_markdown_cell(
-        "### What this shows, and how it differs from the paper\n\n"
-        "In influenza, GC content fell at **both** site classes, with GC3 falling about "
-        "5.65 times faster. That is a coherent picture: composition drifting down, fastest "
-        "where changes are invisible to the protein.\n\n"
-        "RSV does not look like that. **GC3 rises in 6 of 8 lineages while GC12 falls in 6 "
-        "of 8** — the two site classes move in *opposite* directions, so the ratio between "
-        "them is negative rather than a clean multiple.\n\n"
-        "Two things follow. The synonymous and non-synonymous sites are clearly under "
-        "different pressure, which is interesting in itself. But this is not the influenza "
-        "signature, and it should not be described as reproducing it.\n\n"
-        "Note the size: the slopes are around 10^-4 per year, so roughly a tenth of a "
-        "percentage point of GC across the whole decade. Small."),
+        "### How this differs from the paper\n\n"
+        "| | influenza (paper) | RSV (here) |\n"
+        "|---|---|---|\n"
+        "| GC3 | falls | **rises in 6 of 9 lineages** |\n"
+        "| GC12 | falls | **falls in 6 of 9** |\n"
+        "| relationship | same direction, GC3 5.65× faster | **opposite directions**, ratio negative |\n\n"
+        "Two things follow:\n\n"
+        "- Synonymous and non-synonymous sites are clearly under different pressure, which is "
+        "interesting in itself.\n"
+        "- This is **not** the influenza signature and should not be described as reproducing "
+        "it.\n\n"
+        "Note the size: slopes are around 10⁻⁴ per year, so roughly a tenth of a percentage "
+        "point of GC across the whole decade. Small."),
     new_markdown_cell(
         "## 3.4  The dinucleotides\n\n"
         "The same regression applied to each dinucleotide, reported both as frequency per "
@@ -391,14 +409,13 @@ build("notebooks/03_lineage_trends.ipynb", [
         'cmp.round(6)'),
     new_markdown_cell(
         "Most slopes keep their direction and rough size, so geography is not generating "
-        "them. The two that move most are the lineages flagged in notebook 01 as having the "
-        "largest geographic drift, which is what you would hope: the adjustment bites "
-        "exactly where the problem is."),
+        "them. The ones that move most are the lineages notebook 01 flagged as having the "
+        "largest geographic drift — the adjustment bites exactly where the problem is."),
     new_markdown_cell(
         "## 3.5  Is the dinucleotide signal just GC content moving?\n\n"
-        "The paper's Figure 3b. If a dinucleotide's frequency correlates almost perfectly "
-        "with GC content, it carries no information beyond GC. Correlations well below 1 "
-        "mean the dinucleotide is moving on its own."),
+        "The paper's Figure 3b. A dinucleotide that correlates almost perfectly with GC "
+        "content carries no information beyond GC; correlations well below 1 mean it is "
+        "moving on its own."),
     new_code_cell(
         'corr = lineage.gc_vs_dinucleotide_correlation(\n'
         '    gdf, ["per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC", "per1k_TA"])\n'
@@ -407,8 +424,8 @@ build("notebooks/03_lineage_trends.ipynb", [
     new_markdown_cell(
         "## 3.6  Sensitivity: does the lineage level drive the result?\n\n"
         "Truncating to three levels was a choice. Repeating at level 4 gives more, smaller "
-        "lineages. If the direction and rough size of the slopes agree, the choice is not "
-        "driving the conclusion."),
+        "lineages. If direction and rough size agree, the choice is not driving the "
+        "conclusion."),
     new_code_cell(
         'gdf4, keep4 = lineage.prepare(genome, level=4)\n'
         's4 = lineage.lineage_slopes(gdf4, ["gc_content", "gc3", "oe_CG"])\n'
@@ -418,35 +435,32 @@ build("notebooks/03_lineage_trends.ipynb", [
         '    median="median", lineages="size",\n'
         '    n_negative=lambda s: int((s < 0).sum())).round(6)'),
     new_markdown_cell(
-        "**The CpG result does not survive this check.** At three levels the median slope is "
-        "slightly positive with 3 of 8 lineages negative; at four levels it is negative with "
-        "14 of 19 negative. The direction flips depending on how finely lineages are "
-        "defined, which means the granularity is driving it rather than the biology.\n\n"
-        "GC3 is steadier: positive at both levels, though weaker at the finer one. GC "
+        "**The CpG result does not survive this check.**\n\n"
+        "| Lineage level | median slope | lineages negative |\n"
+        "|---|---|---|\n"
+        "| 3 | slightly positive | 3 of 9 |\n"
+        "| 4 | negative | 15 of 20 |\n\n"
+        "The direction flips depending on how finely lineages are defined, which means the "
+        "granularity is driving it rather than the biology.\n\n"
+        "GC3 is steadier — positive at both levels, though weaker at the finer one. GC "
         "content overall sits near zero either way."),
     new_markdown_cell(
         "---\n\n"
         "## 3.7  What this notebook found\n\n"
         "Stated plainly, because the result is mostly negative.\n\n"
-        "**1. There is no consistent CpG trend in RSV.** Lineages disagree with each other: "
-        "A.D.1 and B.D.E rise, A.D.3 and A.D.5 fall. In the influenza paper all twelve "
-        "persistent lineages moved the same way. Here they do not, and the sensitivity "
-        "check above shows the overall direction is an artefact of lineage definition.\n\n"
-        "**2. GC3 and GC12 move in opposite directions**, unlike influenza where both fell. "
-        "Synonymous and non-synonymous sites are under different pressure in RSV, but the "
-        "pattern is not the one the paper describes.\n\n"
-        "**3. Geography is not the explanation.** Slopes keep their direction after region "
-        "adjustment, so the inconsistency between lineages is real, not a sampling artefact.\n\n"
-        "**4. All effects are small** — of the order of 10^-4 per year, a fraction of a "
-        "percentage point across the study period.\n\n"
+        "| | Finding |\n"
+        "|---|---|\n"
+        "| **1** | **No consistent CpG trend in RSV.** Lineages disagree: A.D.1 and B.D.E rise, A.D.3 and A.D.5 fall. In the influenza paper all twelve persistent lineages moved the same way. Here they do not, and section 3.6 shows the overall direction is an artefact of lineage definition. |\n"
+        "| **2** | **GC3 and GC12 move in opposite directions**, unlike influenza where both fell. Synonymous and non-synonymous sites are under different pressure in RSV, but not in the pattern the paper describes. |\n"
+        "| **3** | **Geography is not the explanation.** Slopes keep their direction after region adjustment, so the inconsistency between lineages is real, not a sampling artefact. |\n"
+        "| **4** | **All effects are small** — order 10⁻⁴ per year, a fraction of a percentage point across the study period. |\n\n"
         "### How to read this\n\n"
-        "RSV has circulated in humans for a very long time and is already well adapted to "
-        "it. The influenza result came from lineages that had recently entered a *new* host "
-        "and were still adjusting. There is no equivalent transition inside human RSV, so "
-        "finding no directional trend is a reasonable outcome rather than a failed "
-        "analysis.\n\n"
-        "The clearest signal in this project is not temporal at all. It is the difference "
-        "between genes, and between the two subtypes, which notebook 04 covers.")
+        "RSV has circulated in humans for a very long time and is already well adapted to it. "
+        "The influenza result came from lineages that had recently entered a *new* host and "
+        "were still adjusting. There is no equivalent transition inside human RSV, so finding "
+        "no directional trend is a reasonable outcome rather than a failed analysis.\n\n"
+        "The clearest signal in this project is not temporal at all — it is the difference "
+        "between genes and between the two subtypes, which notebook 04 covers.")
 ])
 
 # --------------------------------------------------------------------- 04 by gene
@@ -454,10 +468,10 @@ build("notebooks/04_genes.ipynb", [
     new_markdown_cell(
         "# 04 — Composition gene by gene\n\n"
         "---\n\n"
-        "Everything so far treated the coding regions as one block. But a genome is not "
-        "uniform: its genes do different jobs and are under different pressure. The paper "
-        "does the same split across the eight influenza segments.\n\n"
-        "RSV has ten genes, in this order along the genome:\n\n"
+        "Everything so far treated the coding regions as one block, but genes do different "
+        "jobs under different pressure. The paper does the same split across the eight "
+        "influenza segments.\n\n"
+        "RSV's ten genes, in order along the genome:\n\n"
         "`NS1 · NS2 · N · P · M · SH · G · F · M2 · L`\n\n"
         "Four are worth knowing:\n\n"
         "| Gene | Role |\n"
@@ -482,16 +496,16 @@ build("notebooks/04_genes.ipynb", [
         'tab.sort_values(["Subtype","gene"]).round(4)'),
     new_markdown_cell(
         "### Patterns\n\n"
-        "**The G gene stands out** — the highest GC content of any gene, well above the "
+        "- **The G gene stands out** — the highest GC content of any gene, well above the "
         "genome-wide figure. It is the most variable gene and the most exposed to antibodies, "
-        "so it is the natural region to examine on its own.\n\n"
-        "**CpG suppression is uneven along the genome**, and in RSV-A the two interferon "
+        "so it is the natural region to examine on its own.\n"
+        "- **CpG suppression is uneven along the genome** — in RSV-A the two interferon "
         "antagonist genes sit far below everything else."),
     new_code_cell('run_r()'),
     new_code_cell('show("fig5_gene_composition.png")'),
     new_markdown_cell(
         "## 4.2  The NS1 and NS2 contrast\n\n"
-        "Taking the two interferon antagonist genes directly, with two ordinary genes for "
+        "The two interferon antagonist genes directly, with two ordinary genes for "
         "comparison."),
     new_code_cell(
         'sel = per_gene[per_gene.gene.isin(["NS1","NS2","N","L"])]\n'
@@ -503,18 +517,19 @@ build("notebooks/04_genes.ipynb", [
         '       .round(3))\n'
         'cmp'),
     new_markdown_cell(
-        "**Read the NS1 rows.** In RSV-A the gene carries almost no CpG at all, and in most "
-        "RSV-A genomes there is none anywhere in it. RSV-B's copy of the same gene carries "
-        "several. GC content is nearly identical between the two, so this is not a side "
-        "effect of base composition — it is specific to the CpG pair.\n\n"
-        "N and L, shown for comparison, behave the same way in both subtypes, so this is not "
-        "a general difference between A and B.\n\n"
-        "This is an observation about sequence, not a demonstrated mechanism. Testing it "
+        "**Read the NS1 rows.**\n\n"
+        "- In RSV-A the gene carries almost no CpG at all, and in most RSV-A genomes there is "
+        "none anywhere in it. RSV-B's copy of the same gene carries several.\n"
+        "- GC content is nearly identical between the subtypes, so this is specific to the "
+        "CpG pair rather than a side effect of base composition.\n"
+        "- N and L, shown for comparison, behave the same way in both subtypes, so this is "
+        "not a general difference between A and B.\n\n"
+        "This is an observation about sequence, not a demonstrated mechanism — testing it "
         "would require laboratory work."),
     new_markdown_cell(
         "## 4.3  Which genes carry the time trend?\n\n"
-        "The same within-lineage regression from notebook 03, run on each gene separately. "
-        "The equivalent of the paper's Figure 2b."),
+        "The within-lineage regression from notebook 03, run on each gene separately. The "
+        "equivalent of the paper's Figure 2b."),
     new_code_cell(
         'bg = pd.read_csv("../results/slopes_by_gene.tsv", sep="\\t")\n'
         'bg = bg[bg.feature == "oe_CG"]\n'
