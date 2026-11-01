@@ -96,19 +96,26 @@ data/             GISAID data and derived tables (git-ignored)
 ## Reproduce
 
 ```bash
-pip install -r requirements.txt           # needs mafft on PATH
+python3 -m venv .venv                     # isolated; see the note below
+.venv/bin/pip install -r requirements.txt # needs mafft on PATH
 
-python scripts/merge_gisaid_batches.py --raw data/Raw --out data/full
-python scripts/build_features.py          # QC + whole-genome composition
-python scripts/build_gene_features.py     # per-gene via alignment, ~20 min
-python scripts/run_gene_analysis.py       # per-gene summary
-python scripts/run_lineage_analysis.py    # the core within-lineage trends
+# register the kernel the notebooks ask for, so they do not fall back to
+# whatever "python3" happens to mean on this machine
+.venv/bin/python -m ipykernel install --user --name rsv --display-name "rsv (.venv)"
 
-jupyter lab notebooks/                    # notebooks call R themselves
+.venv/bin/python scripts/merge_gisaid_batches.py --raw data/Raw --out data/full
+.venv/bin/python scripts/build_features.py          # QC + whole-genome composition
+.venv/bin/python scripts/build_gene_features.py     # per-gene via alignment, ~20 min
+.venv/bin/python scripts/run_gene_analysis.py       # per-gene summary
+.venv/bin/python scripts/run_lineage_analysis.py    # the core within-lineage trends
+
+.venv/bin/jupyter lab notebooks/          # then pick the "rsv (.venv)" kernel
 ```
 
 The project uses an isolated `.venv`, because the Anaconda installation on the original
-machine has a NumPy version conflict that breaks some scientific packages.
+machine has a NumPy version conflict that breaks some scientific packages. The notebooks
+name the `rsv` kernel in their metadata for the same reason: a bare `python3` kernel can
+resolve to the Anaconda base interpreter.
 
 ## Method notes
 

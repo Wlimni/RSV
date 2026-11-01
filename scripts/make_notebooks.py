@@ -42,7 +42,9 @@ def show(fig):
 def build(path, cells):
     nb = new_notebook()
     nb.cells = cells
-    nb.metadata["kernelspec"] = {"name": "python3", "display_name": "Python 3",
+    # name the project kernel explicitly: a bare "python3" can resolve to the Anaconda
+    # base interpreter, whose NumPy 2.x breaks extensions compiled against 1.x
+    nb.metadata["kernelspec"] = {"name": "rsv", "display_name": "rsv (.venv)",
                                  "language": "python"}
     nbf.write(nb, path)
     print("wrote", path)
