@@ -36,3 +36,6 @@ venv/
 # --- Results ---
 # Aggregate summaries (grouped by year/subtype/lineage) and figures ARE committed:
 # they contain no per-sequence GISAID data. Nothing to ignore here.
+
+# Word/Office lock files created when a document is open
+~$*

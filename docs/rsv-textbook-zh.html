@@ -324,7 +324,7 @@
   <p class="lbl">如果你已經在人類遺傳學裡學過 CpG</p>
   <p>你可能是在 DNA methylation(DNA 甲基化)、CpG island(CpG 島)和基因啟動子的脈絡下認識 CpG 的。<strong>那些在這裡完全不適用。</strong>RNA 病毒不會那樣被甲基化,也沒有 CpG island。CpG 對病毒之所以重要,原因完全不同,在第 18 節解釋。公式一樣,生物學不一樣。</p>
 </div>
-<p>本項目追蹤五對:<strong>CpG</strong>、<strong>GpC</strong>、<strong>GpG</strong>、<strong>CpC</strong> 和 <strong>UpA</strong>。前四對是我們參照的流感論文所用的。UpA 是額外加的,因為更廣泛的文獻把它視為 CpG 的「同伴」—— 同樣被壓抑,同樣跟免疫辨識有關 —— 但它研究得沒那麼透徹,所以我們標明它屬於探索性質。</p>
+<p>本項目追蹤四對:<strong>CpG</strong>、<strong>GpC</strong>、<strong>GpG</strong>、<strong>CpC</strong>,就是我們參照的流感論文所用的那四對。<br>(早期版本曾經額外加入 <strong>UpA</strong>,因為更廣泛的文獻把它視為 CpG 的「同伴」。但那篇論文並沒有用它,為了跟論文的方法保持一致、也避免節外生枝,後來把它移除了。這不代表 UpA 沒有意義 —— 它是一個真實、受選擇壓力影響的motif,只是不屬於本項目要回答的問題。)</p>
 
 <h3><span class="num">16.</span>Observed/Expected(實際值與期望值之比)</h3>
 <p>直接數 CpG 會誤導人。一條 G 和 C 很多的基因組,單憑機率就會含有更多 CpG。要問病毒是不是<em>主動迴避</em>這一對,你必須跟「純粹靠機率會出現多少」比較。</p>
@@ -497,14 +497,14 @@
 
 <h4>各種二核苷酸</h4>
 <figure>
-  <img src="figures/r3.png" alt="多格圖,顯示 CpG、GpC、GpG、CpC 與 UpA 的斜率及信賴區間,分別以頻率和 O/E 比值呈現。">
+  <img src="figures/r3.png" alt="多格圖,顯示 CpG、GpC、GpG、CpC 四對的斜率及信賴區間,分別以頻率和 O/E 比值呈現。">
   <figcaption><b>圖 8.</b> 每條 lineage 之內,各二核苷酸每年的變化。上半以每千個核苷酸的頻率表示,下半以 O/E 比值表示。O/E 那一版比較重要,因為它已經校正了 GC 含量。</figcaption>
 </figure>
 
 <h4>會不會只是 GC content 在動?</h4>
 <figure>
   <img src="figures/r4.png" alt="各 lineage 的長條圖,顯示每種二核苷酸頻率與 GC 含量的相關係數。">
-  <figcaption><b>圖 9.</b> 含 GC 的幾對相關係數大約在 0.35–0.5,所以它們帶有 GC 含量以外的資訊。UpA 呈負相關,這是預期之內的,因為它是一對 AT。</figcaption>
+  <figcaption><b>圖 9.</b> 這一格是在問:這些二核苷酸的變化,是不是只是 GC content 在動而已?如果相關係數接近 1,那它就沒有帶來 GC 以外的新資訊。實際上大約只有 0.35–0.5,遠低於 1,代表它們<strong>有一部分是自己在動的</strong> —— 這就是把 CpG 當成獨立訊號來看的理由。順帶一提,流感那篇的對應數字是 0.59–0.73,明顯比我們高,所以在 RSV 裡 CpG 跟 GC 的綁定其實比流感更鬆。</figcaption>
 </figure>
 
 <h4>逐個基因看成分</h4>
@@ -610,7 +610,7 @@
 <p>它根本不是時間上的,而是基因之間和亞型之間的差異。</p>
 <figure>
   <img src="figures/r6.png" alt="三格長條圖:左邊是四個基因的 CpG 數量(對數刻度),中間是 CpG 為零的基因組比例,右邊是 GC 含量對照,兩個亞型並列。">
-  <figcaption><b>圖 11.</b> RSV-A(藍)在 NS1 和 NS2 幾乎沒有 CpG,RSV-B(紅)則有。對照的 N 和 L 兩個基因在兩個亞型幾乎一樣,而右邊顯示 GC content 是匹配的 —— 所以這不是鹼基組成的副作用。左圖用對數刻度,否則 L 基因的四十個 CpG 會把 NS1、NS2 壓成看不見。</figcaption>
+  <figcaption><b>圖 11.</b> 全部十個基因的 CpG 含量,已按基因長度標準化(每一千個核苷酸)。數字是 B/A 的倍數:紅色代表 B 較高,藍色代表 A 較高。可以看到<strong>每個基因都有亞型差異,而且兩個方向都有</strong> —— 但 NS1(12.26 倍)和 NS2(7.43 倍)遠遠拋離排第三的 P(2.18 倍)。下半格顯示只有 NS1 和 NS2 出現「整條基因一個 CpG 都沒有」的情況。由於樣本數太大(15,458 對 17,580),每個基因的 p 值都小於 1e-300,所以 p 值在這裡沒有鑑別力,真正有意義的是倍數和 Cliff's delta(分離程度)。</figcaption>
 </figure>
 <div class="scroll">
 <table>
@@ -627,7 +627,8 @@
 <p>有四點令這個發現站得住腳:</p>
 <ul>
   <li><strong>效應很大</strong> —— 十二倍,不是幾個百分點。</li>
-  <li><strong>有內建對照。</strong>N 和 L 在兩個亞型裡幾乎一樣,所以這不是 A 與 B 之間的普遍差異。</li>
+  <li><strong>它是所有基因裡差距最大的。</strong>看齊全部十個基因之後要修正一個說法:CpG 在<em>每一個</em>基因都有亞型差異,而且<strong>兩個方向都有</strong> —— RSV-B 在 NS1、NS2、P、M 較高,RSV-A 在 N、SH、G、F、M2、L 較高。所以「有差異」本身並不特別。NS1 和 NS2 特別的地方在於<strong>差距的大小</strong>:12.3 倍和 7.4 倍,而排第三的 P 只有 2.18 倍。</li>
+  <li><strong>只有它們碰到「地板」。</strong>84.8% 的 RSV-A 基因組在 NS1 裡一個 CpG 都沒有,NS2 是 34.2%。其他基因都沒有這種現象(只有 SH 很輕微)。這是量變成質變的地方 —— 不只是比較少,而是<em>幾乎完全消失</em>。</li>
   <li><strong>GC content 是匹配的</strong> —— NS1 在 A 是 0.305,在 B 是 0.303 —— 所以這不是鹼基組成的副作用,而是 CpG 專有的現象。</li>
   <li><strong>生物學上說得通。</strong>NS1 和 NS2 正是負責關掉干擾素警報的基因,而 CpG 正是宿主用來偵測病毒 RNA 的標記。負責癱瘓防禦的基因,剛好是被最徹底清除掉「防禦所尋找的標記」的基因。</li>
 </ul>
@@ -719,7 +720,7 @@
     <tr><td>Sustained transmission</td><td>持續傳播</td><td>病毒在某個宿主物種中立足並持續流行多年。</td></tr>
     <tr><td>Synonymous</td><td>同義</td><td>不改變所編碼蛋白質的序列變異。</td></tr>
     <tr><td>Syncytium</td><td>合胞體</td><td>受感染細胞融合而成的多核團塊。RSV 的名字由此而來。</td></tr>
-    <tr><td>UpA (TpA)</td><td>UpA 二核苷酸</td><td>一個 U(或 T)後面接一個 A。被視為 CpG 的同伴標記,在本項目屬探索性質。</td></tr>
+    <tr><td>UpA (TpA)</td><td>UpA 二核苷酸</td><td>一個 U(或 T)後面接一個 A。被視為 CpG 的同伴標記。本項目最終沒有採用,因為參照的論文沒有用它。</td></tr>
     <tr><td>ZAP</td><td>鋅指抗病毒蛋白</td><td>Zinc-finger antiviral protein。人類蛋白,結合病毒 RNA 的 CpG 位點並標記它銷毀。</td></tr>
   </tbody>
 </table>

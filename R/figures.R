@@ -28,9 +28,8 @@ theme_set(
           legend.key.size = unit(.9, "lines")))
 
 lab <- c(gc_content = "GC content", gc3 = "GC3", gc12 = "GC12",
-         per1k_CG = "CpG", per1k_GC = "GpC", per1k_GG = "GpG",
-         per1k_CC = "CpC", per1k_TA = "UpA",
-         oe_CG = "CpG", oe_GC = "GpC", oe_GG = "GpG", oe_CC = "CpC", oe_TA = "UpA")
+         per1k_CG = "CpG", per1k_GC = "GpC", per1k_GG = "GpG", per1k_CC = "CpC",
+         oe_CG = "CpG", oe_GC = "GpC", oe_GG = "GpG", oe_CC = "CpC")
 
 ## ---- Figure 1: GC content over time, one panel per lineage --------------------
 ## Mirrors Fig 2a of the paper: points are genomes, the line is the fitted trend.
@@ -43,7 +42,8 @@ d <- merge(d, ann[, .(Subtype, lineage_grp, panel, slope, r2)],
            by = c("Subtype", "lineage_grp"))
 d[, panel := factor(panel, levels = ann[order(Subtype, -n), panel])]
 ann[, panel := factor(panel, levels = levels(d$panel))]
-ann[, lbl := sprintf("slope %+.2f x 10^-4 / yr\nR2 = %.3f", slope * 1e4, r2)]
+ann[, plbl := ifelse(p < 1e-4, "p < 0.0001", sprintf("p = %.4f", p))]
+ann[, lbl := sprintf("slope %+.2f x 10^-4 / yr\nR2 = %.3f\n%s", slope * 1e4, r2, plbl)]
 
 f1 <- ggplot(d, aes(dec_date, gc_content)) +
   geom_point(aes(colour = Subtype), size = .25, alpha = .12) +
@@ -69,7 +69,10 @@ g <- sl[feature %chin% c("gc_content", "gc3", "gc12")]
 g[, site := factor(lab[feature], levels = c("GC content", "GC12", "GC3"))]
 g[, lineage_grp := factor(lineage_grp, levels = ann[order(Subtype, -n), lineage_grp])]
 
-f2 <- ggplot(g, aes(lineage_grp, slope, fill = site)) +
+g[, key := factor(paste0(Subtype, " ", site),
+                  levels = c("A GC content", "A GC12", "A GC3",
+                             "B GC content", "B GC12", "B GC3"))]
+f2 <- ggplot(g, aes(lineage_grp, slope, fill = key)) +
   geom_hline(yintercept = 0, linewidth = .4, colour = "grey20") +
   geom_col(position = position_dodge(.75), width = .68,
            colour = "grey25", linewidth = .22) +
@@ -77,8 +80,9 @@ f2 <- ggplot(g, aes(lineage_grp, slope, fill = site)) +
                 width = .2, linewidth = .32) +
   facet_grid(~ Subtype, scales = "free_x", space = "free_x",
              labeller = labeller(Subtype = function(x) paste0("RSV-", x))) +
-  scale_fill_manual(values = c("GC content" = "grey55", "GC12" = "#80B1D3", "GC3" = "#1F5C8B"),
-                    name = NULL) +
+  scale_fill_manual(values = c("A GC content" = "#BBD4E6", "A GC12" = "#6BA3CD", "A GC3" = "#1F5C8B",
+                               "B GC content" = "#F0BDBA", "B GC12" = "#D96A63", "B GC3" = "#8C1A14"),
+                    name = NULL, guide = guide_legend(nrow = 2, byrow = TRUE)) +
   scale_y_continuous(labels = label_number(scale = 1e4, accuracy = .1)) +
   labs(title = "Where along the codon is GC content changing?",
        subtitle = "GC3 is the third codon site, mostly synonymous; GC12 the first and second, mostly not",
@@ -91,7 +95,7 @@ ggsave("results/figures/fig2_gc3_vs_gc12.png", f2, width = 9, height = 4.6, dpi 
 ## Mirrors Fig 3a and 3d: frequency per 1,000 nt, and the O/E ratio.
 mk <- function(feats, ylab, ttl, sub) {
   x <- sl[feature %chin% feats]
-  x[, dinuc := factor(lab[feature], levels = c("CpG", "GpC", "GpG", "CpC", "UpA"))]
+  x[, dinuc := factor(lab[feature], levels = c("CpG", "GpC", "GpG", "CpC"))]
   x[, lineage_grp := factor(lineage_grp, levels = ann[order(Subtype, -n), lineage_grp])]
   ggplot(x, aes(dinuc, slope, colour = Subtype)) +
     geom_hline(yintercept = 0, linewidth = .4, colour = "grey20") +
@@ -101,22 +105,22 @@ mk <- function(feats, ylab, ttl, sub) {
     scale_colour_manual(values = pal, guide = "none") +
     labs(title = ttl, subtitle = sub, x = NULL, y = ylab)
 }
-f3a <- mk(c("per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC", "per1k_TA"),
+f3a <- mk(c("per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC"),
           "Change per 1,000 nt per year",
           "Dinucleotide frequency: change per year within each lineage",
           "Frequencies per 1,000 nucleotides, the unit used in the paper")
-f3b <- mk(c("oe_CG", "oe_GC", "oe_GG", "oe_CC", "oe_TA"),
+f3b <- mk(c("oe_CG", "oe_GC", "oe_GG", "oe_CC"),
           "Change in O/E per year",
           "Dinucleotide observed/expected ratio: change per year",
           "O/E corrects for base composition, so this is not simply GC content moving")
 f3 <- (f3a / f3b) +
-  plot_annotation(caption = "Error bars are 95% confidence intervals. UpA is exploratory; it is not used in the source paper.")
+  plot_annotation(caption = "Error bars are 95% confidence intervals. These are the four GC dinucleotides used in the source paper.")
 ggsave("results/figures/fig3_dinucleotide_slopes.png", f3, width = 9, height = 10.5, dpi = 300)
 
 ## ---- Figure 4: is the dinucleotide signal just GC content moving? -------------
 ## Mirrors Fig 3b.
 cr <- fread("results/gc_correlation.tsv")
-cr[, dinuc := factor(lab[feature], levels = c("CpG", "GpC", "GpG", "CpC", "UpA"))]
+cr[, dinuc := factor(lab[feature], levels = c("CpG", "GpC", "GpG", "CpC"))]
 cr[, lineage_grp := factor(lineage_grp, levels = ann[order(Subtype, -n), lineage_grp])]
 
 f4 <- ggplot(cr, aes(dinuc, r, fill = Subtype)) +
@@ -126,7 +130,7 @@ f4 <- ggplot(cr, aes(dinuc, r, fill = Subtype)) +
   scale_fill_manual(values = pal, guide = "none") +
   scale_y_continuous(limits = c(-1, 1), breaks = seq(-1, 1, .5)) +
   labs(title = "Correlation of each dinucleotide frequency with GC content",
-       subtitle = "Values near 1 mean the dinucleotide tracks GC content; values near 0 mean it moves independently",
+       subtitle = "Near 1, the dinucleotide carries no information beyond GC content; well below 1, it moves on its own",
        x = NULL, y = "Pearson r",
        caption = "Computed within each lineage across genomes.")
 ggsave("results/figures/fig4_gc_correlation.png", f4, width = 9, height = 6.4, dpi = 300)

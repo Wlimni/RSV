@@ -308,8 +308,7 @@ build("notebooks/02_features.ipynb", [
         "| C then G | CpG | the motif of interest |\n"
         "| G then C | GpC | |\n"
         "| G then G | GpG | |\n"
-        "| C then C | CpC | |\n"
-        "| T then A | UpA | **not in the paper**; added as exploratory |\n\n"
+        "| C then C | CpC | |\n\n"
         "### Why O/E rather than raw counts\n\n"
         "A GC-rich genome contains more CpG by chance alone, so we divide by chance "
         "expectation:\n\n"
@@ -332,7 +331,7 @@ build("notebooks/02_features.ipynb", [
     new_code_cell(
         'demo = "ATGGCGTTAACGCGTAAATTACGATAG"\n'
         'f = composition.all_features(demo, coding=True)\n'
-        'for k in ["gc_content", "gc3", "gc12", "per1k_CG", "oe_CG", "oe_TA"]:\n'
+        'for k in ["gc_content", "gc3", "gc12", "per1k_CG", "oe_CG"]:\n'
         '    print(f"{k:12s} {f[k]:.4f}")'),
     new_markdown_cell(
         "## 2.2  The measurements across all genomes\n\n"
@@ -341,7 +340,7 @@ build("notebooks/02_features.ipynb", [
     new_code_cell(
         'g = pd.read_csv("../data/processed/rsv_gene_features.tsv", sep="\\t")\n'
         'genome = g[g.gene == "GENOME"]\n'
-        'cols = ["gc_content", "gc3", "gc12", "oe_CG", "oe_GC", "oe_GG", "oe_CC", "oe_TA"]\n'
+        'cols = ["gc_content", "gc3", "gc12", "oe_CG", "oe_GC", "oe_GG", "oe_CC"]\n'
         'genome.groupby("Subtype")[cols].mean().round(4)'),
     new_markdown_cell(
         "### Reading that table\n\n"
@@ -357,8 +356,8 @@ build("notebooks/02_features.ipynb", [
         '    ax[0].hist(x.gc_content, bins=70, alpha=.6, color=PAL[s], label=f"RSV-{s}")\n'
         'ax[0].set_xlabel("GC content"); ax[0].set_ylabel("genomes")\n'
         'ax[0].set_title("GC content"); ax[0].legend(frameon=False)\n'
-        'oe = ["oe_CG", "oe_GC", "oe_GG", "oe_CC", "oe_TA"]\n'
-        'names = ["CpG", "GpC", "GpG", "CpC", "UpA"]\n'
+        'oe = ["oe_CG", "oe_GC", "oe_GG", "oe_CC"]\n'
+        'names = ["CpG", "GpC", "GpG", "CpC"]\n'
         'pos = np.arange(len(oe))\n'
         'for i, s in enumerate("AB"):\n'
         '    x = genome[genome.Subtype == s]\n'
@@ -370,8 +369,8 @@ build("notebooks/02_features.ipynb", [
         'ax[1].legend(frameon=False)\n'
         'plt.tight_layout(); plt.show()'),
     new_markdown_cell(
-        "Only **CpG**, and to a lesser extent **UpA**, fall clearly below the dashed line. "
-        "That is the pattern reported across RNA viruses that circulate in humans."),
+        "Only **CpG** falls clearly below the dashed line. That is the pattern reported "
+        "across RNA viruses that circulate in humans."),
 ])
 
 # ------------------------------------------------- 03 the core: time within lineage
@@ -420,8 +419,8 @@ build("notebooks/03_lineage_trends.ipynb", [
         "lineage separately. The slope is the change per year."),
     new_code_cell(
         'FEATS = ["gc_content", "gc3", "gc12",\n'
-        '         "per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC", "per1k_TA",\n'
-        '         "oe_CG", "oe_GC", "oe_GG", "oe_CC", "oe_TA"]\n'
+        '         "per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC",\n'
+        '         "oe_CG", "oe_GC", "oe_GG", "oe_CC"]\n'
         'slopes = lineage.lineage_slopes(gdf, FEATS)\n'
         'slopes[slopes.feature == "gc_content"][\n'
         '    ["Subtype", "lineage_grp", "n", "slope", "ci_lo", "ci_hi", "r2", "significant"]\n'
@@ -492,7 +491,7 @@ build("notebooks/03_lineage_trends.ipynb", [
         "moving on its own."),
     new_code_cell(
         'corr = lineage.gc_vs_dinucleotide_correlation(\n'
-        '    gdf, ["per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC", "per1k_TA"])\n'
+        '    gdf, ["per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC"])\n'
         'corr.groupby("feature").r.agg(["mean", "min", "max"]).round(3)'),
     new_code_cell('show("fig4_gc_correlation.png")'),
     new_markdown_cell(
@@ -579,25 +578,35 @@ build("notebooks/04_genes.ipynb", [
     new_code_cell('show("fig5_gene_composition.png")'),
     new_markdown_cell(
         "## 4.2  The NS1 and NS2 contrast\n\n"
-        "The two interferon antagonist genes directly, with two ordinary genes for "
-        "comparison."),
+        "CpG for every gene, normalised per 1,000 nucleotides so genes of different "
+        "length are comparable, with the subtype fold change."),
     new_code_cell(
-        'sel = per_gene[per_gene.gene.isin(["NS1","NS2","N","L"])]\n'
-        'cmp = (sel.groupby(["gene","Subtype"])\n'
-        '       .apply(lambda s: pd.Series({\n'
-        '           "CpG per gene": (s.freq_CG * s.valid_len).mean(),\n'
-        '           "% genomes with zero CpG": (s.freq_CG == 0).mean() * 100,\n'
-        '           "GC content": s.gc_content.mean()}), include_groups=False)\n'
-        '       .round(3))\n'
-        'cmp'),
+        'rows = []\n'
+        'for gn in GENES:\n'
+        '    s = per_gene[per_gene.gene == gn]\n'
+        '    a = s.loc[s.Subtype == "A", "freq_CG"] * 1000      # CpG per 1,000 nt\n'
+        '    b = s.loc[s.Subtype == "B", "freq_CG"] * 1000\n'
+        '    rows.append({"gene": gn, "A per 1k": a.mean(), "B per 1k": b.mean(),\n'
+        '                 "fold B/A": b.mean() / a.mean(),\n'
+        '                 "A % zero": (a == 0).mean() * 100,\n'
+        '                 "B % zero": (b == 0).mean() * 100})\n'
+        'pd.DataFrame(rows).set_index("gene").round(2)'),
     new_markdown_cell(
-        "**Read the NS1 rows.**\n\n"
-        "- In RSV-A the gene carries almost no CpG at all, and in most RSV-A genomes there is "
-        "none anywhere in it. RSV-B's copy of the same gene carries several.\n"
-        "- GC content is nearly identical between the subtypes, so this is specific to the "
-        "CpG pair rather than a side effect of base composition.\n"
-        "- N and L, shown for comparison, behave the same way in both subtypes, so this is "
-        "not a general difference between A and B.\n\n"
+        "### Reading the table honestly\n\n"
+        "Looking at all ten genes rather than a chosen few changes what can be claimed.\n\n"
+        "- **CpG differs between the subtypes in every gene**, and in *both* directions: "
+        "RSV-B is higher in NS1, NS2, P and M; RSV-A is higher in N, SH, G, F, M2 and L. "
+        "A subtype difference in CpG is the rule here, not the exception.\n"
+        "- **What singles out NS1 and NS2 is the size of the gap** — 12.3x and 7.4x, against "
+        "2.2x for the next largest (P). They are extreme, not unique.\n"
+        "- **Only NS1 and NS2 reach an absolute floor.** 84.8% of RSV-A genomes carry no CpG "
+        "anywhere in NS1 and 34.2% none in NS2. No other gene does this except SH, weakly.\n"
+        "- **GC content is matched** in those genes (NS1: 30.5% in A, 30.3% in B), so the "
+        "difference is specific to the CpG pair rather than to base composition.\n\n"
+        "A note on statistics: with 15,458 against 17,580 genomes, *every* gene returns "
+        "p < 1e-300 on a Mann-Whitney test. The p value cannot discriminate at this sample "
+        "size, so the fold change and Cliff's delta in "
+        "`results/gene_cpg_subtype_test.tsv` are the measures that carry information.\n\n"
         "This is an observation about sequence, not a demonstrated mechanism — testing it "
         "would require laboratory work."),
     new_markdown_cell(
