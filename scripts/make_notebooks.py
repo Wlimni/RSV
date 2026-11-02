@@ -340,13 +340,21 @@ build("notebooks/02_features.ipynb", [
     new_code_cell(
         'g = pd.read_csv("../data/processed/rsv_gene_features.tsv", sep="\\t")\n'
         'genome = g[g.gene == "GENOME"]\n'
-        'cols = ["gc_content", "gc3", "gc12", "oe_CG", "oe_GC", "oe_GG", "oe_CC"]\n'
+        'cols = ["gc_content", "gc3", "gc12", "oe_CG", "oe_GC", "oe_GG", "oe_CC", "oe_TA"]\n'
         'genome.groupby("Subtype")[cols].mean().round(4)'),
     new_markdown_cell(
         "### Reading that table\n\n"
-        "- **CpG O/E sits far below 1 in both subtypes** — RSV carries only a fraction of the "
-        "CpG pairs its base composition would predict. The other GC pairs sit near or above "
-        "1, so the effect is specific to CpG, not a general shortage of G and C.\n"
+        "- **CpG O/E sits far below 1 in both subtypes** (0.236 in A, 0.242 in B) — RSV carries "
+        "only a quarter of the CpG pairs its base composition would predict. GpC, GpG and CpC "
+        "sit near 1, so this is not a general shortage of G and C.\n"
+        "- **UpA is only mildly suppressed** (0.898 / 0.899) — and that is the informative "
+        "contrast. UpA is the one other dinucleotide with experimental evidence of restricting "
+        "RNA virus replication, through a recognition site separate from the CpG one "
+        "(Goonawardane et al. 2021, mSphere). If RSV were under broad pressure against any "
+        "immune-visible motif, UpA should be suppressed too. It is not, so the pressure here "
+        "is CpG-specific — consistent with a ZAP-like pathway rather than general RNA "
+        "degradation. GpC and ApU, by contrast, are the true controls: reversing the letters "
+        "leaves base composition unchanged and abolishes the effect experimentally.\n"
         "- **GC3 is much lower than GC12** — typical, because third positions are free to "
         "drift when changing them does not change the protein."),
     new_code_cell(
@@ -356,8 +364,8 @@ build("notebooks/02_features.ipynb", [
         '    ax[0].hist(x.gc_content, bins=70, alpha=.6, color=PAL[s], label=f"RSV-{s}")\n'
         'ax[0].set_xlabel("GC content"); ax[0].set_ylabel("genomes")\n'
         'ax[0].set_title("GC content"); ax[0].legend(frameon=False)\n'
-        'oe = ["oe_CG", "oe_GC", "oe_GG", "oe_CC"]\n'
-        'names = ["CpG", "GpC", "GpG", "CpC"]\n'
+        'oe = ["oe_CG", "oe_GC", "oe_GG", "oe_CC", "oe_TA"]\n'
+        'names = ["CpG", "GpC", "GpG", "CpC", "UpA"]\n'
         'pos = np.arange(len(oe))\n'
         'for i, s in enumerate("AB"):\n'
         '    x = genome[genome.Subtype == s]\n'
@@ -419,8 +427,8 @@ build("notebooks/03_lineage_trends.ipynb", [
         "lineage separately. The slope is the change per year."),
     new_code_cell(
         'FEATS = ["gc_content", "gc3", "gc12",\n'
-        '         "per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC",\n'
-        '         "oe_CG", "oe_GC", "oe_GG", "oe_CC"]\n'
+        '         "per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC", "per1k_TA",\n'
+        '         "oe_CG", "oe_GC", "oe_GG", "oe_CC", "oe_TA"]\n'
         'slopes = lineage.lineage_slopes(gdf, FEATS)\n'
         'slopes[slopes.feature == "gc_content"][\n'
         '    ["Subtype", "lineage_grp", "n", "slope", "ci_lo", "ci_hi", "r2", "significant"]\n'
@@ -491,7 +499,7 @@ build("notebooks/03_lineage_trends.ipynb", [
         "moving on its own."),
     new_code_cell(
         'corr = lineage.gc_vs_dinucleotide_correlation(\n'
-        '    gdf, ["per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC"])\n'
+        '    gdf, ["per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC", "per1k_TA"])\n'
         'corr.groupby("feature").r.agg(["mean", "min", "max"]).round(3)'),
     new_code_cell('show("fig4_gc_correlation.png")'),
     new_markdown_cell(
@@ -578,19 +586,29 @@ build("notebooks/04_genes.ipynb", [
     new_code_cell('show("fig5_gene_composition.png")'),
     new_markdown_cell(
         "## 4.2  The NS1 and NS2 contrast\n\n"
-        "CpG for every gene, normalised per 1,000 nucleotides so genes of different "
-        "length are comparable, with the subtype fold change."),
+        "CpG for every gene on three scales at once: the O/E ratio (is CpG avoided relative "
+        "to this gene's own C and G content?), CpG as a percentage of dinucleotide positions, "
+        "and GC content as a control.\n\n"
+        "The percentage counts **overlapping** dinucleotide positions, so the denominator is "
+        "`length - 1`, not `length / 2`. A CpG can start at any base: reading `ACGT` as the "
+        "non-overlapping pairs `AC`,`GT` loses the `CG` sitting across the boundary, and with "
+        "it roughly half of all CpGs."),
     new_code_cell(
         'rows = []\n'
         'for gn in GENES:\n'
         '    s = per_gene[per_gene.gene == gn]\n'
-        '    a = s.loc[s.Subtype == "A", "freq_CG"] * 1000      # CpG per 1,000 nt\n'
-        '    b = s.loc[s.Subtype == "B", "freq_CG"] * 1000\n'
-        '    rows.append({"gene": gn, "A per 1k": a.mean(), "B per 1k": b.mean(),\n'
-        '                 "fold B/A": b.mean() / a.mean(),\n'
-        '                 "A % zero": (a == 0).mean() * 100,\n'
-        '                 "B % zero": (b == 0).mean() * 100})\n'
-        'pd.DataFrame(rows).set_index("gene").round(2)'),
+        '    a, b = s[s.Subtype == "A"], s[s.Subtype == "B"]\n'
+        '    rows.append({"gene": gn,\n'
+        '                 "A O/E": a.oe_CG.mean(), "B O/E": b.oe_CG.mean(),\n'
+        '                 "CpG fold B/A": b.oe_CG.mean() / a.oe_CG.mean(),\n'
+        '                 # freq_CG already uses the (length - 1) overlapping basis\n'
+        '                 "A CpG %": a.freq_CG.mean() * 100, "B CpG %": b.freq_CG.mean() * 100,\n'
+        '                 "A GC %": a.gc_content.mean() * 100, "B GC %": b.gc_content.mean() * 100,\n'
+        '                 "GC fold B/A": b.gc_content.mean() / a.gc_content.mean()})\n'
+        'pd.DataFrame(rows).set_index("gene").round(3)'),
+    new_markdown_cell(
+        "The full figure, with Cliff's delta on every bar pair:"),
+    new_code_cell('show("fig6_subtype_contrast.png")'),
     new_markdown_cell(
         "### Reading the table honestly\n\n"
         "Looking at all ten genes rather than a chosen few changes what can be claimed.\n\n"
@@ -601,12 +619,26 @@ build("notebooks/04_genes.ipynb", [
         "2.2x for the next largest (P). They are extreme, not unique.\n"
         "- **Only NS1 and NS2 reach an absolute floor.** 84.8% of RSV-A genomes carry no CpG "
         "anywhere in NS1 and 34.2% none in NS2. No other gene does this except SH, weakly.\n"
-        "- **GC content is matched** in those genes (NS1: 30.5% in A, 30.3% in B), so the "
-        "difference is specific to the CpG pair rather than to base composition.\n\n"
-        "A note on statistics: with 15,458 against 17,580 genomes, *every* gene returns "
-        "p < 1e-300 on a Mann-Whitney test. The p value cannot discriminate at this sample "
-        "size, so the fold change and Cliff's delta in "
-        "`results/gene_cpg_subtype_test.tsv` are the measures that carry information.\n\n"
+        "- **GC content is matched across all ten genes** — the subtype fold change for GC stays "
+        "between 0.94x and 1.05x, while the CpG O/E fold spans 0.55x to 12.7x. Whatever separates "
+        "the subtypes acts on the CpG pair, not on base composition.\n"
+        "- **CpG O/E is far below 1 in every gene of both subtypes** (0.016 to 0.52), so CpG "
+        "is avoided genome-wide; NS1 and NS2 in RSV-A are the extreme of an existing "
+        "gradient, not a separate phenomenon.\n\n"
+        "**A note on statistics.** With 15,458 against 17,580 genomes, *every* gene returns "
+        "p < 1e-300 on a Mann-Whitney test — even N, where the difference is 0.87x. The p "
+        "value answers 'could this be chance?', and at this sample size the answer is always "
+        "no; it says nothing about how large the difference is. Three effect sizes do:\n\n"
+        "| Measure | What it says | Weakness |\n"
+        "|---|---|---|\n"
+        "| Cliff's delta | chance a random A genome exceeds a random B one, minus the "
+        "reverse; -1 to +1, where ±1 means the distributions do not overlap at all | abstract |\n"
+        "| Fold change | ratio of the means — easiest to state | ignores spread entirely |\n"
+        "| Mean difference + 95% CI | the gap in the original units, and how precise it is | "
+        "scale-dependent |\n\n"
+        "Cliff's delta is the one shown on the figure: it is rank-based, so the many "
+        "zero-CpG genomes in NS1 do not distort it. All three, with CIs, are in "
+        "`results/gene_cpg_subtype_test.tsv`.\n\n"
         "This is an observation about sequence, not a demonstrated mechanism — testing it "
         "would require laboratory work."),
     new_markdown_cell(

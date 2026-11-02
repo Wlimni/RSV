@@ -29,7 +29,13 @@ theme_set(
 
 lab <- c(gc_content = "GC content", gc3 = "GC3", gc12 = "GC12",
          per1k_CG = "CpG", per1k_GC = "GpC", per1k_GG = "GpG", per1k_CC = "CpC",
-         oe_CG = "CpG", oe_GC = "GpC", oe_GG = "GpG", oe_CC = "CpC")
+         per1k_TA = "UpA",
+         oe_CG = "CpG", oe_GC = "GpC", oe_GG = "GpG", oe_CC = "CpC", oe_TA = "UpA")
+
+# CpG first, then the paper's three composition-matched comparators, then UpA. UpA sits
+# last because it is the one motif here with its own restriction pathway rather than
+# being a control: see the figure subtitles.
+dinuc_levels <- c("CpG", "GpC", "GpG", "CpC", "UpA")
 
 ## ---- Figure 1: GC content over time, one panel per lineage --------------------
 ## Mirrors Fig 2a of the paper: points are genomes, the line is the fitted trend.
@@ -95,7 +101,7 @@ ggsave("results/figures/fig2_gc3_vs_gc12.png", f2, width = 9, height = 4.6, dpi 
 ## Mirrors Fig 3a and 3d: frequency per 1,000 nt, and the O/E ratio.
 mk <- function(feats, ylab, ttl, sub) {
   x <- sl[feature %chin% feats]
-  x[, dinuc := factor(lab[feature], levels = c("CpG", "GpC", "GpG", "CpC"))]
+  x[, dinuc := factor(lab[feature], levels = dinuc_levels)]
   x[, lineage_grp := factor(lineage_grp, levels = ann[order(Subtype, -n), lineage_grp])]
   ggplot(x, aes(dinuc, slope, colour = Subtype)) +
     geom_hline(yintercept = 0, linewidth = .4, colour = "grey20") +
@@ -105,22 +111,26 @@ mk <- function(feats, ylab, ttl, sub) {
     scale_colour_manual(values = pal, guide = "none") +
     labs(title = ttl, subtitle = sub, x = NULL, y = ylab)
 }
-f3a <- mk(c("per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC"),
+f3a <- mk(c("per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC", "per1k_TA"),
           "Change per 1,000 nt per year",
           "Dinucleotide frequency: change per year within each lineage",
           "Frequencies per 1,000 nucleotides, the unit used in the paper")
-f3b <- mk(c("oe_CG", "oe_GC", "oe_GG", "oe_CC"),
+f3b <- mk(c("oe_CG", "oe_GC", "oe_GG", "oe_CC", "oe_TA"),
           "Change in O/E per year",
           "Dinucleotide observed/expected ratio: change per year",
           "O/E corrects for base composition, so this is not simply GC content moving")
 f3 <- (f3a / f3b) +
-  plot_annotation(caption = "Error bars are 95% confidence intervals. These are the four GC dinucleotides used in the source paper.")
+  plot_annotation(caption = paste(
+    "Error bars are 95% confidence intervals. CpG, GpC, GpG and CpC are the four dinucleotides used in the source paper;",
+    "GpC and ApU are the\ncomposition-matched comparators shown experimentally to have no effect on replication.",
+    "UpA is added here: it is not in the paper, but it is the only\nother motif known to restrict RNA virus replication,",
+    "through a recognition site separate from the CpG one (Goonawardane et al. 2021, mSphere)."))
 ggsave("results/figures/fig3_dinucleotide_slopes.png", f3, width = 9, height = 10.5, dpi = 300)
 
 ## ---- Figure 4: is the dinucleotide signal just GC content moving? -------------
 ## Mirrors Fig 3b.
 cr <- fread("results/gc_correlation.tsv")
-cr[, dinuc := factor(lab[feature], levels = c("CpG", "GpC", "GpG", "CpC"))]
+cr[, dinuc := factor(lab[feature], levels = dinuc_levels)]
 cr[, lineage_grp := factor(lineage_grp, levels = ann[order(Subtype, -n), lineage_grp])]
 
 f4 <- ggplot(cr, aes(dinuc, r, fill = Subtype)) +
@@ -130,7 +140,8 @@ f4 <- ggplot(cr, aes(dinuc, r, fill = Subtype)) +
   scale_fill_manual(values = pal, guide = "none") +
   scale_y_continuous(limits = c(-1, 1), breaks = seq(-1, 1, .5)) +
   labs(title = "Correlation of each dinucleotide frequency with GC content",
-       subtitle = "Near 1, the dinucleotide carries no information beyond GC content; well below 1, it moves on its own",
+       subtitle = paste("Near +/-1 the dinucleotide carries no information beyond GC content; near 0 it moves on its own.",
+                        "UpA is\nnegative by construction, since U and A are the two bases GC content does not count."),
        x = NULL, y = "Pearson r",
        caption = "Computed within each lineage across genomes.")
 ggsave("results/figures/fig4_gc_correlation.png", f4, width = 9, height = 6.4, dpi = 300)

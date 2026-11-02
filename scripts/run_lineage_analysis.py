@@ -12,6 +12,10 @@ Outputs:     results/lineages.tsv          the lineages analysed
              results/sensitivity_level4.tsv  same fits at a finer lineage level
 Notes:       "Genome level" means the ten coding regions concatenated, which is how the
              paper defines genomic GC, GC3 and GC12.
+             UpA (TpA in DNA letters) is carried alongside the paper's four dinucleotides.
+             It is not in the paper, but it is the one other motif with direct experimental
+             evidence of restricting RNA virus replication, through a pathway separate from
+             the CpG one, so it is the most informative comparison available.
              The window runs 2001 to end of May 2026. The 2026 months after May are cut
              because deposition lag makes them a non-random subset, and each lineage is
              trimmed to the years it was actually sampled in.
@@ -23,9 +27,9 @@ import pandas as pd
 from rsv import lineage
 
 GENOME_FEATURES = ["gc_content", "gc3", "gc12",
-                   "per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC",
-                   "oe_CG", "oe_GC", "oe_GG", "oe_CC"]
-DINUC_FREQ = ["per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC"]
+                   "per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC", "per1k_TA",
+                   "oe_CG", "oe_GC", "oe_GG", "oe_CC", "oe_TA"]
+DINUC_FREQ = ["per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC", "per1k_TA"]
 os.makedirs("results", exist_ok=True)
 
 g = pd.read_csv("data/processed/rsv_gene_features.tsv", sep="\t")
