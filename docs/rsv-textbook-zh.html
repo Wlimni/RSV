@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>RSV 基因組學入門</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -14,6 +15,7 @@
     --warn: #8a5a00;
     --warn-bg: #fdf6e8;
     --key-bg: #f2f6fa;
+    --know: #0f6f72; --know-bg: #edf7f6;
     --font-h: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
     --font-b: "Noto Serif TC", "PingFang TC", Georgia, serif;
     --font-m: "IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -23,6 +25,7 @@
       --bg: #0f1115; --surface: #161922; --ink: #e8ebf1; --ink-soft: #9aa3b4;
       --rule: #272c38; --accent: #7ab3dc; --accent-soft: #16202b;
       --warn: #e6bb6c; --warn-bg: #221c10; --key-bg: #171d26;
+      --know: #6fcfd0; --know-bg: #12211f;
       color-scheme: dark;
     }
   }
@@ -30,6 +33,7 @@
     --bg: #0f1115; --surface: #161922; --ink: #e8ebf1; --ink-soft: #9aa3b4;
     --rule: #272c38; --accent: #7ab3dc; --accent-soft: #16202b;
     --warn: #e6bb6c; --warn-bg: #221c10; --key-bg: #171d26;
+    --know: #6fcfd0; --know-bg: #12211f;
     color-scheme: dark;
   }
 
@@ -97,6 +101,12 @@
   .warn .lbl { font-family: var(--font-h); font-size: .8rem; font-weight: 700;
                color: var(--warn); margin: 0 0 .5rem; }
   .warn p:last-child { margin-bottom: 0; }
+
+  .know { background: var(--know-bg); border-left: 3px solid var(--know);
+          padding: 1.1rem 1.25rem; margin: 1.5rem 0; border-radius: 0 3px 3px 0; }
+  .know .lbl { font-family: var(--font-h); font-size: .8rem; font-weight: 700;
+               color: var(--know); margin: 0 0 .5rem; }
+  .know p:last-child { margin-bottom: 0; }
 
   .toc { background: var(--surface); border: 1px solid var(--rule); border-radius: 4px;
          padding: 1.3rem 1.5rem; margin: 2rem 0; }
@@ -233,7 +243,7 @@
     <tr><td>SH</td><td class="n">195</td><td>最小的基因,在膜上形成通道</td></tr>
     <tr><td><strong>G</strong></td><td class="n">969</td><td>把病毒黏附到細胞上。變異最快的基因</td></tr>
     <tr><td><strong>F</strong></td><td class="n">1,725</td><td>融合膜。nirsevimab 與疫苗的靶點</td></tr>
-    <tr><td>M2-1</td><td class="n">585</td><td>調控轉錄。M2 其實有兩個重疊的 ORF(M2-1 和 M2-2,重疊 35 個鹼基)。本項目只分析 M2-1 —— 兩個都算的話,重疊那一段會被數兩次。</td></tr>
+    <tr><td>M2-1</td><td class="n">585</td><td>調控轉錄。M2 其實有兩個重疊的 ORF(M2-1 和 M2-2,重疊 32–35 個鹼基,視亞型而定)。本項目只分析 M2-1 —— 兩個都算的話,重疊那一段會被數兩次。</td></tr>
     <tr><td><strong>L</strong></td><td class="n">6,498</td><td>複製基因組的酵素。遠比其他基因大</td></tr>
   </tbody>
 </table>
@@ -443,7 +453,22 @@
 <div class="part">
   <div class="pn">第四部分</div>
   <h2>這個項目做了什麼</h2>
-  <p>六個步驟、結果,以及對哪些部分真的成功了的誠實交代。</p>
+  <p>六個步驟、結果,以及對哪些部分真的成功了的誠實交代。每一步都比前面的版本講得更詳細,並收錄「值得知道」的細節。</p>
+</div>
+
+<p>下面六個步驟按同一個結構來講:先說<strong>這一步在做什麼、為什麼需要</strong>,再說<strong>怎樣做</strong>,最後用「值得知道」的方框收錄那些容易被忽略、但會影響你怎樣解讀結果的細節。</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>步驟</th><th>做什麼</th><th class="n">關鍵數字</th><th>代碼在哪裡</th></tr></thead>
+  <tbody>
+    <tr><td>1 收集基因組</td><td>從 GISAID 下載、合併八批</td><td class="n">33,040 條</td><td><code>notebooks/01_data.ipynb</code>、<code>scripts/merge_gisaid_batches.py</code></td></tr>
+    <tr><td>2 品質控制</td><td>三項檢查,再裁剪時間窗</td><td class="n">33,038 → 32,442 條</td><td><code>notebooks/01_data.ipynb</code>、<code>src/rsv/io.py</code></td></tr>
+    <tr><td>3 量度成分</td><td>GC、GC3 / GC12、二核苷酸 O/E</td><td class="n">5 對二核苷酸</td><td><code>notebooks/02_features.ipynb</code>、<code>src/rsv/composition.py</code></td></tr>
+    <tr><td>4 切成十個基因</td><td>對齊參考序列,按座標切</td><td class="n">363,418 筆記錄</td><td><code>scripts/build_gene_features.py</code>、<code>src/rsv/genes.py</code></td></tr>
+    <tr><td>5 定義 lineage</td><td>截短標籤、篩選、裁剪</td><td class="n">9 條 lineage</td><td><code>notebooks/03_lineage_trends.ipynb</code>、<code>src/rsv/lineage.py</code></td></tr>
+    <tr><td>6 擬合趨勢</td><td>每條 lineage 之內做迴歸,標準誤分群</td><td class="n">每個指標 9 個斜率</td><td><code>scripts/run_lineage_analysis.py</code></td></tr>
+  </tbody>
+</table>
 </div>
 
 <h3><span class="num">24.</span>研究問題的由來</h3>
@@ -456,9 +481,27 @@
   <p>在每個 RSV lineage 之內,基因組成分如何隨時間改變?RSV-A 和 RSV-B 的規律是否不同?</p>
 </div>
 
+<div class="know">
+  <p class="lbl">值得知道:RSV 是個有意義的測試案例,但有一個結構性的限制</p>
+  <p>論文的核心是把「持續傳播」的 lineage 跟「零星感染」的 lineage 對比。但 GISAID 裡所有 RSV 序列都來自人類,而 RSV 在人類之間已經流行了很久 —— 整份資料只有「持續傳播」這一個類別,沒有零星感染的對照。</p>
+  <p>所以我們<strong>沒辦法</strong>複製論文那個對比。能問的只有一個比較窄的問題:在這個早已適應人類的病毒裡,成分<em>還有沒有在朝同一個方向漂移</em>?這也是為什麼預期結果可能是否定的 —— 而一個誠實報告的否定結果,在這裡本身就有資訊價值(第 32 節)。要真的做「持續對零星」,需要另一個病毒家族裡有零星案例的對照組,那是另一個規模大得多的工作。</p>
+</div>
+
 <h3><span class="num">25.</span>步驟一 —— 收集基因組</h3>
+<p>這一步看似只是「下載檔案」,但它決定了後面所有分析能回答什麼問題,所以值得講清楚。</p>
 <p>RSV 序列從 GISAID 分八批下載,按亞型和日期範圍切開,因為資料庫一次能匯出的數量有限。每一批是一個序列檔,加上最多三個獨立的 metadata 表格,要用 accession number(序號)對應起來。</p>
 <p>合併後得到 <strong>33,040 條基因組</strong>:15,458 條 RSV-A 和 17,582 條 RSV-B,採集於 2001 至 2026 年。有六條序列出現在多過一批裡,已去除重複。</p>
+<p>每條序列帶著四項我們真正用到的資訊:<strong>亞型</strong>(A 或 B)、<strong>lineage</strong>(病毒家族樹上一個有名字的分支,例如 <code>A.D.1.5</code>,第 29 節詳述)、<strong>採集日期</strong>,以及<strong>地區</strong>。序列本身放在 FASTA 檔裡,這四項資訊放在另外的 metadata 表格裡,兩邊用 <span class="en">accession ID(序號)</span>對上。那六條重複的序列,正是因為同一個序號在不同批次出現兩次才被發現的。</p>
+<p>為什麼分八批?因為 GISAID 一次能匯出的數量有限。為什麼只要「完整、高覆蓋度」的基因組?因為本項目要讀每條序列的每一個位置;缺了一大段的序列,後面所有計算都會被牽連。</p>
+<div class="know">
+  <p class="lbl">值得知道:這不是病例的隨機樣本</p>
+  <p>GISAID 裡的序列是「有人決定要定序」的病例。定序做多少、在哪裡做、哪一年做,全部隨研究資金、疫情和各國政策而變。本項目量到過兩個後果:定序的地區在<em>單一 lineage 之內</em>也大幅漂移(A.D 由早期 71% 大洋洲變成晚期 36% 歐洲);而且季節性很強,十二月的基因組數是九月的三至四倍。這就是為什麼第 26 節要處理地區、第 30 節把地區當共變量。</p>
+</div>
+
+<div class="know">
+  <p class="lbl">值得知道:原始序列不能上傳</p>
+  <p>GISAID 的數據不能再分發。所以本項目的 GitHub 倉庫只放程式碼、結果表和圖;<code>data/</code> 整個資料夾都不進版本控制,只有公開的 NCBI 參考序列(<code>data/reference/</code>)例外。要重現分析,必須自己向 GISAID 申請下載。</p>
+</div>
 
 <h3><span class="num">26.</span>步驟二 —— 品質控制</h3>
 <p>不是每條上載的序列都可用。我們只保留通過三項檢查的基因組:</p>
@@ -473,6 +516,12 @@
 </table>
 </div>
 <p><strong>33,040 條之中有 33,038 條通過。</strong>門檻設得寬鬆,因為下載時已經限定為完整、高覆蓋度的基因組。</p>
+<p>三項檢查各自擋住不同的東西。<strong>長度</strong>擋碎片:RSV 基因組約 15,200 個字母,明顯短於這個的序列缺了一大段。<strong>模糊字母</strong>擋品質差的序列:定序讀不清的位置會被記成 <code>N</code>,而計算 GC 或二核苷酸時 N 只能跳過,N 越多算出來的數字越不可靠。<strong>日期</strong>擋沒法放上時間軸的序列 —— 沒有採集日期,整個趨勢分析就用不上它。</p>
+<p>被淘汰的那兩條,說明了門檻為什麼這樣設:</p>
+<ul>
+  <li>一條 RSV-B 有 <strong>2.11%</strong> 模糊字母,超過 1% 的上限。</li>
+  <li>另一條 RSV-B 長 <strong>15,854</strong> 個字母,比參考序列長了 632 個。多出來的是 3′ 端之後的 <strong>583 個非 RSV 序列</strong>,GC 含量 49%,而病毒自己是 34% —— 這是污染。這正是長度檢查要<strong>同時設上限和下限</strong>的原因:如果只設「至少 14,900」,這一條會被留下,它偏高的 GC 會悄悄混進結果。</li>
+</ul>
 <p>之後審視數據時,發現了幾個嚴重到足以改變分析方式的問題:</p>
 <p><strong>2026 年尾段不完整。</strong>下載是在 2026 年 10 月做的,但序列由採集到上載要幾個月。逐月跟 2025 年同月比較,就能把上載延遲和正常季節性分開:到五月為止,2026 年維持在前一年的 78–93%,五月本身是 92%;然後六月跌到 53%、七月 29%、八月只有 4% —— 同一個月份,2025 年有 399 條,2026 年只有 18 條。那些月份是只由「上載得快的實驗室」貢獻的非隨機樣本。<em>決定:分析窗口訂為 2001 年至 2026 年 5 月底。</em>五月是最後一個仍然維持正常強度的月份,所以在那裡切是最自然的。</p>
 <p><strong>更早的數據全部保留。</strong>把稀疏的早年數據丟掉很誘人,但樣本量隨時間不均<strong>並不會</strong>令斜率有偏差 —— 它只是令後期的年份估計得更精確。對某些 lineage 而言,舊數據增加了好幾年的跨度,而如第 20 節所說,跨度越長斜率越精確。B.D.4 這條 lineage 就因此多了接近三年。</p>
@@ -481,14 +530,92 @@
 <p>還有一個問題記錄下來但沒有修正:很強的季節性,十二月的基因組數是九月的三至四倍。</p>
 <p>最終分析集:<strong>32,442 條基因組,9 條 lineage</strong>。</p>
 
+<div class="know">
+  <p class="lbl">值得知道:QC 通過之後,品質還會不會影響結果?</p>
+  <p>另外驗證過幾件事。<strong>模糊字母極少</strong>:每條 lineage 平均只有 0.01–0.07%,而且跟任何成分指標的相關係數都不超過 0.07。<strong>日期是真正到日的精度</strong>,沒有被填補成「一月一日」之類的假值:1 月 1 日有 123 條,佔 0.4%,跟平均每日的 0.27% 相近,每個月各日的分佈也很平均。</p>
+  <p>再把只含「零模糊字母」的 66% 基因組單獨重做 36 次擬合(4 個指標 × 9 條 lineage):34 次方向不變,<strong>另外 2 次方向相反</strong> —— 但那兩次都是樣本最小的 lineage 裡接近零的斜率(A.D.4 的 GC content、B.D 的 GC3)。把門檻放寬到 0.02% 以下(84% 的基因組)時,36 次的方向全部相同。</p>
+  <p>結論:品質不是主要結果的混淆因素,但<strong>接近零的小 lineage 斜率不穩</strong>,不能被過度解讀。</p>
+</div>
+
 <h3><span class="num">27.</span>步驟三 —— 量度基因組成分</h3>
-<p>對每條基因組,我們計算 GC content、五種二核苷酸的頻率、它們的 O/E 比值,以及 GC3 和 GC12。模糊位置直接跳過。</p>
-<p>有一個技術要點:基因組層面的 GC3 是在<strong>十個編碼區接合起來</strong>之上計算的,而不是原始基因組。編碼區以外沒有讀框,「第三個密碼子位置」在那裡根本沒有意義。流感那篇論文基於同樣理由也是這樣做。</p>
+<p>QC 之後,每條基因組要變成一組數字。我們量度四類東西,每一類都有它存在的理由。二核苷酸共五對:論文用的 CpG、GpC、GpG、CpC,再加上 UpA(原因見第 15 和 18 節)。</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>量度</th><th>怎樣算</th><th>為什麼要量</th></tr></thead>
+  <tbody>
+    <tr><td>GC content</td><td>(G 的數量 + C 的數量)÷ 有效字母總數</td><td>最基本的成分指標,流感論文的主角</td></tr>
+    <tr><td>二核苷酸頻率</td><td>該對出現的次數 ÷ 有效的相鄰位置數(長度 − 1)</td><td>看 CpG 這類特定的對有沒有被壓低</td></tr>
+    <tr><td>O/E 比值</td><td>實際頻率 ÷(第一個字母頻率 × 第二個字母頻率)</td><td>扣掉 GC 含量的影響,才看得出是不是「主動迴避」(第 16 節)</td></tr>
+    <tr><td>GC3、GC12</td><td>只數密碼子第三位 / 第一和第二位的 GC</td><td>分辨壓力作用在 RNA 還是蛋白質(第 17 節)</td></tr>
+  </tbody>
+</table>
+</div>
+<p>模糊位置直接跳過:任何碰到 <code>N</code> 的相鄰對都不計入分母。</p>
+<p>GC3 和 GC12 需要知道<strong>讀框</strong>(第 17 節),也就是從哪個字母開始三個三個數。編碼區以外沒有讀框,「第三個密碼子位置」在那裡沒有意義,所以基因組層面的 GC3 / GC12 只用十個編碼區。而且它們是<strong>逐條基因、各自在正確的讀框內</strong>量度,再按各基因貢獻的位點數合併 —— 而不是把十條基因接成一條長序列再數(原因見下面的方框)。</p>
+
+<div class="know">
+  <p class="lbl">值得知道:分母是「長度 − 1」,不是「長度 ÷ 2」</p>
+  <p>算「CpG 佔幾多百分比」時,直覺可能是把序列切成一對一對來數,分母是長度的一半。<strong>那會漏掉大約一半的 CpG。</strong>CpG 可以從任何一個位置開始,不會乖乖對齊。</p>
+  <p>例:<code>ACGT</code> 長度 4,它的相鄰對是 <code>AC</code>、<code>CG</code>、<code>GT</code> —— 共 3 個,就是 4 − 1。若用 ÷2 的數法從頭切成 <code>AC</code>、<code>GT</code>,中間的 <code>CG</code> 就消失了。</p>
+</div>
+
+<div class="know">
+  <p class="lbl">值得知道:這一步曾經有個程式錯誤,而且改變了一個結果</p>
+  <p>最初的版本是把十條基因接成一條長序列,再在這條序列上算 GC3 / GC12。問題是:只要任何一條基因的長度不是 3 的倍數(約 4% 的基因組),它後面所有基因的讀框就整體錯位一格,於是「第三位」數到的其實是別的位置。</p>
+  <p>這個錯位不是隨機雜訊。修正之後,GC3 和 GC12 的斜率最多改變每年 4.7×10⁻⁴,有 3 條 lineage 的 GC3 方向反轉 —— 斜率會變,代表錯位的程度跟採集年份有關(很可能是定序和組裝方法隨年份改變、序列首尾被截短的比例也跟著變,這一點是推測)。舊版據此寫過「GC3 上升、GC12 下降,方向相反」,那個說法已經撤回(第 31 節圖 7)。GC content 和 CpG O/E 完全不受影響,因為它們不依賴讀框。</p>
+  <p>教訓:凡是依賴讀框的量度,必須在每條基因內部各自計算。</p>
+</div>
+
+<div class="know">
+  <p class="lbl">值得知道:為什麼 UpA 在,但不拿它跟 GC 做相關</p>
+  <p>UpA 不在論文的四對之內,但它是除 CpG 外唯一有實驗證據會壓制 RNA 病毒複製的 motif,而且走另一條辨識路徑(第 18 節),所以保留作對比。但 U 和 A 剛好是 GC content <em>不數</em>的兩個字母,UpA 跟 GC 的相關係數按定義必然是負的(約 −0.65),毫無資訊,所以第 31 節的相關分析不包含它。</p>
+</div>
 
 <h3><span class="num">28.</span>步驟四 —— 切分成十個基因</h3>
-<p>每條基因組跟它所屬亞型的參考序列對齊,然後按第 13 節所述切出十個基因。這產生了 <strong>363,418 筆記錄</strong> —— 33,038 條基因組乘以十一,即十個基因加上每條一筆「全編碼區」的記錄。</p>
+<p>前面的數字是「整條基因組」的。但<strong>不同基因的成分差別很大</strong>(第 31 節),所以還要把每條基因組切成十個基因,逐個量度。難處在於:不能直接「從第 99 個字母切到第 518 個字母」。每條基因組都有自己的插入和缺失,同一個基因在不同基因組裡的位置會差幾個甚至幾十個字母。所以做法是兩步:</p>
+<ol>
+  <li><strong>對齊(alignment)</strong>:用 MAFFT 把每條基因組逐條對齊到它所屬亞型的參考序列 —— RSV-A 用 NC_038235.1,RSV-B 用 NC_001781.1,兩條都是 NCBI 公開的標準參考。對齊會弄清楚「這條序列的第 N 個字母,對應參考序列的第幾個字母」。</li>
+  <li><strong>切割</strong>:參考序列的註解(GenBank 檔)記錄了每個基因的起訖座標。透過對齊把座標搬到每條基因組上,切出該基因的字母,再把對齊用的空位(gap)拿掉。長度不足 50 個字母的基因(來自殘缺的基因組)直接略過。</li>
+</ol>
+<p>十個基因按它們在基因組上的次序(3′ 到 5′)是 NS1、NS2、N、P、M、SH、G、F、M2-1、L。長度差別很大:</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>基因</th><th class="n">RSV-A 長度</th><th class="n">RSV-B 長度</th></tr></thead>
+  <tbody>
+    <tr><td>NS1</td><td class="n">420</td><td class="n">420</td></tr>
+    <tr><td>NS2</td><td class="n">375</td><td class="n">375</td></tr>
+    <tr><td>N</td><td class="n">1,176</td><td class="n">1,176</td></tr>
+    <tr><td>P</td><td class="n">726</td><td class="n">726</td></tr>
+    <tr><td>M</td><td class="n">771</td><td class="n">771</td></tr>
+    <tr><td>SH</td><td class="n">195</td><td class="n">198</td></tr>
+    <tr><td>G</td><td class="n">897</td><td class="n">900</td></tr>
+    <tr><td>F</td><td class="n">1,725</td><td class="n">1,725</td></tr>
+    <tr><td>M2-1</td><td class="n">585</td><td class="n">588</td></tr>
+    <tr><td>L</td><td class="n">6,498</td><td class="n">6,501</td></tr>
+  </tbody>
+</table>
+</div>
+<p>這是參考序列的長度(以核苷酸計)。L 是 SH 的三十多倍 —— 所以比較不同基因時,必須按長度標準化(用 O/E 或百分比,而不是原始個數)。整個步驟產生了 <strong>363,418 筆記錄</strong> —— 33,038 條基因組乘以十一,即十個基因加上每條一筆「全編碼區」的記錄。</p>
+
+<div class="know">
+  <p class="lbl">值得知道:對齊時刻意保留插入,是為了 G 基因</p>
+  <p>對齊時沒有強迫每條序列跟參考一樣長。RSV-A 的 ON1 型和 RSV-B 的 BA 型,在 G 基因裡各帶有一段重複的片段(A 型約 72 個、B 型約 60 個字母)。如果把插入丟掉,就等於把這段序列從恰恰是最有特色的那個基因裡拿走。</p>
+</div>
+
+<div class="know">
+  <p class="lbl">值得知道:M2 其實有兩個閱讀框,而且曾經被悄悄取錯</p>
+  <p>參考序列的 M2 基因帶有兩個互相重疊的編碼區:<strong>M2-1</strong>(A 型 585、B 型 588 個字母)和 <strong>M2-2</strong>(273 個字母),重疊 32–35 個字母(視亞型而定)。本項目只分析 M2-1:兩個都算的話,重疊那一段會被數兩次。</p>
+  <p>曾經有個程式錯誤:解析註解檔時,同一個基因名字下有兩個編碼區,程式只悄悄保留第一個,並把它叫作「M2」。數值剛好是對的(第一個就是 M2-1),但名字誤導人。現在程式遇到同名的多個編碼區,會用它們各自的 <code>/product</code> 欄位(「M2-1 protein」)分別命名。</p>
+</div>
+
+<div class="know">
+  <p class="lbl">值得知道:還有一個已知的限制</p>
+  <p>如果一條序列在某個基因的開頭就缺了幾個字母,切出來的那一段不是從密碼子第一位開始,這個基因<em>內部</em>的 GC3 / GC12 就錯位。這只影響那一條基因,不會像舊版接合方式那樣連累後面所有基因。</p>
+  <p>量度過:長度不是 3 的倍數的序列,NS1 約 2.7%、L 約 2.2%、G 約 0.7%,其餘基因都在 0.1% 以下。要完全堵住這一點,需要加一個「讀框完整」的過濾再重建一次(約 25 分鐘)。</p>
+</div>
 
 <h3><span class="num">29.</span>步驟五 —— 定義 lineage</h3>
+<p><span class="en">Lineage(譜系)</span>是病毒家族樹上一個有名字的分支。名字是分層的、用點分隔:<code>A.D.1.5</code> 是 <code>A.D.1</code> 裡面的一個子分支,而 <code>A.D.1</code> 又在 <code>A.D</code> 裡面。層級越多,分支越細。</p>
 <p>這一步需要一個判斷。完整的 GISAID lineage 標籤太細:大部分只涵蓋約六年、幾百條基因組,而如第 20 節所說,那樣算出來的斜率不確定到不能用。</p>
 <p>把標籤截短到三層 —— 即 <code>A.D.1.5</code> 變成 <code>A.D.1</code> —— 就得到比較少但比較大的群組:</p>
 <div class="scroll">
@@ -503,10 +630,50 @@
 </div>
 <p>再要求至少 5 年和 200 條基因組,然後裁剪到各自真正被採樣的年份,最後剩下 <strong>9 條 lineage</strong> —— 六條 RSV-A、三條 RSV-B。跨度由 8.4 年到 14.4 年,而且每一條在頭三年都至少有 31 條基因組,所以沒有任何一條擬合線是建立在一個孤立的早期點之上。</p>
 <p>選三層是一個決定,所以整個分析會在四層再跑一次作為檢驗。</p>
+<div class="know">
+  <p class="lbl">值得知道:為什麼一定要在 lineage「之內」分析</p>
+  <p>整體趨勢可能純粹來自「一個 lineage 取代另一個」,而不是任何一個 lineage 自己在改變 —— 這就是第 23 節講的辛普森悖論。把各 lineage 分開擬合,才能把「取代」排除在趨勢之外。</p>
+</div>
+
+<div class="know">
+  <p class="lbl">值得知道:lineage 的層級是分析者的選擇,所以要檢驗它</p>
+  <p>三層是判斷,不是真理。改成四層(20 條 lineage),CpG O/E 斜率的中位數方向由「略為上升」翻成「下降」(20 條中 15 條為負;三層時 9 條中只有 3 條為負)。方向取決於 lineage 切得多細,代表是切法在驅動結果,而不是生物學。這個檢驗在 <code>notebooks/03_lineage_trends.ipynb</code> 第 3.6 節。</p>
+</div>
 
 <h3><span class="num">30.</span>步驟六 —— 擬合趨勢</h3>
 <p>基於第 23 節的理由,每個特徵都是<strong>在每條 lineage 之內分開</strong>對採集日期做迴歸。日期換算成小數年份,所以 2017 年 7 月 2 日變成約 2017.5 —— 用盡日期的精度而不是只取整年。</p>
 <p>每次擬合都跑兩遍:一次直接跑,一次固定地區。</p>
+<p>迴歸(第 19 節)給每次擬合三個東西:<strong>斜率</strong>(每年的變化量)、它的 <strong>95% 信賴區間</strong>,以及 R²。斜率的單位是「每年」:例如 GC content 的斜率 −1.17×10⁻⁴,代表每年下降 0.0117 個百分點,十年才下降約 0.12 個百分點 —— 非常小。</p>
+
+<h4>第三個設定:標準誤要分群</h4>
+<p>這是整個分析裡最重要的統計決定,也是最晚才發現的。普通迴歸假設每條基因組都是獨立的觀察。但同一個 lineage 裡的基因組來自同一個祖先,一個 clade 大爆發就會貢獻幾百條幾乎一模一樣的序列 —— 同一件演化事件被數了幾百次(<span class="en">pseudoreplication</span>,偽重複)。後果是標準誤被低估,p 值被壓到不合理地小。</p>
+<p>做法是把標準誤按較細的 sub-lineage 分群(比分析用的 lineage 再細兩層);如果一條 lineage 底下少於 3 個 sub-lineage,就改按採集年份分群。分群後標準誤中位數脹大約 6.6 倍。顯著的 lineage 數目因此大幅下降:</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>指標</th><th class="n">普通迴歸顯著</th><th class="n">分群後顯著</th></tr></thead>
+  <tbody>
+    <tr><td>GC content</td><td class="n">7 / 9</td><td class="n">4 / 9</td></tr>
+    <tr><td>GC3</td><td class="n">8 / 9</td><td class="n">3 / 9</td></tr>
+    <tr><td>GC12</td><td class="n">8 / 9</td><td class="n">1 / 9</td></tr>
+    <tr><td>CpG O/E</td><td class="n">6 / 9</td><td class="n">1 / 9</td></tr>
+  </tbody>
+</table>
+</div>
+<p>這強化了否定結果:連普通迴歸看起來顯著的那些趨勢,大部分在正確處理之後都站不住。</p>
+
+<h4>第二種比較:RSV-A 對 RSV-B</h4>
+<p>亞型之間的比較要用兩個層次,它們回答不同的問題。<strong>每條基因組的層次</strong>是描述:這個群體裡實際看到的差距有多大(例如 NS1 的 CpG O/E,B 是 A 的 12.7 倍)。<strong>每條 lineage 的層次</strong>才是推論:這個差距是不是亞型本身的性質,而不只是某個成功的 clade 造成的。</p>
+<p>RSV-A 和 RSV-B 本身就是兩個 clade,所以比較它們接近「比較兩件演化事件」,而不是「比較 15,458 對 17,580 個樣本」。我們因此問:<strong>這個差異在每一個獨立 lineage 裡都成立嗎?</strong>這裡取 6 條 RSV-A 對 4 條 RSV-B 的 lineage 平均值。十個基因裡,NS1、NS2、P、M、SH、M2-1 這六個兩邊完全不重疊;N、G、F、L 重疊。順帶一提:6 對 4 的 Mann-Whitney 檢驗,即使兩邊完全分開,p 值也只能低到 0.0095,所以這裡報<strong>範圍</strong>而不報 p 值。</p>
+
+<div class="know">
+  <p class="lbl">值得知道:A.D.4 的 p 值要特別小心</p>
+  <p>A.D.4 只有 368 條基因組,底下 sub-lineage 不足 3 個,所以改按年份分群,只有約 10 個群。結果它的 GC content p 值(0.0014)反而比普通迴歸(0.079)<em>更</em>顯著。群組只有十個時,擬合實質上是對年均值做迴歸,估計很不穩。這是九條 lineage 裡唯一一個需要這樣提醒的 p 值。</p>
+</div>
+
+<div class="know">
+  <p class="lbl">值得知道:第一次做分群時就做錯了</p>
+  <p>第一次實作用了常態分佈作為參考分佈:A.D.2 只有 4 個群,卻得到 p = 0.0002。群組這麼少,必須用 <span class="en">t</span> 分佈(自由度 = 群數 − 1),改用之後同一條 lineage 的 p = 0.033。這個陷阱很常見:分群標準誤的理論是為「群數很多」寫的,群數少時要手動修正。</p>
+</div>
 
 <h3><span class="num">31.</span>結果</h3>
 <h4>各 lineage 之內 GC content 隨時間的變化</h4>

@@ -314,8 +314,8 @@ figureSlide({
     "GC content varies by gene but is nearly the same in RSV-A and RSV-B.",
     "RSV-A CpG O/E is 0.016 in NS1 and 0.072 in NS2, against 0.16 to 0.41 in every other gene.",
   ], "WHY IT MATTERS", "NS1 and NS2 are the genes that switch off the interferon alarm."),
-  notes: "M2 is M2-1 only. The reference annotates two overlapping reading frames (M2-1 and M2-2, overlapping by 35 " +
-    "nt), and counting both would count that stretch twice.\n\n" +
+  notes: "M2 is M2-1 only. The reference annotates two overlapping reading frames (M2-1 and M2-2, overlapping by 32 to 35 " +
+    "nt depending on subtype), and counting both would count that stretch twice.\n\n" +
     "The G gene is the most GC-rich (43% in RSV-A, 40% in RSV-B) and SH is among the lowest.\n\n" +
     "Our search of PubMed and the web found no published comparison of CpG between RSV-A and RSV-B, and no ZAP study " +
     "in RSV or any pneumovirus. Engineered work exists (Liang 2017, Le Nouen 2020, Meng 2014) but not this observation.",

@@ -39,3 +39,4 @@ venv/
 
 # Word/Office lock files created when a document is open
 ~$*
+.playwright-mcp/

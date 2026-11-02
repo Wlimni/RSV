@@ -588,7 +588,7 @@ build("notebooks/04_genes.ipynb", [
         "RSV's ten genes, in order along the genome:\n\n"
         "`NS1 · NS2 · N · P · M · SH · G · F · M2-1 · L`\n\n"
         "M2 carries two overlapping ORFs; only **M2-1** is analysed, because M2-2 shares "
-        "35 nucleotides with it and counting both would double-count that stretch.\n\n"
+        "32-35 nucleotides with it (by subtype) and counting both would double-count that stretch.\n\n"
         "Four are worth knowing:\n\n"
         "| Gene | Role |\n"
         "|---|---|\n"

@@ -26,7 +26,7 @@ args = ap.parse_args()
 
 REF = {"A": ("data/reference/NC_038235.1.fasta", "data/reference/NC_038235.1.gb"),
        "B": ("data/reference/NC_001781.1.fasta", "data/reference/NC_001781.1.gb")}
-# M2 carries two overlapping ORFs. Only M2-1 is analysed: M2-2 overlaps it by 35 nt,
+# M2 carries two overlapping ORFs. Only M2-1 is analysed: M2-2 overlaps it by 32-35 nt,
 # so including both would count that stretch twice in the concatenated genome.
 GENE_ORDER = ["NS1", "NS2", "N", "P", "M", "SH", "G", "F", "M2-1", "L"]
 

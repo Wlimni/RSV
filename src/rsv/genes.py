@@ -17,7 +17,7 @@ def read_cds(gb_path):
     Parse CDS features into {name: (start, end)}, 1-based inclusive, in file order.
 
     A gene can carry more than one CDS. RSV's M2 is the case that matters: it holds
-    M2-1 (ORF 1) and M2-2 (ORF 2), which overlap by 35 nt. Keying on /gene alone would
+    M2-1 (ORF 1) and M2-2 (ORF 2), which overlap by 32-35 nt (by subtype). Keying on /gene alone would
     silently keep whichever came first and label it "M2", so where a /gene name is used
     by several CDS, each is named from its /product instead ("M2-1 protein" -> "M2-1").
 
