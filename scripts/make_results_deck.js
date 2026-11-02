@@ -345,7 +345,7 @@ figureSlide({
     slide.addText([
       label("HOW TO READ IT"),
       para("Top: CpG O/E, bars are genome means and whiskers span the lineage means. Bottom: GC content, the control.", { paraSpaceAfter: 8 }),
-      para("6 of 10 genes separate across lineages (NS1, NS2, P, M, SH, M2-1); N, G, F and L are marked overlap.", { breakLine: false, paraSpaceAfter: 0 }),
+      para("6 of 10 genes separate across lineages (NS1, NS2, P, M, SH, M2-1); the whiskers of N, G, F and L overlap.", { breakLine: false, paraSpaceAfter: 0 }),
     ], { x: x0 + 0.25, y: BOX.y + 3.4, w: pw - 0.5, h: 1.7, valign: "top", margin: 0, isTextBox: true,
       objectName: "how to read" });
   },

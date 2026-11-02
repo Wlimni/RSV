@@ -142,11 +142,12 @@ for ax, (col, short, ylab, pct_col, log) in zip(axes, METRICS):
             ax.text(xi, y * 3.4 if log else y + .045, f"{r.fold_B_over_A:.2f}x",
                     ha="center", fontsize=8.2, weight="bold", color="black")
 
-def overlay_lineages(ax, x, w, fs=7.4, ms=11, tag="lineage ranges\noverlap"):
+def overlay_lineages(ax, x, w):
     """
     Overlay the span of the independent lineage means on an O/E panel, as a whisker from the
-    lowest to the highest lineage. Where the two subtypes' whiskers do not overlap, the difference holds across every lineage; where they do, the gap is inside
-    ordinary lineage-to-lineage variation and the bar difference means little.
+    lowest to the highest lineage. Where the two subtypes' whiskers do not overlap, the
+    difference holds across every lineage; where they do, the gap is inside ordinary
+    lineage-to-lineage variation and the bar difference means little.
     """
     for xi, gn in zip(x, GENES):
         for i, sb in enumerate("AB"):
@@ -156,9 +157,6 @@ def overlay_lineages(ax, x, w, fs=7.4, ms=11, tag="lineage ranges\noverlap"):
             xc = xi + (i - .5) * w
             ax.plot([xc, xc], [v.min(), v.max()], color="0.15", lw=1.0, zorder=3)
             ax.hlines([v.min(), v.max()], xc - .06, xc + .06, color="0.15", lw=1.0, zorder=3)
-        if not sep[gn]:      # mark the genes whose lineage ranges overlap
-            ax.text(xi, .69, tag, ha="center", fontsize=fs,
-                    color="0.25", style="italic", linespacing=1.15)
 
 
 overlay_lineages(axes[0], x, w)
@@ -207,7 +205,7 @@ oe = t[t.metric == "CpG O/E"].set_index("gene").loc[GENES]
 for i, sb in enumerate("AB"):
     axs[0].bar(x + (i - .5) * w, oe[f"{sb}_mean"], w, color=PAL[sb], label=f"RSV-{sb}",
                edgecolor="0.25", linewidth=.4)
-overlay_lineages(axs[0], x, w, fs=9.5, ms=16, tag="overlap")
+overlay_lineages(axs[0], x, w)
 for xi, gn in zip(x, GENES):
     top = max(oe.loc[gn, ["A_mean", "B_mean"]].max(), lin[lin.gene == gn].oe.max())
     axs[0].text(xi, top + .045, f"{oe.loc[gn, 'fold_B_over_A']:.2f}x", ha="center", fontsize=10,
