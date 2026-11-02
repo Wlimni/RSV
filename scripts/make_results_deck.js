@@ -56,8 +56,6 @@ pres.defineSlideMaster({
     { placeholder: { options: { name: "title", type: "title", x: 0.6, y: 0.4, w: 12.13, h: 1.05,
         fontFace: "Cambria", fontSize: 24, bold: true, color: C.text1, align: "left",
         valign: "top", margin: 0 }, text: "" } },
-    { text: { text: "RSV composition  ·  results update", options: { x: 0.6, y: 7.0, w: 5, h: 0.3,
-        fontSize: 10, color: C.accent5, margin: 0 } } },
   ],
   slideNumber: { x: 12.18, y: 7.0, w: 0.55, h: 0.3, fontSize: 10, color: C.accent5, align: "right" },
 });
