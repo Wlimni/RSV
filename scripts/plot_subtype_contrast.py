@@ -122,8 +122,7 @@ for ax, (col, short, ylab, pct_col, log) in zip(axes, METRICS):
         for xi, gn in zip(x, GENES):
             r, y = sub.loc[gn], hi[gn]
             ax.text(xi, y * 3.4 if log else y + .045, f"{r.fold_B_over_A:.2f}x",
-                    ha="center", fontsize=8.2, weight="bold",
-                    color=PAL["B"] if r.fold_B_over_A > 1 else PAL["A"])
+                    ha="center", fontsize=8.2, weight="bold", color="black")
 
 # O/E has an absolute reference: 1.0 means "as expected from this gene's own base content"
 axes[0].axhline(1, ls="--", lw=.9, color="0.35")
@@ -136,7 +135,7 @@ axes[2].set_xlabel("Gene (genome order, 3' to 5')")
 fig.suptitle("CpG differs between the subtypes in every gene, and NS1/NS2 are the extreme case",
              fontsize=13, weight="bold", x=.008, y=.992, ha="left")
 fig.text(.008, .006,
-         "Fold change = RSV-B mean / RSV-A mean; red where B is higher, blue where A is higher. "
+         "Fold change = RSV-B mean / RSV-A mean, in black above each gene; above 1 means RSV-B is higher. "
          "Shown in place of p, which is < 1e-300 for every gene at n = 15,458 vs 17,580.\n"
          "Counts are on a log axis because L is thirty times the length of SH. The percentage on each bar is that "
          "count as a share of the gene: CpG over overlapping dinucleotide\npositions (denominator length - 1), GC over bases. "
