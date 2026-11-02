@@ -29,7 +29,9 @@ from rsv import lineage
 GENOME_FEATURES = ["gc_content", "gc3", "gc12",
                    "per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC", "per1k_TA",
                    "oe_CG", "oe_GC", "oe_GG", "oe_CC", "oe_TA"]
-DINUC_FREQ = ["per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC", "per1k_TA"]
+# UpA is deliberately absent here: U and A are exactly the bases GC content does not
+# count, so its correlation with GC is negative by definition and carries no information.
+DINUC_FREQ = ["per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC"]
 os.makedirs("results", exist_ok=True)
 
 g = pd.read_csv("data/processed/rsv_gene_features.tsv", sep="\t")

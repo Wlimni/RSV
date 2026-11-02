@@ -499,7 +499,7 @@ build("notebooks/03_lineage_trends.ipynb", [
         "moving on its own."),
     new_code_cell(
         'corr = lineage.gc_vs_dinucleotide_correlation(\n'
-        '    gdf, ["per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC", "per1k_TA"])\n'
+        '    gdf, ["per1k_CG", "per1k_GC", "per1k_GG", "per1k_CC"])\n'
         'corr.groupby("feature").r.agg(["mean", "min", "max"]).round(3)'),
     new_code_cell('show("fig4_gc_correlation.png")'),
     new_markdown_cell(
@@ -587,8 +587,8 @@ build("notebooks/04_genes.ipynb", [
     new_markdown_cell(
         "## 4.2  The NS1 and NS2 contrast\n\n"
         "CpG for every gene on three scales at once: the O/E ratio (is CpG avoided relative "
-        "to this gene's own C and G content?), CpG as a percentage of dinucleotide positions, "
-        "and GC content as a control.\n\n"
+        "to this gene's own C and G content?), the CpG count, and the GC count as a control. "
+        "Counts say how much is there; the percentage beside each says how dense it is.\n\n"
         "The percentage counts **overlapping** dinucleotide positions, so the denominator is "
         "`length - 1`, not `length / 2`. A CpG can start at any base: reading `ACGT` as the "
         "non-overlapping pairs `AC`,`GT` loses the `CG` sitting across the boundary, and with "
@@ -602,12 +602,17 @@ build("notebooks/04_genes.ipynb", [
         '                 "A O/E": a.oe_CG.mean(), "B O/E": b.oe_CG.mean(),\n'
         '                 "CpG fold B/A": b.oe_CG.mean() / a.oe_CG.mean(),\n'
         '                 # freq_CG already uses the (length - 1) overlapping basis\n'
+        '                 "A CpG n": (a.freq_CG * (a.valid_len - 1)).mean(),\n'
+        '                 "B CpG n": (b.freq_CG * (b.valid_len - 1)).mean(),\n'
         '                 "A CpG %": a.freq_CG.mean() * 100, "B CpG %": b.freq_CG.mean() * 100,\n'
+        '                 "A GC n": (a.gc_content * a.valid_len).mean(),\n'
+        '                 "B GC n": (b.gc_content * b.valid_len).mean(),\n'
         '                 "A GC %": a.gc_content.mean() * 100, "B GC %": b.gc_content.mean() * 100,\n'
         '                 "GC fold B/A": b.gc_content.mean() / a.gc_content.mean()})\n'
         'pd.DataFrame(rows).set_index("gene").round(3)'),
     new_markdown_cell(
-        "The full figure, with Cliff's delta on every bar pair:"),
+        "The full figure. Counts are on a log axis, since L is thirty times the length of "
+        "SH; the percentage sits on each bar and the fold change above each gene."),
     new_code_cell('show("fig6_subtype_contrast.png")'),
     new_markdown_cell(
         "### Reading the table honestly\n\n"
@@ -636,9 +641,11 @@ build("notebooks/04_genes.ipynb", [
         "| Fold change | ratio of the means — easiest to state | ignores spread entirely |\n"
         "| Mean difference + 95% CI | the gap in the original units, and how precise it is | "
         "scale-dependent |\n\n"
-        "Cliff's delta is the one shown on the figure: it is rank-based, so the many "
-        "zero-CpG genomes in NS1 do not distort it. All three, with CIs, are in "
-        "`results/gene_cpg_subtype_test.tsv`.\n\n"
+        "The figure annotates the fold change, as the most direct statement of the gap. "
+        "Cliff's delta is the better safeguard — being rank-based, the many zero-CpG NS1 "
+        "genomes cannot distort it, and it separates '0.87x with the groups overlapping' "
+        "from '0.87x with no overlap at all', which a fold change cannot. All three, with "
+        "CIs, are in `results/gene_cpg_subtype_test.tsv`.\n\n"
         "This is an observation about sequence, not a demonstrated mechanism — testing it "
         "would require laboratory work."),
     new_markdown_cell(

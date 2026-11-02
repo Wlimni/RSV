@@ -130,7 +130,7 @@ ggsave("results/figures/fig3_dinucleotide_slopes.png", f3, width = 9, height = 1
 ## ---- Figure 4: is the dinucleotide signal just GC content moving? -------------
 ## Mirrors Fig 3b.
 cr <- fread("results/gc_correlation.tsv")
-cr[, dinuc := factor(lab[feature], levels = dinuc_levels)]
+cr[, dinuc := factor(lab[feature], levels = head(dinuc_levels, 4))]  # no UpA here, see run_lineage_analysis.py
 cr[, lineage_grp := factor(lineage_grp, levels = ann[order(Subtype, -n), lineage_grp])]
 
 f4 <- ggplot(cr, aes(dinuc, r, fill = Subtype)) +
@@ -140,8 +140,7 @@ f4 <- ggplot(cr, aes(dinuc, r, fill = Subtype)) +
   scale_fill_manual(values = pal, guide = "none") +
   scale_y_continuous(limits = c(-1, 1), breaks = seq(-1, 1, .5)) +
   labs(title = "Correlation of each dinucleotide frequency with GC content",
-       subtitle = paste("Near +/-1 the dinucleotide carries no information beyond GC content; near 0 it moves on its own.",
-                        "UpA is\nnegative by construction, since U and A are the two bases GC content does not count."),
+       subtitle = "Near 1, the dinucleotide carries no information beyond GC content; well below 1, it moves on its own",
        x = NULL, y = "Pearson r",
        caption = "Computed within each lineage across genomes.")
 ggsave("results/figures/fig4_gc_correlation.png", f4, width = 9, height = 6.4, dpi = 300)
