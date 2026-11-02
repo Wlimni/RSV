@@ -142,22 +142,28 @@ for ax, (col, short, ylab, pct_col, log) in zip(axes, METRICS):
             ax.text(xi, y * 3.4 if log else y + .045, f"{r.fold_B_over_A:.2f}x",
                     ha="center", fontsize=8.2, weight="bold", color="black")
 
-# Overlay the independent lineage means on the O/E panel. Where the two subtypes' points
-# do not overlap, the difference holds across every lineage; where they do, the gap is
-# inside ordinary lineage-to-lineage variation and the bar difference means little.
-rng = np.random.default_rng(0)
-for xi, gn in zip(x, GENES):
-    for i, sb in enumerate("AB"):
-        v = lin[(lin.gene == gn) & (lin.Subtype == sb)].oe.to_numpy()
-        if not len(v):
-            continue
-        xc = xi + (i - .5) * w
-        axes[0].plot([xc, xc], [v.min(), v.max()], color="0.15", lw=.8, zorder=3)
-        axes[0].scatter(xc + rng.uniform(-.07, .07, len(v)), v, s=11, zorder=4,
-                        facecolor="white", edgecolor="0.15", linewidth=.7)
-    if not sep[gn]:          # mark the genes whose lineage ranges overlap
-        axes[0].text(xi, .69, "lineage ranges\noverlap", ha="center", fontsize=7.4,
-                     color="0.25", style="italic", linespacing=1.15)
+def overlay_lineages(ax, x, w, fs=7.4, ms=11, tag="lineage ranges\noverlap"):
+    """
+    Overlay the independent lineage means on an O/E panel. Where the two subtypes' points do
+    not overlap, the difference holds across every lineage; where they do, the gap is inside
+    ordinary lineage-to-lineage variation and the bar difference means little.
+    """
+    rng = np.random.default_rng(0)
+    for xi, gn in zip(x, GENES):
+        for i, sb in enumerate("AB"):
+            v = lin[(lin.gene == gn) & (lin.Subtype == sb)].oe.to_numpy()
+            if not len(v):
+                continue
+            xc = xi + (i - .5) * w
+            ax.plot([xc, xc], [v.min(), v.max()], color="0.15", lw=.8, zorder=3)
+            ax.scatter(xc + rng.uniform(-.07, .07, len(v)), v, s=ms, zorder=4,
+                       facecolor="white", edgecolor="0.15", linewidth=.7)
+        if not sep[gn]:      # mark the genes whose lineage ranges overlap
+            ax.text(xi, .69, tag, ha="center", fontsize=fs,
+                    color="0.25", style="italic", linespacing=1.15)
+
+
+overlay_lineages(axes[0], x, w)
 
 # O/E has an absolute reference: 1.0 means "as expected from this gene's own base content"
 axes[0].axhline(1, ls="--", lw=.9, color="0.35")
@@ -193,3 +199,42 @@ for short in ["CpG O/E", "CpG count", "GC count"]:
     print(f"\n--- {short} ---")
     print(t[t.metric == short][["gene", "A_mean", "B_mean", "A_pct", "B_pct",
                                 "fold_B_over_A", "cliffs_delta"]].round(3).to_string(index=False))
+
+
+# ---- slide version -----------------------------------------------------------------------
+# The full figure is too dense to read at slide size. A slide needs the two panels the headline
+# rests on: CpG O/E with the lineage means, and GC content as the control, at a larger type size.
+fs_, axs = plt.subplots(2, 1, figsize=(8.4, 6.4), sharex=True, gridspec_kw={"height_ratios": [1.45, 1]})
+plt.rcParams.update({"font.size": 11})
+oe = t[t.metric == "CpG O/E"].set_index("gene").loc[GENES]
+for i, sb in enumerate("AB"):
+    axs[0].bar(x + (i - .5) * w, oe[f"{sb}_mean"], w, color=PAL[sb], label=f"RSV-{sb}",
+               edgecolor="0.25", linewidth=.4)
+overlay_lineages(axs[0], x, w, fs=9.5, ms=16, tag="overlap")
+for xi, gn in zip(x, GENES):
+    top = max(oe.loc[gn, ["A_mean", "B_mean"]].max(), lin[lin.gene == gn].oe.max())
+    axs[0].text(xi, top + .045, f"{oe.loc[gn, 'fold_B_over_A']:.2f}x", ha="center", fontsize=10,
+                weight="bold")
+axs[0].axhline(1, ls="--", lw=.9, color="0.35")
+axs[0].text(-.45, 1.015, "1.0 = CpG as expected from this gene's C and G content", fontsize=9.5, color="0.35")
+axs[0].scatter([], [], s=16, facecolor="white", edgecolor="0.15", linewidth=.7, label="lineage mean")
+axs[0].legend(frameon=False, loc="upper right", ncol=2, bbox_to_anchor=(1, .93), fontsize=10)
+axs[0].set_ylim(0, 1.1)
+axs[0].set_ylabel("CpG observed / expected")
+axs[0].set_title("CpG O/E", fontsize=12.5, weight="bold", loc="left")
+
+gcp = g.groupby(["gene", "Subtype"]).pct_GC_base.mean().unstack().loc[GENES]
+for i, sb in enumerate("AB"):
+    axs[1].bar(x + (i - .5) * w, gcp[sb], w, color=PAL[sb], edgecolor="0.25", linewidth=.4)
+    for xi, gn in zip(x, GENES):
+        axs[1].text(xi + (i - .5) * w, gcp.loc[gn, sb] + .8, f"{gcp.loc[gn, sb]:.1f}", ha="center",
+                    fontsize=8.5, color=PAL[sb], rotation=90, va="bottom")
+axs[1].set_ylim(0, 58)
+axs[1].set_ylabel("GC content (%)")
+axs[1].set_title("GC content: the control", fontsize=12.5, weight="bold", loc="left")
+axs[1].set_xticks(x)
+axs[1].set_xticklabels(GENES)
+axs[1].set_xlabel("Gene (genome order, 3' to 5')")
+fs_.tight_layout()
+fs_.savefig("results/figures/fig6_slide.png", dpi=200)
+print("wrote results/figures/fig6_slide.png")

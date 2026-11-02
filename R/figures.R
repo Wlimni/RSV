@@ -127,11 +127,15 @@ f3b <- mk(c("oe_CG", "oe_GC", "oe_GG", "oe_CC", "oe_TA"),
           "O/E corrects for base composition, so this is not simply GC content moving")
 f3 <- (f3a / f3b) +
   plot_annotation(caption = paste(
-    "Error bars are 95% confidence intervals. CpG, GpC, GpG and CpC are the four dinucleotides used in the source paper;",
+    "Error bars are cluster-robust 95% confidence intervals. CpG, GpC, GpG and CpC are the four dinucleotides used in the source paper;",
     "GpC and ApU are the\ncomposition-matched comparators shown experimentally to have no effect on replication.",
     "UpA is added here: it is not in the paper, but it is the only\nother motif known to restrict RNA virus replication,",
     "through a recognition site separate from the CpG one (Goonawardane et al. 2021, mSphere)."))
 ggsave("results/figures/fig3_dinucleotide_slopes.png", f3, width = 9, height = 10.5, dpi = 300)
+# The O/E half on its own, for slides: the full figure is too tall for a 16:9 frame and the
+# frequency half repeats the same message.
+f3_oe <- f3b + labs(caption = "Error bars are cluster-robust 95% confidence intervals. UpA is not in the source paper.")
+ggsave("results/figures/fig3_oe_only.png", f3_oe, width = 10.5, height = 5.8, dpi = 300)
 
 ## ---- Figure 4: is the dinucleotide signal just GC content moving? -------------
 ## Mirrors Fig 3b.
