@@ -9,24 +9,60 @@ Notes:       Alignment keeps insertions (no --keeplength), because RSV-A ON1 and
              bias exactly the gene we care most about.
 """
 import os, re, subprocess, tempfile
-from collections import OrderedDict
+from collections import Counter, OrderedDict
 
 
 def read_cds(gb_path):
-    """Parse gene name -> (start, end) 1-based inclusive CDS coordinates from a GenBank file."""
-    genes = OrderedDict()
-    cur = None
+    """
+    Parse CDS features into {name: (start, end)}, 1-based inclusive, in file order.
+
+    A gene can carry more than one CDS. RSV's M2 is the case that matters: it holds
+    M2-1 (ORF 1) and M2-2 (ORF 2), which overlap by 35 nt. Keying on /gene alone would
+    silently keep whichever came first and label it "M2", so where a /gene name is used
+    by several CDS, each is named from its /product instead ("M2-1 protein" -> "M2-1").
+
+    A join(...) location is reduced to its outermost coordinates. RSV CDS are contiguous,
+    so this is exact here; for a spliced CDS it would span the intron, and the caller
+    would need a real feature parser.
+    """
+    recs, loc, gene, product = [], None, None, None
+
+    def flush():
+        if loc is not None:
+            recs.append({"loc": loc, "gene": gene, "product": product})
+
     for line in open(gb_path):
-        m = re.match(r"^     CDS\s+(?:join\()?(<?\d+)\.\.(>?\d+)", line)
+        m = re.match(r"^     CDS\s+(.*)$", line)
         if m:
-            cur = (int(m.group(1).lstrip("<")), int(m.group(2).lstrip(">")))
+            flush()
+            nums = [int(x) for x in re.findall(r"\d+", m.group(1))]
+            loc = (min(nums), max(nums)) if nums else None
+            gene = product = None
             continue
-        if cur:
+        if loc is not None:
+            if re.match(r"^     \S", line):      # next feature began
+                flush()
+                loc = gene = product = None
+                continue
             g = re.search(r'/gene="([^"]+)"', line)
             if g:
-                genes.setdefault(g.group(1), cur)
-                cur = None
-    return genes
+                gene = g.group(1)
+            q = re.search(r'/product="([^"]+)"', line)
+            if q:
+                product = q.group(1)
+    flush()
+
+    counts = Counter(r["gene"] for r in recs if r["gene"])
+    out = OrderedDict()
+    for r in recs:
+        if r["gene"] is None or r["loc"] is None:
+            continue
+        name = r["gene"]
+        if counts[name] > 1 and r["product"]:
+            # "M2-1 protein" -> "M2-1"; falls back to the gene name if the product is bare
+            name = r["product"].split()[0] or name
+        out.setdefault(name, r["loc"])
+    return out
 
 
 def read_fasta(path):

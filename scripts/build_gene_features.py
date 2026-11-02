@@ -7,6 +7,9 @@ Inputs:      data/full/RSV_full.fasta, data/processed/rsv_features.tsv (for meta
              data/reference/NC_038235.1.{gb,fasta} (A), data/reference/NC_001781.1.{gb,fasta} (B)
 Outputs:     data/processed/rsv_gene_features.tsv (one row per sequence per gene, plus a
              GENOME row per sequence holding the ten coding regions concatenated)
+             Genome GC3/GC12 pool each gene's own in-frame site counts rather than being
+             measured on the concatenation, which would be out of frame downstream of any
+             gene whose length is not a multiple of 3.
 Notes:       Alignment keeps insertions, so the ON1 (A) and BA (B) G-gene duplications are
              retained. Sequences are processed in chunks to bound memory.
              Run: .venv/bin/python scripts/build_gene_features.py [--chunk 2000] [--max-per-subtype N]
@@ -23,7 +26,9 @@ args = ap.parse_args()
 
 REF = {"A": ("data/reference/NC_038235.1.fasta", "data/reference/NC_038235.1.gb"),
        "B": ("data/reference/NC_001781.1.fasta", "data/reference/NC_001781.1.gb")}
-GENE_ORDER = ["NS1", "NS2", "N", "P", "M", "SH", "G", "F", "M2", "L"]
+# M2 carries two overlapping ORFs. Only M2-1 is analysed: M2-2 overlaps it by 35 nt,
+# so including both would count that stretch twice in the concatenated genome.
+GENE_ORDER = ["NS1", "NS2", "N", "P", "M", "SH", "G", "F", "M2-1", "L"]
 
 meta = pd.read_csv("data/processed/rsv_features.tsv", sep="\t",
                    usecols=["Accession ID", "Subtype", "Lineage", "year", "region"])
@@ -36,13 +41,14 @@ for sub, grp in meta.groupby("Subtype"):
     if args.max_per_subtype:
         accs = accs[:args.max_per_subtype]
     ref_fa, ref_gb = REF[sub]
-    cds = genes.read_cds(ref_gb)
+    cds = {k: v for k, v in genes.read_cds(ref_gb).items() if k in GENE_ORDER}
     print(f"\nRSV-{sub}: {len(accs)} sequences, {len(cds)} genes")
     t0 = time.time()
     for i in range(0, len(accs), args.chunk):
         batch = {a: seqs[a] for a in accs[i:i + args.chunk] if a in seqs}
         ref_row, aligned = genes.align_to_reference(ref_fa, batch)
         per_gene = genes.slice_genes(ref_row, aligned, cds)
+        per_acc_codon = {}           # accession -> list of (gc3, n3, gc12, n12) per gene
         for gene, d in per_gene.items():
             for acc, s in d.items():
                 if len(s) < 50:          # skip genes missing from a partial genome
@@ -50,6 +56,7 @@ for sub, grp in meta.groupby("Subtype"):
                 f = composition.all_features(s, coding=True)
                 f.update({"Accession ID": acc, "Subtype": sub, "gene": gene})
                 rows.append(f)
+                per_acc_codon.setdefault(acc, []).append(f)
         # Genome-level row: the ten coding regions concatenated in genome order.
         # The paper defines "genomic" GC, GC3 and GC12 over the coding regions rather
         # than the raw genome, so the frame stays well defined.
@@ -58,7 +65,18 @@ for sub, grp in meta.groupby("Subtype"):
             if len(cat) < 1000:
                 continue
             f = composition.all_features(cat, coding=True)
-            f.update({"Accession ID": acc, "Subtype": sub, "gene": "GENOME"})
+            # GC3/GC12 must NOT come from the concatenation: a gene whose length is not a
+            # multiple of 3 throws every downstream gene out of frame (about 4% of
+            # genomes). Pool each gene's own in-frame counts instead.
+            parts = per_acc_codon.get(acc, [])
+            n3 = sum(x["n3"] for x in parts if x.get("gc3") is not None)
+            n12 = sum(x["n12"] for x in parts if x.get("gc12") is not None)
+            f["gc3"] = (sum(x["gc3"] * x["n3"] for x in parts if x.get("gc3") is not None) / n3
+                        if n3 else None)
+            f["gc12"] = (sum(x["gc12"] * x["n12"] for x in parts if x.get("gc12") is not None) / n12
+                         if n12 else None)
+            f.update({"Accession ID": acc, "Subtype": sub, "gene": "GENOME",
+                      "n3": n3, "n12": n12})
             rows.append(f)
         done = min(i + args.chunk, len(accs))
         el = time.time() - t0

@@ -64,6 +64,9 @@ def prepare(df, level=3, min_years=5, min_n=200, date_col="date",
     """
     d = df.copy()
     d["lineage_grp"] = truncate_lineage(d["Lineage"].astype(str), level)
+    # a finer label than the analysis lineage, used to cluster standard errors: genomes
+    # sharing it share recent ancestry and are not independent observations
+    d["clade_fine"] = truncate_lineage(d["Lineage"].astype(str), level + 2)
     d["dec_date"] = decimal_date(d[date_col])
     d = d[d["dec_date"].notna()]
     d = d[(d["dec_date"] >= start) & (d["dec_date"] < end)]
@@ -97,7 +100,8 @@ def _trim_sparse_ends(s, min_per_year):
     return s[(yrs >= ok.min()) & (yrs <= ok.max())]
 
 
-def lineage_slopes(df, features, by=("Subtype", "lineage_grp"), covariates=()):
+def lineage_slopes(df, features, by=("Subtype", "lineage_grp"), covariates=(),
+                   cluster="clade_fine", min_clusters=3):
     """
     Regress each feature against decimal collection date inside each lineage.
 
@@ -110,9 +114,19 @@ def lineage_slopes(df, features, by=("Subtype", "lineage_grp"), covariates=()):
     even inside single lineages: A.D goes from 71% Oceania early to 36% Europe late.
     Fitting inside a lineage removes lineage replacement but not that geographic drift,
     so a slope that survives region adjustment is the more trustworthy one.
+
+    Standard errors. Plain OLS assumes every genome is an independent observation, which
+    is false: genomes inside a lineage share ancestry, so one clade expanding contributes
+    many near-identical points. Left uncorrected this understates the standard error by
+    roughly sixfold here and turns ordinary drift into p < 0.0001. Errors are therefore
+    clustered on `cluster` (a finer lineage label), falling back to calendar year where a
+    lineage has too few distinct clades, and to plain OLS if neither is usable. Inference uses t with (clusters - 1)
+    degrees of freedom, since a lineage often has only a handful of clusters. `p` and
+    the confidence interval are the clustered values; `p_ols` keeps the uncorrected one
+    for comparison, and `cluster_by` records which was used.
     """
     out = []
-    cols = ["dec_date"] + list(covariates)
+    cols = ["dec_date"] + list(covariates) + ([cluster] if cluster else [])
     ctrl = "".join(f" + C({c})" for c in covariates)
     for keys, g in df.groupby(list(by)):
         for f in features:
@@ -123,12 +137,28 @@ def lineage_slopes(df, features, by=("Subtype", "lineage_grp"), covariates=()):
                 ctrl_use = ""            # covariate has no variation here; skip it
             else:
                 ctrl_use = ctrl
-            m = smf.ols(f"Q('{f}') ~ dec_date{ctrl_use}", data=s).fit()
-            lo, hi = m.conf_int().loc["dec_date"]
+            model = smf.ols(f"Q('{f}') ~ dec_date{ctrl_use}", data=s)
+            m = model.fit()
+            # pick the coarsest grouping that still has enough clusters to estimate with
+            groups, how = None, "none"
+            if cluster and s[cluster].nunique() >= min_clusters:
+                groups, how = s[cluster], cluster
+            else:
+                yr = s["dec_date"].astype(int)
+                if yr.nunique() >= min_clusters:
+                    groups, how = yr, "year"
+            # use_t makes the reference distribution t with (clusters - 1) degrees of
+            # freedom. The default normal reference is badly anti-conservative when there
+            # are only a handful of clusters, which is the usual case for a lineage.
+            mc = (model.fit(cov_type="cluster", cov_kwds={"groups": groups}, use_t=True)
+                  if groups is not None else m)
+            lo, hi = mc.conf_int().loc["dec_date"]
             rec = dict(zip(by, keys if isinstance(keys, tuple) else (keys,)))
             rec.update({"feature": f, "n": len(s), "slope": m.params["dec_date"],
-                        "ci_lo": lo, "ci_hi": hi, "p": m.pvalues["dec_date"],
-                        "r2": m.rsquared, "mean": s[f].mean()})
+                        "ci_lo": lo, "ci_hi": hi, "p": mc.pvalues["dec_date"],
+                        "p_ols": m.pvalues["dec_date"],
+                        "n_clusters": int(groups.nunique()) if groups is not None else 1,
+                        "cluster_by": how, "r2": m.rsquared, "mean": s[f].mean()})
             out.append(rec)
     res = pd.DataFrame(out)
     if len(res):

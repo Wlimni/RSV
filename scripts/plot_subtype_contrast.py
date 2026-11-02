@@ -34,7 +34,8 @@ import matplotlib.pyplot as plt
 os.makedirs("results/figures", exist_ok=True)
 plt.rcParams.update({"font.size": 10, "axes.spines.top": False, "axes.spines.right": False})
 PAL = {"A": "#2C7FB8", "B": "#C62824"}
-GENES = ["NS1", "NS2", "N", "P", "M", "SH", "G", "F", "M2", "L"]   # genome order, 3' to 5'
+GENES = ["NS1", "NS2", "N", "P", "M", "SH", "G", "F", "M2-1", "L"]   # genome order, 3' to 5'
+MIN_LINEAGE_N = 50          # a lineage mean needs this many genomes to be worth plotting
 
 # (column, panel label, y axis label, column holding the % printed on each bar, log axis)
 METRICS = [("oe_CG",    "CpG O/E",  "CpG observed / expected",   None,      False),
@@ -66,6 +67,21 @@ g["pct_CG"] = g.freq_CG * 100
 g["pct_GC_base"] = g.gc_content * 100
 g["n_CG"] = g.freq_CG * (g.valid_len - 1)
 g["n_GC_base"] = g.gc_content * g.valid_len
+# Independent unit of analysis. Genomes inside a lineage share ancestry, so comparing
+# 15,458 against 17,580 genomes counts the same evolutionary events over and over. The
+# lineage mean is the observation that can actually support a claim about the subtypes.
+g["clade"] = g["Lineage"].astype(str).str.split(".").str[:3].str.join(".")
+g = g[g.clade.str.len() > 2]
+lin = (g.groupby(["gene", "Subtype", "clade"])
+         .agg(oe=("oe_CG", "mean"), n=("oe_CG", "size")).reset_index())
+lin = lin[lin.n >= MIN_LINEAGE_N]
+lin.to_csv("results/gene_cpg_subtype_by_lineage.tsv", sep="\t", index=False)
+
+sep = {}                     # gene -> do the two subtypes' lineage means overlap?
+for gn in GENES:
+    a = lin[(lin.gene == gn) & (lin.Subtype == "A")].oe
+    b = lin[(lin.gene == gn) & (lin.Subtype == "B")].oe
+    sep[gn] = bool(len(a) and len(b) and (a.max() < b.min() or b.max() < a.min()))
 
 rows = []
 for gn in GENES:
@@ -94,7 +110,7 @@ t.to_csv("results/gene_cpg_subtype_test.tsv", sep="\t", index=False)
 
 x = np.arange(len(GENES))
 w = 0.38
-fig, axes = plt.subplots(3, 1, figsize=(12, 10.6), sharex=True)
+fig, axes = plt.subplots(3, 1, figsize=(12, 11.6), sharex=True)
 
 for ax, (col, short, ylab, pct_col, log) in zip(axes, METRICS):
     sub = t[t.metric == short].set_index("gene").loc[GENES]
@@ -119,29 +135,58 @@ for ax, (col, short, ylab, pct_col, log) in zip(axes, METRICS):
     # fold change above each gene: the most direct statement of the subtype gap
     if short != "GC count":
         hi = sub[["A_mean", "B_mean"]].max(axis=1)
+        if short == "CpG O/E":           # clear the lineage points, which can top the bar
+            hi = pd.Series({gn: max(hi[gn], lin[lin.gene == gn].oe.max()) for gn in GENES})
         for xi, gn in zip(x, GENES):
             r, y = sub.loc[gn], hi[gn]
             ax.text(xi, y * 3.4 if log else y + .045, f"{r.fold_B_over_A:.2f}x",
                     ha="center", fontsize=8.2, weight="bold", color="black")
 
+# Overlay the independent lineage means on the O/E panel. Where the two subtypes' points
+# do not overlap, the difference holds across every lineage; where they do, the gap is
+# inside ordinary lineage-to-lineage variation and the bar difference means little.
+rng = np.random.default_rng(0)
+for xi, gn in zip(x, GENES):
+    for i, sb in enumerate("AB"):
+        v = lin[(lin.gene == gn) & (lin.Subtype == sb)].oe.to_numpy()
+        if not len(v):
+            continue
+        xc = xi + (i - .5) * w
+        axes[0].plot([xc, xc], [v.min(), v.max()], color="0.15", lw=.8, zorder=3)
+        axes[0].scatter(xc + rng.uniform(-.07, .07, len(v)), v, s=11, zorder=4,
+                        facecolor="white", edgecolor="0.15", linewidth=.7)
+    if not sep[gn]:          # mark the genes whose lineage ranges overlap
+        axes[0].text(xi, .69, "lineage ranges\noverlap", ha="center", fontsize=7.4,
+                     color="0.25", style="italic", linespacing=1.15)
+
 # O/E has an absolute reference: 1.0 means "as expected from this gene's own base content"
 axes[0].axhline(1, ls="--", lw=.9, color="0.35")
 axes[0].text(-.45, 1.015, "1.0 = CpG as expected from this gene's C and G content",
              fontsize=8.2, color="0.35", ha="left")
+axes[0].scatter([], [], s=11, facecolor="white", edgecolor="0.15", linewidth=.7,
+                label="lineage mean")
 axes[0].legend(frameon=False, loc="upper right", ncol=2, bbox_to_anchor=(1, .93))
 axes[2].set_xticks(x); axes[2].set_xticklabels(GENES)
 axes[2].set_xlabel("Gene (genome order, 3' to 5')")
 
-fig.suptitle("CpG differs between the subtypes in every gene, and NS1/NS2 are the extreme case",
-             fontsize=13, weight="bold", x=.008, y=.992, ha="left")
-fig.text(.008, .006,
-         "Fold change = RSV-B mean / RSV-A mean, in black above each gene; above 1 means RSV-B is higher. "
-         "Shown in place of p, which is < 1e-300 for every gene at n = 15,458 vs 17,580.\n"
+nsep = sum(sep.values())
+ns1a = lin[(lin.gene == "NS1") & (lin.Subtype == "A")].oe
+ns1b = lin[(lin.gene == "NS1") & (lin.Subtype == "B")].oe
+fig.suptitle(f"CpG differs by subtype across independent lineages in {nsep} of 10 genes",
+             fontsize=13, weight="bold", x=.008, y=.993, ha="left")
+fig.text(.008, .962,
+         f"NS1 and NS2 are the extreme case: NS1 lineage means span {ns1a.min():.3f}-{ns1a.max():.3f} in RSV-A "
+         f"against {ns1b.min():.3f}-{ns1b.max():.3f} in RSV-B, with no overlap.",
+         fontsize=9.5, color="0.3", ha="left")
+fig.text(.008, .008,
+         "Bars are means over all genomes. Open points on the top panel are means of independent lineages, which is the unit "
+         "a claim can rest on:\ngenomes within a lineage share ancestry, so the per-genome p (< 1e-300 for every gene) counts the same "
+         "evolutionary events repeatedly.\nFold change = RSV-B mean / RSV-A mean, in black above each gene; above 1 means RSV-B is higher.\n"
          "Counts are on a log axis because L is thirty times the length of SH. The percentage on each bar is that "
          "count as a share of the gene: CpG over overlapping dinucleotide\npositions (denominator length - 1), GC over bases. "
          "Cliff's delta, 95% CIs and mean differences: results/gene_cpg_subtype_test.tsv.",
          fontsize=8.2, color="0.35", va="bottom", linespacing=1.5)
-fig.tight_layout(rect=[0, .062, 1, .975])
+fig.tight_layout(rect=[0, .095, 1, .948])
 fig.savefig("results/figures/fig6_subtype_contrast.png", dpi=200)
 print("wrote results/figures/fig6_subtype_contrast.png")
 for short in ["CpG O/E", "CpG count", "GC count"]:

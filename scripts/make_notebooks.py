@@ -440,6 +440,30 @@ build("notebooks/03_lineage_trends.ipynb", [
     new_code_cell('run_r()'),
     new_code_cell('show("fig1_lineage_trends.png")'),
     new_markdown_cell(
+        "### Why the p values here are cluster-robust\n\n"
+        "Plain OLS treats every genome as an independent observation. Genomes inside a lineage "
+        "share ancestry, so one expanding clade contributes hundreds of near-identical points "
+        "and the same evolutionary event is counted again and again. That understates the "
+        "standard error (by about 6-7x here) and makes ordinary drift look significant.\n\n"
+        "`lineage_slopes` therefore clusters standard errors on a finer sub-lineage label, "
+        "falling back to calendar year where a lineage has too few sub-lineages, and uses a "
+        "t distribution with (clusters - 1) degrees of freedom. A normal reference is "
+        "anti-conservative with only a handful of clusters. `p_ols` keeps the uncorrected "
+        "value for comparison."),
+    new_code_cell(
+        'sig = slopes[slopes.feature.isin(["gc_content", "gc3", "gc12", "oe_CG"])]\n'
+        'sig.groupby("feature").agg(\n'
+        '    lineages=("p", "size"),\n'
+        '    plain_OLS=("p_ols", lambda s: int((s < .05).sum())),\n'
+        '    cluster_robust=("p", lambda s: int((s < .05).sum())))'),
+    new_markdown_cell(
+        "Significant lineages at p < 0.05 fall sharply once related genomes stop counting as "
+        "independent. This strengthens the negative result: there is even less support for a "
+        "consistent trend than plain OLS suggested.\n\n"
+        "One caveat: A.D.4 (368 genomes) gets *more* significant when clustered by year, "
+        "because with only ten year-clusters the fit is effectively a regression on annual "
+        "means. Treat that single p value with caution."),
+    new_markdown_cell(
         "## 3.3  Where along the codon is GC changing?\n\n"
         "The sharpest test available:\n\n"
         "- pressure acting on the **RNA** → strongest effect at third codon positions, where "
@@ -455,14 +479,23 @@ build("notebooks/03_lineage_trends.ipynb", [
         "### How this differs from the paper\n\n"
         "| | influenza (paper) | RSV (here) |\n"
         "|---|---|---|\n"
-        "| GC3 | falls | **rises in 6 of 9 lineages** |\n"
-        "| GC12 | falls | **falls in 6 of 9** |\n"
-        "| relationship | same direction, GC3 5.65× faster | **opposite directions**, ratio negative |\n\n"
-        "Two things follow:\n\n"
-        "- Synonymous and non-synonymous sites are clearly under different pressure, which is "
-        "interesting in itself.\n"
+        "| GC3 | falls | **rises in 7 of 9 lineages** |\n"
+        "| GC12 | falls | **falls in 4 of 9** (rises in 5) |\n"
+        "| relationship | same direction, GC3 5.65× faster | **no shared direction**: opposite in 4 of 9 lineages; GC3 moves 2.65× as fast by mean absolute slope |\n\n"
         "- This is **not** the influenza signature and should not be described as reproducing "
-        "it.\n\n"
+        "it.\n"
+        "- **The contrast is fragile, so do not present it as a finding.** Refitting from only "
+        "the seven genes that rarely truncate (N, P, M, SH, NS2, F, M2-1) keeps the slope "
+        "direction in just 7 of 9 lineages for GC3 and 6 of 9 for GC12. With cluster-robust "
+        "errors only 3 of 9 GC3 slopes and 1 of 9 GC12 slopes are significant.\n"
+        "- **An earlier version reported this as a clean opposite-direction result** (GC3 up "
+        "in 6, GC12 down in 6). That came from measuring codon positions on the concatenated "
+        "genome, which is out of frame downstream of any gene whose length is not a multiple "
+        "of 3 (about 4% of genomes). Correcting it changed GC3 and GC12 slopes by up to "
+        "4.7e-4 per year, so the misframing was correlated with collection date. Codon "
+        "positions are now measured gene by gene and pooled by site count.\n"
+        "- The ratio is of mean absolute slopes. A ratio of signed sums is meaningless when "
+        "slopes carry both signs: it divides by a near-zero total and once printed -22x.\n\n"
         "Note the size: slopes are around 10⁻⁴ per year, so roughly a tenth of a percentage "
         "point of GC across the whole decade. Small."),
     new_markdown_cell(
@@ -531,8 +564,8 @@ build("notebooks/03_lineage_trends.ipynb", [
         "Stated plainly, because the result is mostly negative.\n\n"
         "| | Finding |\n"
         "|---|---|\n"
-        "| **1** | **No consistent CpG trend in RSV.** Lineages disagree: A.D.1 and B.D.E rise, A.D.3 and A.D.5 fall. In the influenza paper all twelve persistent lineages moved the same way. Here they do not, and section 3.6 shows the overall direction is an artefact of lineage definition. |\n"
-        "| **2** | **GC3 and GC12 move in opposite directions**, unlike influenza where both fell. Synonymous and non-synonymous sites are under different pressure in RSV, but not in the pattern the paper describes. |\n"
+        "| **1** | **No consistent CpG trend in RSV.** Lineages disagree: A.D.1 and B.D.E rise, A.D.3 and A.D.5 fall. In the influenza paper all twelve persistent lineages moved the same way. Here they do not, only 1 of 9 CpG slopes is significant once related genomes are not counted as independent, and section 3.6 shows the overall direction is an artefact of lineage definition. |\n"
+        "| **2** | **No reliable GC3 / GC12 contrast.** Unlike influenza, where both fell with GC3 5.65x faster, RSV has no shared direction (GC3 up in 7 of 9, GC12 down in 4 of 9). But the split changes with which genes are included and few slopes are significant (GC3 3 of 9, GC12 1 of 9), so it is unresolved rather than an 'opposite directions' finding. |\n"
         "| **3** | **Geography is not the explanation.** Slopes keep their direction after region adjustment, so the inconsistency between lineages is real, not a sampling artefact. |\n"
         "| **4** | **All effects are small** — order 10⁻⁴ per year, a fraction of a percentage point across the study period. |\n\n"
         "### How to read this\n\n"
@@ -553,7 +586,9 @@ build("notebooks/04_genes.ipynb", [
         "jobs under different pressure. The paper does the same split across the eight "
         "influenza segments.\n\n"
         "RSV's ten genes, in order along the genome:\n\n"
-        "`NS1 · NS2 · N · P · M · SH · G · F · M2 · L`\n\n"
+        "`NS1 · NS2 · N · P · M · SH · G · F · M2-1 · L`\n\n"
+        "M2 carries two overlapping ORFs; only **M2-1** is analysed, because M2-2 shares "
+        "35 nucleotides with it and counting both would double-count that stretch.\n\n"
         "Four are worth knowing:\n\n"
         "| Gene | Role |\n"
         "|---|---|\n"
@@ -567,7 +602,7 @@ build("notebooks/04_genes.ipynb", [
         "## 4.1  Composition of each gene"),
     new_code_cell(
         'g = pd.read_csv("../data/processed/rsv_gene_features.tsv", sep="\\t")\n'
-        'GENES = ["NS1","NS2","N","P","M","SH","G","F","M2","L"]\n'
+        'GENES = ["NS1","NS2","N","P","M","SH","G","F","M2-1","L"]\n'
         'per_gene = g[g.gene != "GENOME"]\n'
         'tab = (per_gene.groupby(["Subtype", "gene"])\n'
         '       .agg(n=("gc_content","size"), length=("valid_len","median"),\n'
@@ -617,9 +652,10 @@ build("notebooks/04_genes.ipynb", [
     new_markdown_cell(
         "### Reading the table honestly\n\n"
         "Looking at all ten genes rather than a chosen few changes what can be claimed.\n\n"
-        "- **CpG differs between the subtypes in every gene**, and in *both* directions: "
-        "RSV-B is higher in NS1, NS2, P and M; RSV-A is higher in N, SH, G, F, M2 and L. "
-        "A subtype difference in CpG is the rule here, not the exception.\n"
+        "- **Per genome, CpG differs between the subtypes in every gene**, in *both* "
+        "directions: RSV-B is higher in NS1, NS2, P and M; RSV-A is higher in N, SH, G, F, "
+        "M2-1 and L. But see 4.2b — only some of these survive the right unit of "
+        "analysis.\n"
         "- **What singles out NS1 and NS2 is the size of the gap** — 12.3x and 7.4x, against "
         "2.2x for the next largest (P). They are extreme, not unique.\n"
         "- **Only NS1 and NS2 reach an absolute floor.** 84.8% of RSV-A genomes carry no CpG "
@@ -648,6 +684,45 @@ build("notebooks/04_genes.ipynb", [
         "CIs, are in `results/gene_cpg_subtype_test.tsv`.\n\n"
         "This is an observation about sequence, not a demonstrated mechanism — testing it "
         "would require laboratory work."),
+    new_markdown_cell(
+        "## 4.2b  The right unit of analysis\n\n"
+        "The table above treats each genome as an independent observation. It is not. "
+        "Genomes inside a lineage share recent ancestry, so one clade expanding "
+        "contributes hundreds of near-identical points and the same evolutionary event "
+        "gets counted over and over. That is why every gene reaches p < 1e-300.\n\n"
+        "RSV-A and RSV-B are two clades. Comparing them is closer to a single "
+        "evolutionary contrast than to 33,000 independent samples. The observation that "
+        "can carry a claim is the **lineage mean**: if the subtype difference holds "
+        "separately in every lineage, it is a property of the subtype rather than of one "
+        "successful clade."),
+    new_code_cell(
+        'lin = (per_gene.assign(clade=per_gene.Lineage.astype(str).str.split(".").str[:3].str.join("."))\n'
+        '       .query("clade.str.len() > 2")\n'
+        '       .groupby(["gene", "Subtype", "clade"])\n'
+        '       .agg(oe=("oe_CG", "mean"), n=("oe_CG", "size")).reset_index())\n'
+        'lin = lin[lin.n >= 50]          # a lineage mean needs support\n'
+        'rows = []\n'
+        'for gn in GENES:\n'
+        '    a = lin[(lin.gene == gn) & (lin.Subtype == "A")].oe\n'
+        '    b = lin[(lin.gene == gn) & (lin.Subtype == "B")].oe\n'
+        '    rows.append({"gene": gn, "A lineages": len(a), "B lineages": len(b),\n'
+        '                 "A range": f"{a.min():.3f}-{a.max():.3f}",\n'
+        '                 "B range": f"{b.min():.3f}-{b.max():.3f}",\n'
+        '                 # do the two subtypes overlap at all across their lineages?\n'
+        '                 "separated": a.max() < b.min() or b.max() < a.min()})\n'
+        'pd.DataFrame(rows).set_index("gene")'),
+    new_markdown_cell(
+        "### What survives\n\n"
+        "Only the genes marked `separated` show a difference that holds across every "
+        "independent lineage. For the rest, the per-genome gap sits inside ordinary "
+        "lineage-to-lineage variation, and the vanishing p value was an artefact of "
+        "counting genomes instead of lineages.\n\n"
+        "NS1 and NS2 are not marginal cases: RSV-A lineages run 0.001-0.027 in NS1 "
+        "against 0.163-0.210 for RSV-B — a sixfold gap with no overlap at all. That "
+        "statement is worth more than any p value, and it is the one to report.\n\n"
+        "A caution on testing these ten lineage means: a Mann-Whitney on 6 against 4 "
+        "bottoms out at p = 0.0095 even with perfect separation, so quote the ranges, "
+        "not the p."),
     new_markdown_cell(
         "## 4.3  Which genes carry the time trend?\n\n"
         "The within-lineage regression from notebook 03, run on each gene separately. The "

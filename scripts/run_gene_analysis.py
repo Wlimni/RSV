@@ -11,7 +11,7 @@ import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 import pandas as pd
 
-GENE_ORDER = ["NS1", "NS2", "N", "P", "M", "SH", "G", "F", "M2", "L"]
+GENE_ORDER = ["NS1", "NS2", "N", "P", "M", "SH", "G", "F", "M2-1", "L"]
 os.makedirs("results", exist_ok=True)
 
 g = pd.read_csv("data/processed/rsv_gene_features.tsv", sep="\t")

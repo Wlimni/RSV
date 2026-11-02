@@ -48,6 +48,9 @@ d <- merge(d, ann[, .(Subtype, lineage_grp, panel, slope, r2)],
            by = c("Subtype", "lineage_grp"))
 d[, panel := factor(panel, levels = ann[order(Subtype, -n), panel])]
 ann[, panel := factor(panel, levels = levels(d$panel))]
+# p is the cluster-robust value from lineage.py: genomes inside a lineage share
+# ancestry, and plain OLS treats them as independent, which understates the error
+# about sixfold here. p_ols is kept in the table for comparison.
 ann[, plbl := ifelse(p < 1e-4, "p < 0.0001", sprintf("p = %.4f", p))]
 ann[, lbl := sprintf("slope %+.2f x 10^-4 / yr\nR2 = %.3f\n%s", slope * 1e4, r2, plbl)]
 
@@ -63,9 +66,12 @@ f1 <- ggplot(d, aes(dec_date, gc_content)) +
   scale_colour_manual(values = pal, guide = "none") +
   scale_x_continuous(breaks = seq(2008, 2024, 4)) +
   labs(title = "GC content over time, fitted separately within each lineage",
-       subtitle = "Each point is one genome. Fitting inside lineages keeps lineage replacement out of the trend.",
+       subtitle = paste("Each point is one genome. Fitting inside lineages keeps lineage replacement out of the trend,",
+                        "and standard\nerrors are clustered on sub-lineage so that related genomes are not counted as independent."),
        x = "Collection date", y = "GC content (coding regions)",
-       caption = "Shaded band is the 95% confidence interval of the fit.")
+       caption = sprintf(paste("Shaded band is the ordinary 95%% confidence interval of the fit; the quoted p is cluster-robust (t, clusters - 1 df) and is the one to read.",
+                               "\nUncorrected OLS would call %d of %d lineages significant, against %d of %d here."),
+                         sum(ann$p_ols < .05), nrow(ann), sum(ann$p < .05), nrow(ann)))
 ggsave("results/figures/fig1_lineage_trends.png", f1, width = 9.5, height = 7.4, dpi = 300)
 
 ## ---- Figure 2: GC, GC3 and GC12 slopes side by side ---------------------------
@@ -150,7 +156,7 @@ cat("figures written to results/figures/\n")
 ## ---- Figure 5: composition gene by gene ---------------------------------------
 ## Context for the time trends: the genome is not uniform, and the interferon
 ## antagonist genes NS1 and NS2 sit far from the rest in RSV-A.
-GENES <- c("NS1","NS2","N","P","M","SH","G","F","M2","L")
+GENES <- c("NS1","NS2","N","P","M","SH","G","F","M2-1","L")  # M2-1 only: M2-2 overlaps it
 gs <- fread("results/gene_summary.tsv")
 gs[, gene := factor(gene, levels = GENES)]
 

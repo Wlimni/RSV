@@ -108,8 +108,12 @@ def gc_by_codon_position(seq):
             else:
                 tot12 += 1
                 gc12 += is_gc
+    # the site counts are returned so a caller combining several genes can weight them
+    # correctly instead of concatenating, which would break frame on any gene whose
+    # length is not a multiple of 3
     return {"gc3": gc3 / tot3 if tot3 else None,
-            "gc12": gc12 / tot12 if tot12 else None}
+            "gc12": gc12 / tot12 if tot12 else None,
+            "n3": tot3, "n12": tot12}
 
 
 def all_features(seq, coding=False):

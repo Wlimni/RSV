@@ -5,6 +5,7 @@ Purpose:     Fit composition trends over time inside each RSV lineage, following
              figure script reads.
 Inputs:      data/processed/rsv_gene_features.tsv, data/processed/rsv_features.tsv
 Outputs:     results/lineages.tsv          the lineages analysed
+             results/gene_cpg_subtype_by_lineage.tsv  (written by plot_subtype_contrast.py)
              results/slopes_genome.tsv     slope per lineage per feature, genome level
              results/slopes_by_gene.tsv    slope per lineage per gene
              results/gc_correlation.tsv    dinucleotide frequency vs GC content
@@ -16,6 +17,9 @@ Notes:       "Genome level" means the ten coding regions concatenated, which is 
              It is not in the paper, but it is the one other motif with direct experimental
              evidence of restricting RNA virus replication, through a pathway separate from
              the CpG one, so it is the most informative comparison available.
+             Standard errors are clustered on sub-lineage, because genomes sharing
+             recent ancestry are not independent observations; `p_ols` keeps the
+             uncorrected value for comparison.
              The window runs 2001 to end of May 2026. The 2026 months after May are cut
              because deposition lag makes them a non-random subset, and each lineage is
              trimmed to the years it was actually sampled in.
@@ -51,6 +55,14 @@ print(keep.round(2).to_string(index=False))
 slopes = lineage.lineage_slopes(gdf, GENOME_FEATURES)
 slopes.to_csv("results/slopes_genome.tsv", sep="\t", index=False)
 
+# How much of the apparent significance came from treating related genomes as independent?
+gc = slopes[slopes.feature == "gc_content"]
+print(f"\n=== Effect of clustering standard errors on sub-lineage ({gc.cluster_by.iloc[0]}) ===")
+print(gc[["Subtype", "lineage_grp", "n", "n_clusters", "slope", "p_ols", "p"]]
+      .rename(columns={"p": "p_clustered"}).round(5).to_string(index=False))
+print(f"significant before clustering: {(gc.p_ols < .05).sum()}/{len(gc)}   "
+      f"after: {(gc.p < .05).sum()}/{len(gc)}")
+
 # Same fits with region held constant. Sequencing geography shifted strongly over the
 # period, including inside single lineages, so a slope that survives this is the safer one.
 slopes_adj = lineage.lineage_slopes(gdf, GENOME_FEATURES, covariates=("region",))
@@ -66,10 +78,14 @@ piv = (slopes[slopes.feature.isin(["gc_content", "gc3", "gc12"])]
        .pivot_table(index=["Subtype", "lineage_grp"], columns="feature", values="slope"))
 piv["gc3_vs_gc12"] = (piv["gc3"] / piv["gc12"]).round(2)
 print(piv.round(6).to_string())
-ratio = piv["gc3"].sum() / piv["gc12"].sum()
-print(f"\noverall GC3 changes {ratio:.2f}x as fast as GC12 "
+# Ratio of MAGNITUDES. Slopes here carry both signs, so a ratio of signed sums divides by
+# a near-zero number where they cancel and says nothing (it once printed -22x). The paper's
+# lineages all moved the same way, which is why a plain ratio worked for them.
+ratio = piv["gc3"].abs().sum() / piv["gc12"].abs().sum()
+opposite = int((piv["gc3"] * piv["gc12"] < 0).sum())
+print(f"\nGC3 moves {ratio:.2f}x as fast as GC12 by mean |slope| "
       f"(paper reports 5.65x for influenza)")
-
+print(f"GC3 and GC12 move in opposite directions in {opposite}/{len(piv)} lineages")
 print("\n=== CpG O/E slope per lineage, before and after region adjustment ===")
 cg = slopes[slopes.feature == "oe_CG"][["Subtype", "lineage_grp", "n", "slope", "p"]]
 cga = slopes_adj[slopes_adj.feature == "oe_CG"][["Subtype", "lineage_grp", "slope", "p"]]
