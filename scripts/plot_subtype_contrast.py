@@ -144,20 +144,18 @@ for ax, (col, short, ylab, pct_col, log) in zip(axes, METRICS):
 
 def overlay_lineages(ax, x, w, fs=7.4, ms=11, tag="lineage ranges\noverlap"):
     """
-    Overlay the independent lineage means on an O/E panel. Where the two subtypes' points do
-    not overlap, the difference holds across every lineage; where they do, the gap is inside
+    Overlay the span of the independent lineage means on an O/E panel, as a whisker from the
+    lowest to the highest lineage. Where the two subtypes' whiskers do not overlap, the difference holds across every lineage; where they do, the gap is inside
     ordinary lineage-to-lineage variation and the bar difference means little.
     """
-    rng = np.random.default_rng(0)
     for xi, gn in zip(x, GENES):
         for i, sb in enumerate("AB"):
             v = lin[(lin.gene == gn) & (lin.Subtype == sb)].oe.to_numpy()
             if not len(v):
                 continue
             xc = xi + (i - .5) * w
-            ax.plot([xc, xc], [v.min(), v.max()], color="0.15", lw=.8, zorder=3)
-            ax.scatter(xc + rng.uniform(-.07, .07, len(v)), v, s=ms, zorder=4,
-                       facecolor="white", edgecolor="0.15", linewidth=.7)
+            ax.plot([xc, xc], [v.min(), v.max()], color="0.15", lw=1.0, zorder=3)
+            ax.hlines([v.min(), v.max()], xc - .06, xc + .06, color="0.15", lw=1.0, zorder=3)
         if not sep[gn]:      # mark the genes whose lineage ranges overlap
             ax.text(xi, .69, tag, ha="center", fontsize=fs,
                     color="0.25", style="italic", linespacing=1.15)
@@ -169,8 +167,7 @@ overlay_lineages(axes[0], x, w)
 axes[0].axhline(1, ls="--", lw=.9, color="0.35")
 axes[0].text(-.45, 1.015, "1.0 = CpG as expected from this gene's C and G content",
              fontsize=8.2, color="0.35", ha="left")
-axes[0].scatter([], [], s=11, facecolor="white", edgecolor="0.15", linewidth=.7,
-                label="lineage mean")
+axes[0].plot([], [], color="0.15", lw=1.0, label="range of lineage means")
 axes[0].legend(frameon=False, loc="upper right", ncol=2, bbox_to_anchor=(1, .93))
 axes[2].set_xticks(x); axes[2].set_xticklabels(GENES)
 axes[2].set_xlabel("Gene (genome order, 3' to 5')")
@@ -185,7 +182,7 @@ fig.text(.008, .962,
          f"against {ns1b.min():.3f}-{ns1b.max():.3f} in RSV-B, with no overlap.",
          fontsize=9.5, color="0.3", ha="left")
 fig.text(.008, .008,
-         "Bars are means over all genomes. Open points on the top panel are means of independent lineages, which is the unit "
+         "Bars are means over all genomes. Whiskers on the top panel span the means of independent lineages, which is the unit "
          "a claim can rest on:\ngenomes within a lineage share ancestry, so the per-genome p (< 1e-300 for every gene) counts the same "
          "evolutionary events repeatedly.\nFold change = RSV-B mean / RSV-A mean, in black above each gene; above 1 means RSV-B is higher.\n"
          "Counts are on a log axis because L is thirty times the length of SH. The percentage on each bar is that "
@@ -203,7 +200,7 @@ for short in ["CpG O/E", "CpG count", "GC count"]:
 
 # ---- slide version -----------------------------------------------------------------------
 # The full figure is too dense to read at slide size. A slide needs the two panels the headline
-# rests on: CpG O/E with the lineage means, and GC content as the control, at a larger type size.
+# rests on: CpG O/E with the range of the lineage means, and GC content as the control, at a larger type size.
 fs_, axs = plt.subplots(2, 1, figsize=(8.4, 6.4), sharex=True, gridspec_kw={"height_ratios": [1.45, 1]})
 plt.rcParams.update({"font.size": 11})
 oe = t[t.metric == "CpG O/E"].set_index("gene").loc[GENES]
@@ -217,7 +214,7 @@ for xi, gn in zip(x, GENES):
                 weight="bold")
 axs[0].axhline(1, ls="--", lw=.9, color="0.35")
 axs[0].text(-.45, 1.015, "1.0 = CpG as expected from this gene's C and G content", fontsize=9.5, color="0.35")
-axs[0].scatter([], [], s=16, facecolor="white", edgecolor="0.15", linewidth=.7, label="lineage mean")
+axs[0].plot([], [], color="0.15", lw=1.0, label="range of lineage means")
 axs[0].legend(frameon=False, loc="upper right", ncol=2, bbox_to_anchor=(1, .93), fontsize=10)
 axs[0].set_ylim(0, 1.1)
 axs[0].set_ylabel("CpG observed / expected")
