@@ -745,8 +745,15 @@ build("notebooks/04_genes.ipynb", [
         'fig.colorbar(im, ax=ax, shrink=.85, label="slope per year")\n'
         'plt.tight_layout(); plt.show()'),
     new_markdown_cell(
-        "Red means CpG O/E rising in that gene and lineage, blue means falling. Reading "
-        "across a row shows whether a gene behaves consistently across lineages."),
+        "Red means CpG O/E rising in that gene and lineage, blue means falling. The pattern "
+        "is **uneven**:\n\n"
+        "- **Most cells sit near zero** — 78% change by less than 0.003 per year.\n"
+        "- **No gene moves the same way in all 9 lineages.** Every row has both red and blue.\n"
+        "- **The largest swings are all in SH**, up to 0.025 per year in either direction. SH is "
+        "only about 195 nucleotides and carries one or two CpGs, so its O/E jumps when a single "
+        "CpG appears or disappears. None of its biggest swings is significant (A.D.5 p = 0.11, "
+        "B.D.4 p = 0.14).\n\n"
+        "Across all 90 gene-and-lineage fits, 20 are significant after clustering."),
 ])
 
 print("done")

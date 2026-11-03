@@ -97,6 +97,10 @@ print(f"\nslopes keeping their direction after region adjustment: "
 
 # ---- per gene ----------------------------------------------------------------------
 per_gene = g[g.gene != "GENOME"]
+# This table holds ten rows per genome, so prepare() on it would count rows rather than
+# genomes and admit lineages with as few as 20 genomes (B.D.1 has 123). Use exactly the
+# genomes kept at genome level so both analyses cover the same lineages.
+per_gene = per_gene[per_gene["Accession ID"].isin(gdf["Accession ID"])]
 pg, _ = lineage.prepare(per_gene)
 by_gene = lineage.lineage_slopes(pg, ["gc_content", "oe_CG"],
                                  by=("Subtype", "lineage_grp", "gene"))
