@@ -183,6 +183,7 @@
         <li>步驟六 —— 擬合趨勢</li>
         <li>結果</li>
         <li>我們發現了什麼、沒發現什麼</li>
+        <li>跟進分析 —— 缺失的 CpG 在密碼子的哪裡</li>
         <li>下一步</li>
       </ol>
     </li>
@@ -453,7 +454,7 @@
 <div class="part">
   <div class="pn">第四部分</div>
   <h2>這個項目做了什麼</h2>
-  <p>六個步驟、結果,以及對哪些部分真的成功了的誠實交代。每一步都比前面的版本講得更詳細,並收錄「值得知道」的細節。</p>
+  <p>六個步驟、結果、一輪跟進分析(第 33 節),以及對哪些部分真的成功了的誠實交代。每一步都比前面的版本講得更詳細,並收錄「值得知道」的細節。</p>
 </div>
 
 <p>下面六個步驟按同一個結構來講:先說<strong>這一步在做什麼、為什麼需要</strong>,再說<strong>怎樣做</strong>,最後用「值得知道」的方框收錄那些容易被忽略、但會影響你怎樣解讀結果的細節。</p>
@@ -467,6 +468,7 @@
     <tr><td>4 切成十個基因</td><td>對齊參考序列,按座標切</td><td class="n">363,418 筆記錄</td><td><code>scripts/build_gene_features.py</code>、<code>src/rsv/genes.py</code></td></tr>
     <tr><td>5 定義 lineage</td><td>截短標籤、篩選、裁剪</td><td class="n">9 條 lineage</td><td><code>notebooks/03_lineage_trends.ipynb</code>、<code>src/rsv/lineage.py</code></td></tr>
     <tr><td>6 擬合趨勢</td><td>每條 lineage 之內做迴歸,標準誤分群</td><td class="n">每個指標 9 個斜率</td><td><code>scripts/run_lineage_analysis.py</code></td></tr>
+    <tr><td>7 跟進分析(第 33 節)</td><td>CpG 按密碼子位置分類、固定氨基酸檢驗、HyPhy dN/dS</td><td class="n">NS1 比值 0.01 對 0.38</td><td><code>notebooks/05_codon_followup.ipynb</code>、<code>src/rsv/codon.py</code></td></tr>
   </tbody>
 </table>
 </div>
@@ -881,16 +883,221 @@
   <p>這是這個發現最需要先排除的替代解釋,而且有一個直接的檢驗方法:<strong>看 RSV-A 的 NS1 CpG 在各 lineage 之內是不是「還在下降」。</strong>如果還在降,代表壓力仍然在作用;如果整段觀察期都已經貼近零,那就比較像是早就固定下來的狀態。</p>
 </div>
 
-<h3><span class="num">33.</span>下一步</h3>
-<p>三個選項,按產出可報告成果的機會率排序。</p>
+<h3><span class="num">33.</span>跟進分析 —— 缺失的 CpG 在密碼子的哪裡(Notebook 05)</h3>
+<p>趨勢分析是否定結果,唯一的發現是 RSV-A 的 NS1/NS2 CpG 遠比 RSV-B 少。跟導師討論之後,決定先把這個發現追問下去:<strong>它是蛋白質的限制,還是作用在 RNA 上的壓力?</strong>這一節就是答案的第一輪,全部在 <code>notebooks/05_codon_followup.ipynb</code>。</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>步驟</th><th>做什麼</th><th class="n">關鍵數字</th><th>代碼在哪裡</th></tr></thead>
+  <tbody>
+    <tr><td>A 查宿主</td><td>看 GISAID 的 Host 欄位</td><td class="n">33,040 條全是 Human</td><td>notebook 05 §5.1</td></tr>
+    <tr><td>B 取樣、切出編碼序列</td><td>每條 lineage 最多 250 條,十個基因各自在 frame 內</td><td class="n">9 條 lineage、2,250 條基因組</td><td><code>scripts/build_codon_data.py</code></td></tr>
+    <tr><td>C 密碼子統計</td><td>GC3、ENC、CpG 分成三類位置</td><td class="n">90 行(9 lineage × 10 基因)</td><td><code>src/rsv/codon.py</code></td></tr>
+    <tr><td>D 固定氨基酸的檢驗</td><td>密碼子最後一個字母是 C,後面接 G 開頭的氨基酸</td><td class="n">比值 0.01(A) 對 0.38(B)</td><td>notebook 05 §5.3</td></tr>
+    <tr><td>E HyPhy 的 dN/dS</td><td>蛋白質受到的選擇壓力有沒有分別</td><td class="n">8 個基因 × (A、B、A+B)</td><td><code>scripts/run_hyphy.py</code></td></tr>
+    <tr><td>F 時間趨勢</td><td>NS1/NS2 的 CpG 還在變嗎</td><td class="n">18 個斜率</td><td>notebook 05 §5.5</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h4>A. 有沒有非人類宿主?</h4>
+<p>導師問的第一個問題是:RSV 的資料裡有沒有宿主資訊?如果有,結合宿主和時間,就可以區分「零星」和「持續」。查的結果很乾脆:GISAID 的 <code>Host</code> 欄位 33,040 條<strong>全部是 Human</strong>。另一個「額外宿主資訊」欄位有 312 筆內容,全是臨床備註(合併感染、研究名稱),沒有一筆提到動物。</p>
+<p>所以 RSV 沒辦法按宿主分組,論文那個「持續 對 零星」的對比在 RSV 上做不出來。這不是分析的失敗,而是資料本身的性質。</p>
+<div class="know">
+  <p class="lbl">值得知道:「零星」和「持續」不能只靠宿主加一個「少於一年」來定</p>
+  <p>很容易以為:知道宿主,再看這條 lineage 存在了多久,不到一年就是零星。但這三樣東西各自回答不同的問題:</p>
+  <ul>
+    <li><strong>宿主</strong>回答「病毒在哪一種動物身上」。</li>
+    <li><strong>持續或零星</strong>回答「傳播鏈有沒有一直延續下去」—— 一次跳到新宿主之後,是幾個病例就消失,還是在新宿主之間繼續傳。</li>
+    <li><strong>時間長度</strong>只有配上<strong>傳播樹</strong>才有意義。一條只存在半年的 lineage,可能真的是零星,也可能只是沒人去定序;而 RSV 這類季節性病毒,一個冬天就會自然結束。</li>
+  </ul>
+  <p>比較站得住腳的定義是:在樹上找出每一次「宿主轉換」事件,看那次事件之後的後代群,<strong>跨過多少個季節或年份、有多少條基因組</strong>;跨度和數量都夠的是持續,其餘是零星。閾值(例如一年或兩年)是人為選的,所以兩個都要試,並且兩個都報告。這部分要在別的病毒上做,見第 34 節。</p>
+</div>
+
+<h4>B. 數據怎樣準備</h4>
+<p>這一輪不需要全部 32,442 條基因組。每條 lineage(用趨勢分析同樣的 9 條,同樣的日期窗)<strong>隨機抽最多 250 條</strong>,所以最大的 lineage 不會主導結果。對齊到參考序列、切出十個基因之後,每個基因只保留符合以下條件的序列:以 <code>ATG</code> 開頭、模糊鹼基不超過 1%、讀到<strong>第一個終止密碼子</strong>為止,而且長度至少是參考基因的 90%。保留的數量:RSV-A 的 NS1 是 1,460 / 1,500,RSV-B 是 718 / 750,所有基因都在 95% 以上。</p>
+<div class="know">
+  <p class="lbl">值得知道:為什麼 G 基因需要「讀到第一個終止密碼子」</p>
+  <p>第一版只要求「長度是 3 的倍數、中間沒有終止密碼子」,結果 RSV-A 的 G 基因 1,500 條裡只剩 24 條。原因是 G 基因的<strong>終止密碼子位置在不同 lineage 之間會移動</strong>(蛋白質 C 端的長度不同),按參考序列的座標切下去,有的切短了、有的切過頭。改成「從 ATG 起、讀到自己的第一個終止密碼子為止」之後,1,487 條保留。</p>
+  <p>還有一類是<strong>開頭被截斷</strong>的序列(定序沒讀到基因的頭幾個字母)。它們在自己的切片裡讀碼框是錯位的,算密碼子位置會全錯,所以直接排除,而不是硬湊。</p>
+</div>
+
+<h4>C. 三個密碼子層面的量度</h4>
+<p>GC3(第三位置的 GC 含量)在第 17 節講過。這一輪多了兩個:</p>
+<ul>
+  <li><strong>ENC(effective number of codons,有效密碼子數)</strong>:20 代表每種氨基酸永遠只用同一個密碼子(偏好到極致),61 代表所有密碼子均勻使用(完全沒有偏好)。它量度的是整體的密碼子用法,不針對 CpG。</li>
+  <li><strong>CpG 按位置分成三類</strong>,因為一個 CpG 在密碼子的哪裡,決定了蛋白質能不能插手。</li>
+</ul>
+<div class="scroll">
+<table>
+  <thead><tr><th>類別</th><th>C 在哪裡</th><th>G 在哪裡</th><th>蛋白質管不管得到?</th></tr></thead>
+  <tbody>
+    <tr><td><strong>位置 1-2</strong></td><td>密碼子第 1 位</td><td>同一密碼子第 2 位</td><td>管得到。這只會是 Arg 的 <code>CGN</code>,氨基酸決定了這兩個字母。</td></tr>
+    <tr><td><strong>位置 2-3</strong></td><td>第 2 位</td><td>第 3 位</td><td>基本管不到。Ser、Pro、Thr、Ala 的 <code>NCG</code>,第 3 位任何字母都是同一個氨基酸,<strong>可以自由換掉</strong>。</td></tr>
+    <tr><td><strong>位置 3-1</strong></td><td>一個密碼子的第 3 位</td><td>下一個密碼子的第 1 位</td><td>一半管得到。C 通常可以換掉(同義),但 G 由下一個氨基酸決定。</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="know">
+  <p class="lbl">值得知道:一個具體的例子,說明為什麼「位置 3-1」是同義的</p>
+  <p>設兩個相連的密碼子是 <code>GCC GAT</code>,編碼 Ala-Asp。前一個的結尾 <code>C</code> 加上後一個的開頭 <code>G</code>,中間形成一個 <strong>CpG</strong>(<code>GC<u>C</u> <u>G</u>AT</code>)。但 Ala 有四個密碼子 <code>GCT / GCC / GCA / GCG</code>,全部是 Ala。把 <code>GCC</code> 換成 <code>GCT</code>,蛋白質<strong>一個字母都沒變</strong>,CpG 卻消失了。</p>
+  <p>所以如果某個基因在「位置 2-3」和「位置 3-1」特別缺 CpG,而在氨基酸說了算的「位置 1-2」沒有分別,最合理的解釋是:壓力作用在<strong>挑選哪個同義密碼子</strong>,也就是 RNA 這一層,而不是蛋白質。</p>
+</div>
+<p>三類 CpG 都用 O/E 表示(實際值除以由該位置的兩個字母頻率算出的期望值)。同一條 lineage 的所有基因組先把次數合併,再算比值,避免單條基因組只有幾個 CpG 時比值亂跳。<strong>每條 lineage 是一個數據點</strong>,所以是 6 條 A 對 3 條 B,跟第 30 節同一個理由。</p>
+
+<h4>D. 結果一:缺的 CpG 在哪裡</h4>
+<figure>
+  <img src="figures/r7.png" alt="十個小圖,每個基因一幅,橫軸是三類位置(1-2、2-3、3-1),縱軸是 CpG O/E,藍點是 RSV-A 的 lineage,紅點是 RSV-B 的 lineage。NS1 的紅點只在 3-1 位置高過零,NS2 的紅點在 2-3 和 3-1 都高過藍點。">
+  <figcaption><b>圖 12.</b> CpG O/E 按密碼子位置分開,每個點是一條 lineage(藍 = RSV-A,紅 = RSV-B)。<b>NS1</b>:兩個亞型在「位置 1-2」都是 0,「位置 2-3」都接近 0,<strong>只有「位置 3-1」藍紅分開</strong>。<b>NS2</b>:「位置 2-3」和「位置 3-1」藍紅都分開。其他基因的差異較小,或方向不一致。</figcaption>
+</figure>
+<div class="scroll">
+<table>
+  <thead><tr><th>基因</th><th>位置</th><th class="n">RSV-A(6 條 lineage)</th><th class="n">RSV-B(3 條 lineage)</th><th>有沒有重疊</th></tr></thead>
+  <tbody>
+    <tr><td rowspan="3"><strong>NS1</strong></td><td>1-2</td><td class="n">0.00</td><td class="n">0.00</td><td>兩邊都是零</td></tr>
+    <tr><td>2-3</td><td class="n">0.00 – 0.07</td><td class="n">0.01 – 0.02</td><td>兩邊都接近零</td></tr>
+    <tr><td><strong>3-1</strong></td><td class="n"><strong>0.00 – 0.04</strong></td><td class="n"><strong>0.38 – 0.47</strong></td><td><strong>完全不重疊</strong></td></tr>
+    <tr><td rowspan="3"><strong>NS2</strong></td><td>1-2</td><td class="n">0.00</td><td class="n">0.00 – 0.01</td><td>兩邊都接近零</td></tr>
+    <tr><td><strong>2-3</strong></td><td class="n"><strong>0.00 – 0.28</strong></td><td class="n"><strong>0.48 – 0.49</strong></td><td><strong>完全不重疊</strong></td></tr>
+    <tr><td><strong>3-1</strong></td><td class="n"><strong>0.00 – 0.02</strong></td><td class="n"><strong>0.55 – 0.71</strong></td><td><strong>完全不重疊</strong></td></tr>
+  </tbody>
+</table>
+</div>
+<p>讀法:NS1 的差異<strong>全部</strong>落在「位置 3-1」,NS2 的落在「位置 2-3」和「位置 3-1」。這三處都是第 3 位字母可以自由改變的地方。氨基酸說了算的「位置 1-2」,兩個亞型都幾乎是零(RSV 的 NS1、NS2 幾乎不出現 Arg 的 <code>CGN</code>),沒有分別可言。</p>
+<p>另外兩點要老實講。第一,其他基因並不是「A 全面較低」:M 的「位置 2-3」A 比 B 低(0.00–0.02 對 0.23–0.35),N 的「位置 2-3」方向相反,SH 在「位置 1-2」跟別人完全不同。所以沒有哪一類位置是「A 一律較低」。第二,<strong>RSV-A 內部也不一致</strong>:NS2 的 A.D.1 整條 lineage 幾乎沒有 CpG(O/E 0.004),另外五條 A lineage 在 0.1 左右,因此「A 的 NS2」不是一個單一數值。</p>
+<p>GC3 和 ENC 也一併看過:NS1 的 GC3 是 A 0.27–0.29、B 0.24–0.25,ENC 兩邊都在 33–34 之間。<strong>密碼子用法整體上沒有不同,不同的只是 CpG</strong>。(M 基因的 ENC 差得多,A 36 對 B 43,但它的 CpG 沒有同樣的差別,可見這兩件事是分開的。)</p>
+
+<h4>E. 結果二:把氨基酸固定下來再比</h4>
+<p>上面的 O/E 依賴鹼基組成。更乾淨的做法是<strong>讓蛋白質完全不動</strong>:只看那些第 3 位有選擇的密碼子(同一個氨基酸有以 C 結尾的、也有不以 C 結尾的同義密碼子),問它們以 C 結尾的比例,在兩種情況下有沒有分別:</p>
+<ul>
+  <li>下一個氨基酸是 <strong>Gly / Ala / Val / Asp / Glu</strong> —— 這五個氨基酸的密碼子<strong>全部以 G 開頭</strong>,所以前面若是 C,必定形成 CpG;</li>
+  <li>下一個氨基酸是別的 —— 結尾是 C 不會造成 CpG。</li>
+</ul>
+<p>如果沒有任何力量壓制 CpG,兩個比例應該一樣,比值是 1。</p>
+<figure>
+  <img src="figures/r8.png" alt="十個基因的點圖,縱軸是『下一個氨基酸以 G 開頭時,密碼子以 C 結尾的比例,相對於其他情況』,藍點是 RSV-A,紅點是 RSV-B。NS1 和 NS2 的藍點貼近 0,紅點分別在 0.3 到 0.4 和 0.5 到 0.6。其他基因兩個亞型相近。">
+  <figcaption><b>圖 13.</b> 固定氨基酸之後的 CpG 迴避比值。1 = 沒有迴避。所有基因都低於 1,代表 RSV 全基因組都在迴避這種 CpG;但 <b>RSV-A 的 NS1 和 NS2 幾乎降到 0</b>。</figcaption>
+</figure>
+<div class="scroll">
+<table>
+  <thead><tr><th>基因</th><th>亞型</th><th class="n">下一個是 G 開頭時,以 C 結尾</th><th class="n">其他情況,以 C 結尾</th><th class="n">比值</th></tr></thead>
+  <tbody>
+    <tr><td rowspan="2"><strong>NS1</strong></td><td>A</td><td class="n">0.2%</td><td class="n">23.9%</td><td class="n"><strong>0.01</strong></td></tr>
+    <tr><td>B</td><td class="n">6.5%</td><td class="n">17.4%</td><td class="n">0.38</td></tr>
+    <tr><td rowspan="2"><strong>NS2</strong></td><td>A</td><td class="n">0.3%</td><td class="n">33.9%</td><td class="n"><strong>0.01</strong></td></tr>
+    <tr><td>B</td><td class="n">21.6%</td><td class="n">37.5%</td><td class="n">0.58</td></tr>
+  </tbody>
+</table>
+</div>
+<p>RSV-A 的 NS1:在「下一個必定是 G 開頭」的位置,只有 <strong>0.2%</strong> 的密碼子以 C 結尾,其他位置卻有 24%。氨基酸一個都沒有換,純粹是<strong>同義密碼子的選擇</strong>被推向避開 CpG。RSV-B 也在避開(0.38 對 1),只是沒有那麼徹底。</p>
+<p>要注意的是,比值在<strong>幾乎所有基因、兩個亞型</strong>都低於 1(0.01–0.58),所以「迴避跨密碼子的 CpG」是 RSV 的普遍特徵;NS1/NS2 在 A 裡特別之處是迴避得多<strong>徹底</strong>。而且有兩個基因方向相反(F 和 G 在 B 裡的比值比 A 低),所以也不能說 A 處處更嚴格。</p>
+
+<h4>F. 結果三:蛋白質層面的選擇壓力(HyPhy)</h4>
+<p><span class="en">HyPhy</span> 是一套專門做分子演化選擇分析的軟體。這裡用它的 <span class="en">SLAC</span> 方法:先在每個基因的序列上建一棵演化樹,再沿著樹數出「同義變化」(不改氨基酸)和「非同義變化」(改了氨基酸),算出整個基因的 <strong>dN/dS(ω)</strong>。</p>
+<ul>
+  <li><strong>ω 遠低於 1</strong>:非同義變化被淘汰得比同義變化多,蛋白質受到<span class="en">purifying selection(純化選擇)</span>,被保護著。</li>
+  <li><strong>ω 約等於 1</strong>:蛋白質幾乎不受限制。</li>
+  <li><strong>ω 大於 1</strong>:改變氨基酸反而佔優勢(正選擇),比較少見。</li>
+</ul>
+<p>為什麼這跟 CpG 有關?如果 A 和 B 的 NS1 受到的蛋白質限制很不一樣,CpG 的差異就可能只是蛋白質差異的副產品。ω 相近,則比較支持「是密碼子選擇的問題」。方法:每個基因每個亞型隨機抽 100 條(A+B 一起的樹則各 50 條),先在蛋白質層面對齊再還原成密碼子,用 IQ-TREE 建樹,再跑 SLAC。</p>
+<figure>
+  <img src="figures/r9.png" alt="八個基因的長條圖,每個基因三條:RSV-A、RSV-B、A 加 B 同一棵樹,縱軸是基因整體 dN/dS。所有數值都遠低於 1,NS1 的三條幾乎一樣高。">
+  <figcaption><b>圖 14.</b> HyPhy SLAC 的整基因 dN/dS。全部遠低於 1:這些基因都受到強烈的純化選擇。<b>NS1 在 A 和 B 之間幾乎相同</b>(0.091 對 0.096)。</figcaption>
+</figure>
+<div class="scroll">
+<table>
+  <thead><tr><th>基因</th><th class="n">ω(A)</th><th class="n">ω(B)</th><th class="n">ω(A+B 一起)</th><th class="n">A 的變化數(同義 / 非同義)</th></tr></thead>
+  <tbody>
+    <tr><td><strong>NS1</strong></td><td class="n">0.091</td><td class="n">0.096</td><td class="n">0.093</td><td class="n">68 / 14</td></tr>
+    <tr><td><strong>NS2</strong></td><td class="n">0.141</td><td class="n">0.209</td><td class="n">0.165</td><td class="n">75 / 24</td></tr>
+    <tr><td>N</td><td class="n">0.043</td><td class="n">0.031</td><td class="n">0.031</td><td class="n">213 / 19</td></tr>
+    <tr><td>P</td><td class="n">0.095</td><td class="n">0.087</td><td class="n">0.080</td><td class="n">156 / 32</td></tr>
+    <tr><td>M</td><td class="n">0.048</td><td class="n">0.023</td><td class="n">0.042</td><td class="n">177 / 22</td></tr>
+    <tr><td>SH</td><td class="n">0.201</td><td class="n">0.285</td><td class="n">0.253</td><td class="n">30 / 16</td></tr>
+    <tr><td>F</td><td class="n">0.094</td><td class="n">0.115</td><td class="n">0.078</td><td class="n">373 / 74</td></tr>
+    <tr><td>M2-1</td><td class="n">0.123</td><td class="n">0.090</td><td class="n">0.092</td><td class="n">110 / 25</td></tr>
+  </tbody>
+</table>
+</div>
+<p>結論:NS1 的蛋白質在 A 和 B 受到<strong>同樣強度</strong>的保護,所以 CpG 的差距不能用「蛋白質限制不同」來解釋。NS2 在 B 稍為寬鬆(0.21 對 0.14),但兩邊都很低。</p>
+<div class="warn">
+  <p class="lbl">HyPhy 這一步的限制</p>
+  <p>同一個亞型之內的基因組是近親,所以每個基因只數到幾十個變化(上表最後一欄:NS1 只有 14 個非同義變化)。ω 因此<strong>不精確</strong>:足以說「兩邊都受強烈保護」,不足以分辨很小的差別。另外 SLAC 把整棵樹合起來算,它<strong>沒辦法告訴你 CpG 是在樹的哪一個分支上消失的</strong>。後者需要祖先序列重建,見第 34 節。HyPhy 還有別的方法(FEL、MEME 等找逐個位點的選擇),這次沒有用。</p>
+</div>
+
+<h4>G. 結果四:NS1/NS2 的 CpG 還在變嗎?</h4>
+<p>用第 30 節同一套分群穩健迴歸(<code>results/slopes_by_gene.tsv</code>),只看 NS1 和 NS2 的 CpG O/E 的 18 個斜率(9 條 lineage × 2 個基因)。</p>
+<ul>
+  <li>NS1 的斜率全部很小(絕對值最多每年 0.006),<strong>沒有任何一條在下降</strong>。只有 A.D 的 NS1 名義上顯著,而且是<strong>微升</strong>(每年 +0.0021,平均值 0.012,p = 0.0022)。</li>
+  <li>NS2 有兩個名義上顯著的上升:A.D(p = 0.036)和 A.D.2(p = 0.0055,但只有 4 個分群)。</li>
+  <li>18 次檢驗做 Bonferroni 校正(p 值乘以 18),<strong>只有 A.D 的 NS1 勉強過關</strong>(0.0022 × 18 ≈ 0.04)。</li>
+</ul>
+<p>所以沒有 lineage 正在失去 CpG。這是 A 與 B 之間<strong>固定的差異</strong>,不是還在進行的趨勢。這個結果直接回答了第 32 節最後提出的「是不是還在下降」:不是。</p>
+
+<h4>H. 小結</h4>
+<div class="scroll">
+<table>
+  <thead><tr><th>問題</th><th>答案</th></tr></thead>
+  <tbody>
+    <tr><td>RSV 有非人類宿主嗎?</td><td><strong>沒有。</strong>33,040 條全是 Human。</td></tr>
+    <tr><td>RSV-A 的 NS1/NS2 的 CpG 缺在哪裡?</td><td>缺在<strong>同義位置</strong>:NS1 在跨密碼子的「位置 3-1」,NS2 在「位置 2-3」和「3-1」。氨基酸決定的「位置 1-2」兩個亞型都是零。</td></tr>
+    <tr><td>是蛋白質造成的嗎?</td><td><strong>可能性低。</strong>NS1 的 ω 是 0.091(A)對 0.096(B);固定氨基酸之後,A 幾乎從不在 G 開頭的氨基酸前面用 C 結尾(比值 0.01 對 0.38)。</td></tr>
+    <tr><td>還在變化嗎?</td><td><strong>沒有。</strong>沒有 lineage 的 NS1/NS2 CpG 在下降。</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="warn">
+  <p class="lbl">這一輪證明了什麼、沒證明什麼</p>
+  <p><strong>證明了:</strong>CpG 的缺失集中在不影響蛋白質的位置,而且蛋白質本身受的限制在 A 和 B 之間一樣。這跟「RNA 層面的選擇壓力」吻合。</p>
+  <p><strong>沒有證明:</strong>這是 ZAP 之類的抗病毒壓力造成的。<strong>突變偏好</strong>或<strong>祖先留下來的密碼子用法</strong>,在一張「快照」裡看起來會一模一樣。RNA 病毒的突變本身就傾向 C→U(這會自然減少 CpG),所以單看「CpG 少」不能直接證明有選擇。要區分,需要有樹:知道 CpG 是在<strong>哪一個分支、什麼時候</strong>消失的,以及那個分支上有沒有一次「集中去除 CpG 的同義變化」。</p>
+  <p>另外,樣本是每條 lineage 抽 250 條,不是全部基因組;而且只有 6 條 A 和 3 條 B。</p>
+</div>
+<div class="know">
+  <p class="lbl">值得知道:這一輪帶來的新概念</p>
+  <ul>
+    <li><strong>CpG 抑制是個很普遍的現象。</strong>脊椎動物 RNA 病毒的基因組普遍缺 CpG;人類的 ZAP 蛋白會結合含高 CpG 的 RNA 並標記它銷毀(Takata et al. 2017, <em>Nature</em>)。這是為什麼 CpG 缺失被當成「宿主壓力」的證據。但同一個現象可以由好幾個原因造成(見上面的警告框)。</li>
+    <li><strong>跨密碼子的 CpG</strong>(本節的「位置 3-1」)是<span class="en">codon-pair bias(密碼子對偏好)</span>的一種:密碼子的選擇不只取決於它自己,還取決於它的鄰居。人工減弱病毒的方法之一(codon-pair deoptimization)就是調整這種相鄰關係。</li>
+    <li><strong>固定蛋白質再比較</strong>是區分「蛋白質的限制」和「RNA 的偏好」最直接的方法:把氨基酸擺平,看剩下的選擇。</li>
+    <li><strong>ω 低不等於 CpG 差異無關。</strong>ω 只告訴你蛋白質被保護得有多緊;CpG 的差異可以發生在被保護的蛋白質<em>內部</em>,因為同義位置本來就不影響蛋白質。</li>
+  </ul>
+</div>
+
+<h3><span class="num">34.</span>下一步</h3>
+<p>選項一至三是原本的清單(第三項已完成),四、五是跟導師討論之後新增的。</p>
 <h4>一、Nirsevimab 抗藥性監測 —— 最強的選項</h4>
 <p>自 2023 年起,nirsevimab 在整個人口層面給嬰兒使用,史上第一次對 <strong>F</strong> 蛋白施加了刻意的免疫壓力。抗藥性有沒有出現,是現在多個監測團隊正在發表的、活躍而未解決的問題。</p>
 <p>本項目已經具備條件。數據橫跨 <strong>2015 至 2026 年</strong>,涵蓋推行前後,而流程已經能正確切出 F 基因。我們確認過它能可靠讀出相關的抗體結合位置,而且兩個亞型的「正常」氨基酸剛好如文獻所述不同:RSV-A 在第 201 位是 K,RSV-B 是 N —— 這正是兩個亞型需要留意的突變不一樣的原因。</p>
 <p>分析內容是:追蹤已知抗藥性相關取代在推行前後、按年份和亞型的頻率。無論結果如何都很可能可以報告:發現沒有上升本身就是一個監測結果(已有數個團隊發表過),而發現有上升則意義重大。</p>
 <h4>二、確認 NS1 發現是否為新發現</h4>
 <p>如上所述做一次系統性文獻搜尋。半天時間,而它決定了現有結果值不值得繼續發展。</p>
-<h4>三、檢驗缺失的 CpG 是否位於同義位點</h4>
-<p>如果結果是新的,自然的下一步是問:那些沒有 CpG 的位置,<em>本來能不能</em>在不改變蛋白質的前提下帶有 CpG?如果可以,那這種缺失就必定是作用在 RNA 上的選擇,而不是蛋白質的限制。標準做法是一個固定氨基酸序列、只打亂同義密碼子的 Monte Carlo 虛無模型。</p>
+<h4>三、檢驗缺失的 CpG 是否位於同義位點 —— 已完成</h4>
+<p>這一項已經在第 33 節做完。方法跟原先設想的「固定氨基酸、打亂同義密碼子」的 Monte Carlo 虛無模型不同,改用了更直接的「固定氨基酸之後比較以 C 結尾的比例」,再加上 HyPhy 的 dN/dS。結果:缺失集中在同義位置,蛋白質的限制在 A 和 B 之間一樣。</p>
+<h4>四、把 CpG 的消失放到樹上 —— 區分選擇與突變偏好的唯一辦法</h4>
+<p>第 33 節的結論停在「吻合 RNA 層面的壓力」,因為快照分不出選擇和突變偏好。下一步是把 RSV-A 與 RSV-B 放在<strong>同一棵 NS1/NS2 的樹</strong>上,重建每個內部節點的祖先序列,逐個分支數兩樣東西:<strong>製造 CpG 的同義變化</strong>和<strong>消除 CpG 的同義變化</strong>。如果 CpG 的消失是被選擇推動的,應該能在某些分支看到「消除多過製造」,多過突變偏好預期的量;如果只是突變偏好,各分支的比例會跟整體的突變譜一致。這一步工作量比較大(約一至兩週),而且有可能得出不明確的結果。</p>
+<h4>五、換其他病毒,用現有的流程直接試</h4>
+<p>RSV 的趨勢是否定結果,而且沒有宿主資訊,所以導師建議換其他病毒,直接用現有流程(每個 lineage 內做時間趨勢)看有沒有有趣的故事,有的話就沿著那個病毒做下去。GISAID 頁面上有這些資料庫:</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>GISAID 分頁</th><th>病毒</th><th>宿主有變化嗎?</th><th>備註</th></tr></thead>
+  <tbody>
+    <tr><td>EpiFlu</td><td>流感</td><td>有:鳥、牛、其他哺乳類(H5N1)</td><td>論文研究的就是流感,所以新意較低;但 H5N1 的牛和哺乳類資料是最近的「宿主轉換」,可以拿來驗證。</td></tr>
+    <tr><td>hCoV-19</td><td>SARS-CoV-2</td><td>有:人、貂、鹿</td><td>資料量極大,非人類宿主的部分很少。</td></tr>
+    <tr><td>EpiRSV</td><td>RSV</td><td>沒有,全是人</td><td>本項目已完成。</td></tr>
+    <tr><td>EpiPox</td><td>猴痘(mpox)</td><td>幾乎全是人</td><td><strong>DNA 病毒</strong>,突變受宿主的 APOBEC3 酶主導,機制跟 RNA 病毒的 CpG 不同,論文的方法不能直接套用。動物宿主樣本少,且常來自單一研究。</td></tr>
+    <tr><td>EpiArbo</td><td>蟲媒病毒(由蚊傳播)</td><td>有,但要經過蚊子</td><td>導師說要避開:兩個宿主交替,成分會受蚊子宿主影響,混淆很大。</td></tr>
+    <tr><td>EpiNiV</td><td>Nipah 病毒</td><td>有:蝙蝠(源頭)、豬、人</td><td>屬副黏液病毒,跟 RSV 同一個大家族;宿主轉換是真正的零星事件,值得看。資料量可能很少,要先確認基因組數目。</td></tr>
+  </tbody>
+</table>
+</div>
+<p>先做的事是<strong>可行性評估</strong>:下載每個候選的 host、日期、lineage 欄位,數一數非人類宿主有多少條序列、涵蓋多長時間。條件不夠的(例如只有十幾條基因組)就不用做。</p>
+<div class="know">
+  <p class="lbl">值得知道:換一個病毒,現有的流程需要什麼</p>
+  <ul>
+    <li>一條<strong>有基因標註的參考基因組</strong>(NCBI 的 GenBank 檔),用來切出基因。</li>
+    <li>每條序列的<strong>採集日期</strong>。</li>
+    <li>一個<strong>分群標籤</strong>(像 RSV 的 lineage)。如果資料庫沒有,就要自己建樹再切出分支(IQ-TREE 或 Nextstrain 的 augur)。</li>
+    <li>若要做「零星對持續」:每條序列的<strong>宿主</strong>,以及一棵<strong>時間樹</strong>(TreeTime),在樹上找出宿主轉換事件,看每次事件之後的後代群存續了多久、有多少條基因組(見第 33 節 A 的方框)。這是第二階段,要先從上面的可行性評估選出最好的候選才做。</li>
+  </ul>
+</div>
 
 <!-- ===================== GLOSSARY ===================== -->
 <div class="part">
@@ -948,6 +1155,12 @@
     <tr><td>UpA (TpA)</td><td>UpA 二核苷酸</td><td>一個 U(或 T)後面接一個 A。除 CpG 外唯一有實驗證據會壓制 RNA 病毒複製的 motif,走的是另一條辨識路徑。論文沒有用它,本項目保留它作為對比:RSV 的 CpG O/E 只有 0.24,UpA 卻有 0.90,顯示壓力是 CpG 專有的。</td></tr>
     <tr><td>Cliff's delta</td><td>Cliff 效應量</td><td>兩組分佈分離得多徹底,範圍 −1 到 +1。樣本數大到 p 值失效時用它代替。0 = 完全重疊,±1 = 完全不重疊。</td></tr>
     <tr><td>Effect size</td><td>效應量</td><td>差異「有多大」的指標,相對於 p 值的「是不是巧合」。樣本數越大,p 值越沒用,效應量越重要。</td></tr>
+    <tr><td>ENC</td><td>有效密碼子數</td><td>Effective number of codons。20 = 每種氨基酸只用一個密碼子,61 = 所有密碼子均勻使用。量度整體的密碼子偏好。</td></tr>
+    <tr><td>dN/dS (ω)</td><td>非同義對同義變化比</td><td>非同義變化率除以同義變化率。遠低於 1 代表蛋白質受到純化選擇保護,約 1 代表不受限制,大於 1 代表正選擇。</td></tr>
+    <tr><td>HyPhy</td><td>HyPhy 軟體</td><td>做分子演化選擇分析的軟體。本項目用它的 SLAC 方法算整個基因的 dN/dS。</td></tr>
+    <tr><td>Purifying selection</td><td>純化選擇</td><td>淘汰會破壞功能的變異,令蛋白質保持不變。ω 低就是它的特徵。</td></tr>
+    <tr><td>Codon-pair bias</td><td>密碼子對偏好</td><td>密碼子的選擇受相鄰密碼子影響。跨密碼子的 CpG(前一個結尾 C、後一個開頭 G)是其中一種。</td></tr>
+    <tr><td>Host</td><td>宿主</td><td>病毒寄居的生物。GISAID 的 Host 欄位記錄序列來自哪一種。</td></tr>
     <tr><td>ZAP</td><td>鋅指抗病毒蛋白</td><td>Zinc-finger antiviral protein。人類蛋白,結合病毒 RNA 的 CpG 位點並標記它銷毀。</td></tr>
   </tbody>
 </table>

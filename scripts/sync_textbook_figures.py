@@ -2,8 +2,8 @@
 Script Name: sync_textbook_figures.py
 Purpose:     Copy the analysis figures into docs/figures/ under the short names the
              textbook HTML references, so docs/ stays self-contained and shareable.
-Inputs:      results/figures/fig1..fig6 *.png
-Outputs:     docs/figures/r1..r6 *.png
+Inputs:      results/figures/fig1..fig9 *.png
+Outputs:     docs/figures/r1..r9 *.png
 Notes:       Run after regenerating figures (Rscript R/figures.R, and
              scripts/plot_subtype_contrast.py). The teaching diagrams t1..t5 are made
              separately by scripts/make_teaching_figures.py and are not touched here.
@@ -18,6 +18,9 @@ PAIRS = {
     "fig4_gc_correlation.png":     "r4.png",
     "fig5_gene_composition.png":   "r5.png",
     "fig6_subtype_contrast.png":   "r6.png",
+    "fig7_cpg_by_codon_position.png": "r7.png",
+    "fig8_junction_ratio.png":     "r8.png",
+    "fig9_hyphy_omega.png":        "r9.png",
 }
 
 src, dst = Path("results/figures"), Path("docs/figures")
