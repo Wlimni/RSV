@@ -20,40 +20,19 @@ Notes:       APOBEC3-type mutation = C->T where the reference base before it is 
              dates are dropped.
              Run: .venv/bin/python scripts/run_mpox_lineage_analysis.py
 """
-import os, sys, re
+import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 import numpy as np, pandas as pd
-from rsv import lineage
+from rsv import lineage, mpox
 
-ref = "".join(l.strip() for l in open("data/processed/Mpox/nextclade/dataset/reference.fasta") if not l.startswith(">")).upper()
-SUB = re.compile(r"^([ACGT])(\d+)([ACGT])$")
-
-
-def parse(cell):
-    """'C123T,G456A' -> list of (ref, pos, alt) for plain A/C/G/T substitutions."""
-    if not isinstance(cell, str):
-        return []
-    out = []
-    for x in cell.split(","):
-        m = SUB.match(x)
-        if m:
-            out.append((m.group(1), int(m.group(2)), m.group(3)))
-    return out
+ref = mpox.load_reference("data/processed/Mpox/nextclade/dataset/reference.fasta")
 
 
 def classify(subs):
-    """Counts: total, APOBEC3-type, and net G+C loss."""
-    apo = loss = 0
-    for r, p, a in subs:
-        if r == "C" and a == "T":
-            loss += 1
-            apo += p >= 2 and ref[p - 2] == "T"
-        elif r == "G" and a == "A":
-            loss += 1
-            apo += p < len(ref) and ref[p] == "A"
-        elif (r == "T" and a == "C") or (r == "A" and a == "G"):
-            loss -= 1
-    return len(subs), apo, loss
+    return mpox.classify(subs, ref)
+
+
+parse = mpox.parse
 
 
 nc = pd.read_csv("data/processed/Mpox/nextclade/nextclade.tsv", sep="\t", low_memory=False)

@@ -3,7 +3,8 @@ Script Name: merge_gisaid.py
 Purpose:     Merge the GISAID downloads of one virus (several TSVs and FASTAs in one folder) into
              one metadata table and one FASTA. Used for NiV and Mpox; the RSV batches have their
              own script (merge_gisaid_batches.py) because they sit in one folder per batch.
-Inputs:      data/Raw/<virus>/*.tsv and *.fasta (GISAID default names, which are not reliable)
+Inputs:      data/Raw/<virus>/**/*.tsv and *.fasta, subfolders allowed (one per search) (GISAID default
+             names, which are not reliable)
 Outputs:     data/processed/<virus>/<virus>_metadata.tsv, <virus>.fasta, merge_report.txt
 Notes:       Join key = Accession ID; for each field the first non-empty value wins. FASTA header
              is >name|accession|date, so the accession is the 2nd '|' field. Duplicate accessions
@@ -18,7 +19,7 @@ os.makedirs(out, exist_ok=True)
 csv.field_size_limit(10**8)
 
 meta, n_rows = {}, 0
-for f in sorted(glob.glob(f"{raw}/*.tsv")):
+for f in sorted(glob.glob(f"{raw}/**/*.tsv", recursive=True)):
     with open(f, newline="", encoding="utf-8") as fh:
         for row in csv.DictReader(fh, delimiter="\t"):
             n_rows += 1
@@ -28,7 +29,7 @@ for f in sorted(glob.glob(f"{raw}/*.tsv")):
                     m[k] = v
 
 fasta, n_dup = {}, 0
-for f in sorted(glob.glob(f"{raw}/*.fasta")):
+for f in sorted(glob.glob(f"{raw}/**/*.fasta", recursive=True)):
     h, s = None, []
     with open(f) as fh:
         for line in list(fh) + [">END|END|END"]:

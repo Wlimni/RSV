@@ -12,9 +12,12 @@ Notes:       Whole-genome only. Mpox is a ~197 kb double-stranded DNA virus with
              main mutation signature of human-adapted MPXV.
              Clade call: share of sampled 21-mers found only in the clade I reference versus only in
              the clade IIb reference. Rough: it separates I from II, it does not split IIa/IIb.
-             Run: .venv/bin/python scripts/build_mpox_features.py
+             Run: .venv/bin/python scripts/build_mpox_features.py [Mpox|MpoxI]
 """
+import sys
 import numpy as np, pandas as pd
+
+VIRUS = sys.argv[1] if len(sys.argv) > 1 else "Mpox"      # data folder name: Mpox or MpoxI
 
 K, STEP = 21, 53
 LUT = np.full(256, 4, np.uint8)
@@ -47,7 +50,7 @@ only_i, only_ii = ki - kii, kii - ki
 print("reference k-mers:", len(only_i), "only in I,", len(only_ii), "only in II")
 
 rows = []
-for n, (h, s) in enumerate(read_fa("data/processed/Mpox/Mpox.fasta")):
+for n, (h, s) in enumerate(read_fa(f"data/processed/{VIRUS}/{VIRUS}.fasta")):
     acc = h.split("|")[1]
     a = LUT[np.frombuffer(s.encode(), np.uint8)]
     valid = a < 4
@@ -71,9 +74,9 @@ for n, (h, s) in enumerate(read_fa("data/processed/Mpox/Mpox.fasta")):
 f = pd.DataFrame(rows)
 tot = f.hit_I + f.hit_II
 f["clade_call"] = np.where(tot < 200, "unassigned", np.where(f.hit_I > f.hit_II, "I", "II"))
-meta = pd.read_csv("data/processed/Mpox/Mpox_metadata.tsv", sep="\t", dtype=str)
+meta = pd.read_csv(f"data/processed/{VIRUS}/{VIRUS}_metadata.tsv", sep="\t", dtype=str)
 f = f.merge(meta[["Accession ID", "Host", "Collection date", "Location", "Specimen",
                   "Additional host information", "Patient status"]], on="Accession ID", how="left")
-f.to_csv("data/processed/Mpox/Mpox_features.tsv", sep="\t", index=False)
+f.to_csv(f"data/processed/{VIRUS}/{VIRUS}_features.tsv", sep="\t", index=False)
 print(len(f), "sequences")
 print(f.clade_call.value_counts())
