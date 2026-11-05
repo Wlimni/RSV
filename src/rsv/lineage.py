@@ -10,8 +10,8 @@ Notes:       Fitting inside each lineage, rather than pooling everything, is wha
              RSV lineage labels are hierarchical and dot-separated (A.D.1.5 sits inside
              A.D.1 inside A.D). Full labels are too fine for this: most span only ~6 years
              with a few hundred sequences, which makes every slope noisy. Truncating to
-             three levels gives about 8 well-populated lineages spanning 2015-2026, which
-             is close to the 12 lineages the paper worked with.
+             three levels gives 14 groups (7 RSV-A, 7 RSV-B); 9 of them pass the span and size
+             filters in `prepare`, which is close to the 12 lineages the paper worked with.
 """
 import numpy as np
 import pandas as pd
