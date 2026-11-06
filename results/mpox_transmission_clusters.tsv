@@ -1,0 +1,498 @@
+cluster	dataset	size	span_years	class	countries	groups
+0	clade I	1	0.0	sporadic	1	Ib sh2023
+1	clade I	1	0.0	sporadic	1	Ib sh2023
+2	clade I	9	0.44572198517835204	intermediate	1	Ib sh2023
+3	clade I	1	0.0	sporadic	1	Ib sh2023
+4	clade I	1	0.0	sporadic	1	Ib sh2023
+5	clade I	9	0.6129350999324288	intermediate	1	Ib sh2023
+6	clade I	20	1.3283030166930985	sustained	1	Ib sh2023
+7	clade I	13	0.24316939890672984	intermediate	1	Ib sh2023
+8	clade I	1	0.0	sporadic	1	Ib sh2023
+9	clade I	1	0.0	sporadic	1	Ib sh2023
+10	clade I	1	0.0	sporadic	1	Ib sh2023
+11	clade I	1	0.0	sporadic	1	Ib sh2023
+12	clade I	1	0.0	sporadic	1	Ib sh2023
+13	clade I	28	0.7013698630137242	sustained	3	Ib sh2023
+14	clade I	1	0.0	sporadic	1	Ib sh2023
+15	clade I	1	0.0	sporadic	1	Ib sh2023
+16	clade I	1	0.0	sporadic	1	Ib sh2023
+17	clade I	1	0.0	sporadic	1	Ib sh2023
+18	clade I	1	0.0	sporadic	1	Ib sh2023
+19	clade I	1	0.0	sporadic	1	Ib sh2023
+20	clade I	1	0.0	sporadic	1	Ib sh2023
+21	clade I	1	0.0	sporadic	1	Ib sh2023
+22	clade I	1	0.0	sporadic	1	Ib sh2023
+23	clade I	1	0.0	sporadic	1	Ib sh2023
+24	clade I	1	0.0	sporadic	1	Ib sh2023
+25	clade I	1	0.0	sporadic	1	Ib sh2023
+26	clade I	1	0.0	sporadic	1	Ib sh2023
+27	clade I	1	0.0	sporadic	1	Ib sh2023
+28	clade I	1	0.0	sporadic	1	Ib sh2023
+29	clade I	1	0.0	sporadic	1	Ib sh2023
+30	clade I	1	0.0	sporadic	1	Ib sh2023
+31	clade I	1	0.0	sporadic	1	Ib sh2023
+32	clade I	1	0.0	sporadic	1	Ib sh2023
+33	clade I	1	0.0	sporadic	1	Ib sh2023
+34	clade I	1	0.0	sporadic	1	Ib sh2023
+35	clade I	1	0.0	sporadic	1	Ib sh2023
+36	clade I	1	0.0	sporadic	1	Ib sh2023
+37	clade I	1	0.0	sporadic	1	Ib sh2023
+38	clade I	1	0.0	sporadic	1	Ib sh2023
+39	clade I	1	0.0	sporadic	1	Ib sh2023
+40	clade I	1	0.0	sporadic	1	Ib sh2023
+41	clade I	1	0.0	sporadic	1	Ib sh2023
+42	clade I	1	0.0	sporadic	1	Ib sh2023
+43	clade I	1	0.0	sporadic	1	Ib sh2023
+44	clade I	1	0.0	sporadic	1	Ib sh2023
+45	clade I	1	0.0	sporadic	1	Ib sh2023
+46	clade I	1	0.0	sporadic	1	Ib sh2023
+47	clade I	1	0.0	sporadic	1	Ib sh2023
+48	clade I	2	0.0	sporadic	1	Ib sh2023
+49	clade I	1	0.0	sporadic	1	Ib sh2023
+50	clade I	1	0.0	sporadic	1	Ib sh2023
+51	clade I	1	0.0	sporadic	1	Ib sh2023
+52	clade I	1	0.0	sporadic	1	Ib sh2023
+53	clade I	1	0.0	sporadic	1	Ib sh2023
+54	clade I	2	0.005479452054714784	sporadic	1	Ib sh2023
+55	clade I	1	0.0	sporadic	1	Ib sh2023
+56	clade I	2	0.0	sporadic	1	Ib sh2023
+57	clade I	1	0.0	sporadic	1	Ib sh2023
+58	clade I	1	0.0	sporadic	1	Ib sh2023
+59	clade I	1	0.0	sporadic	1	Ib sh2023
+60	clade I	2	0.1753424657533742	sporadic	1	Ib sh2023
+61	clade I	2	0.0	sporadic	1	Ia no outbreak
+62	clade I	3	0.0	intermediate	1	Ia no outbreak
+63	clade I	3	0.5369863013700069	intermediate	1	Ia no outbreak
+64	clade I	2	10.79188562018112	sporadic	1	Ia no outbreak
+65	clade I	3	0.05753424657518735	intermediate	1	Ia no outbreak
+66	clade I	1	0.0	sporadic	1	Ia no outbreak
+67	clade I	8	0.5424657534247217	intermediate	1	Ia no outbreak
+68	clade I	1	0.0	sporadic	1	Ia no outbreak
+69	clade I	1	0.0	sporadic	1	Ia no outbreak
+70	clade I	2	0.04383561643840039	sporadic	1	Ia no outbreak
+71	clade I	2	0.3753424657531923	sporadic	1	Ia no outbreak
+72	clade I	1	0.0	sporadic	1	Ia no outbreak
+73	clade I	1	0.0	sporadic	1	Ia no outbreak
+74	clade I	1	0.0	sporadic	1	Ia no outbreak
+75	clade I	1	0.0	sporadic	1	Ia no outbreak
+76	clade I	1	0.0	sporadic	1	Ia no outbreak
+77	clade I	1	0.0	sporadic	1	Ia no outbreak
+78	clade I	1	0.0	sporadic	1	Ia no outbreak
+79	clade I	11	0.5972078748409331	sustained	1	Ia no outbreak
+80	clade I	15	1.3642413354293694	sustained	1	Ia no outbreak
+81	clade I	3	0.0164308705741405	intermediate	1	Ia no outbreak
+82	clade I	1	0.0	sporadic	1	Ia no outbreak
+83	clade I	6	1.2681637847140337	intermediate	1	Ia no outbreak
+84	clade I	3	0.14760835391894034	intermediate	1	Ia no outbreak
+85	clade I	3	0.013661202185858201	intermediate	1	Ia no outbreak
+86	clade I	2	0.0	sporadic	1	Ia no outbreak
+87	clade I	5	0.03561643835587347	intermediate	1	Ia no outbreak
+88	clade I	3	0.19178082191751855	intermediate	1	Ia no outbreak
+89	clade I	1	0.0	sporadic	1	Ia no outbreak
+90	clade I	8	0.5863013698628947	intermediate	1	Ia no outbreak
+91	clade I	1	0.0	sporadic	1	Ia no outbreak
+92	clade I	1	0.0	sporadic	1	Ia no outbreak
+93	clade I	1	0.0	sporadic	1	Ia no outbreak
+94	clade I	5	0.02191780821908651	intermediate	1	Ia no outbreak
+95	clade I	2	0.05205479452069994	sporadic	1	Ia no outbreak
+96	clade I	5	0.27123287671247454	intermediate	1	Ia no outbreak
+97	clade I	1	0.0	sporadic	1	Ia no outbreak
+98	clade I	1	0.0	sporadic	1	Ia no outbreak
+99	clade I	1	0.0	sporadic	1	Ia no outbreak
+100	clade I	2	0.016438356164371726	sporadic	1	Ia no outbreak
+101	clade I	1	0.0	sporadic	1	Ia no outbreak
+102	clade I	4	0.0	intermediate	1	Ia no outbreak
+103	clade I	2	0.02739726027357392	sporadic	1	Ia no outbreak
+104	clade I	2	0.0	sporadic	1	Ia no outbreak
+105	clade I	2	0.008219178082072176	sporadic	1	Ia sh2024
+106	clade I	9	0.01639344262321174	intermediate	1	Ia no outbreak
+107	clade I	2	0.016393442622984367	sporadic	1	Ia no outbreak
+108	clade I	1	0.0	sporadic	1	Ia no outbreak
+109	clade I	1	0.0	sporadic	1	Ia no outbreak
+110	clade I	44	0.37704918032773094	intermediate	1	Ia sh2024
+111	clade I	1	0.0	sporadic	1	Ia no outbreak
+112	clade I	3	0.010928961748277288	intermediate	1	Ia no outbreak
+113	clade I	1	0.0	sporadic	1	Ia no outbreak
+114	clade I	3	0.3032786885248697	intermediate	1	Ia no outbreak
+115	clade I	1	0.0	sporadic	1	Ia no outbreak
+116	clade I	1	0.0	sporadic	1	Ia no outbreak
+117	clade I	2	0.0	sporadic	1	Ia no outbreak
+118	clade I	2	0.0	sporadic	1	Ia no outbreak
+119	clade I	2	0.0	sporadic	1	Ia no outbreak
+120	clade I	1	0.0	sporadic	1	Ia no outbreak
+121	clade I	2	0.00819672131160587	sporadic	1	Ia no outbreak
+122	clade I	1	0.0	sporadic	1	Ia no outbreak
+123	clade I	1	0.0	sporadic	1	Ia no outbreak
+124	clade I	1	0.0	sporadic	1	Ia no outbreak
+125	clade I	1	0.0	sporadic	1	Ia no outbreak
+126	clade I	1	0.0	sporadic	1	Ia no outbreak
+127	clade I	1	0.0	sporadic	1	Ia no outbreak
+128	clade I	1	0.0	sporadic	1	Ia no outbreak
+129	clade I	2	0.002732240437353539	sporadic	1	Ia no outbreak
+130	clade I	1	0.0	sporadic	1	Ia no outbreak
+131	clade I	2	0.3005464480875162	sporadic	1	Ia no outbreak
+132	clade I	1	0.0	sporadic	1	Ia no outbreak
+133	clade I	1	0.0	sporadic	1	Ia no outbreak
+134	clade I	7	0.10958904109611467	intermediate	1	Ia no outbreak
+135	clade I	7	0.5671232876711656	intermediate	1	Ia no outbreak
+136	clade I	1	0.0	sporadic	1	Ia no outbreak
+137	clade I	1	0.0	sporadic	1	Ia no outbreak
+138	clade I	2	0.0	sporadic	1	Ia no outbreak
+139	clade I	1	0.0	sporadic	1	Ia no outbreak
+140	clade I	1	0.0	sporadic	1	Ia sh2024
+141	clade I	1	0.0	sporadic	1	Ia sh2024
+142	clade I	2	0.0	sporadic	1	Ia no outbreak
+143	clade I	1	0.0	sporadic	1	Ia no outbreak
+144	clade I	1	0.0	sporadic	1	Ia sh2024
+145	clade I	1	0.0	sporadic	1	Ia no outbreak
+146	clade I	1	0.0	sporadic	1	Ia no outbreak
+147	clade I	1	0.0	sporadic	1	Ia no outbreak
+148	clade I	1	0.0	sporadic	0	Ia no outbreak
+149	clade I	1	0.0	sporadic	1	Ia no outbreak
+150	clade I	1	0.0	sporadic	1	Ia no outbreak
+151	clade I	1	0.0	sporadic	1	Ia no outbreak
+152	clade I	1	0.0	sporadic	1	Ia no outbreak
+153	clade I	1	0.0	sporadic	0	Ia no outbreak
+154	clade I	1	0.0	sporadic	1	Ia no outbreak
+155	clade I	2	0.0	sporadic	1	Ia no outbreak
+156	clade I	1	0.0	sporadic	1	Ia no outbreak
+157	clade I	1	0.0	sporadic	1	Ia no outbreak
+158	clade I	2	0.0	sporadic	1	Ia no outbreak,Ia sh2024
+159	clade I	2	0.0	sporadic	1	Ia no outbreak
+160	clade I	4	0.051912568306079265	intermediate	1	Ia no outbreak
+161	clade I	4	0.0	intermediate	1	Ia no outbreak
+162	clade I	1	0.0	sporadic	1	Ia no outbreak
+163	clade I	1	0.0	sporadic	1	Ia sh2024
+164	clade I	2	0.0	sporadic	1	Ia no outbreak
+165	clade I	1	0.0	sporadic	1	Ia no outbreak
+166	clade I	3	0.6767123287668255	intermediate	1	Ia no outbreak
+167	clade I	1	0.0	sporadic	1	Ia no outbreak
+168	clade I	1	0.0	sporadic	1	Ia no outbreak
+169	clade I	1	0.0	sporadic	1	Ia no outbreak
+170	clade I	2	0.005479452054942158	sporadic	1	Ia no outbreak
+171	clade I	2	0.0	sporadic	1	Ia no outbreak
+172	clade I	1	0.0	sporadic	1	Ia no outbreak
+173	clade I	1	0.0	sporadic	1	Ia no outbreak
+174	clade I	6	1.0082191780818448	intermediate	1	Ia no outbreak
+175	clade I	5	1.1397260273972734	intermediate	1	Ia no outbreak
+176	clade I	2	0.0	sporadic	1	Ia no outbreak
+177	clade I	1	0.0	sporadic	1	Ia no outbreak
+178	clade I	1	0.0	sporadic	1	Ia no outbreak
+179	clade I	1	0.0	sporadic	1	Ia no outbreak
+180	clade I	3	0.010958904109656942	intermediate	1	Ia no outbreak
+181	clade I	1	0.0	sporadic	1	Ia no outbreak
+182	clade I	1	0.0	sporadic	1	Ia no outbreak
+183	clade I	3	0.0	intermediate	1	Ia no outbreak
+184	clade I	1	0.0	sporadic	1	Ia no outbreak
+185	clade I	1	0.0	sporadic	1	Ia no outbreak
+186	clade I	1	0.0	sporadic	1	Ia no outbreak
+187	clade I	1	0.0	sporadic	1	Ia no outbreak
+188	clade I	1	0.0	sporadic	1	Ia no outbreak
+189	clade I	1	0.0	sporadic	1	Ia no outbreak
+190	clade I	2	1.2191780821915472	sporadic	1	Ia no outbreak
+191	clade I	1	0.0	sporadic	1	Ia no outbreak
+192	clade I	8	0.12602739726025902	intermediate	1	Ia no outbreak
+193	clade I	3	0.0	intermediate	1	Ia no outbreak
+194	clade I	2	0.0	sporadic	1	Ia no outbreak
+195	clade I	1	0.0	sporadic	1	Ia no outbreak
+196	clade I	1	0.0	sporadic	1	Ia no outbreak
+197	clade I	1	0.0	sporadic	1	Ia no outbreak
+198	clade I	3	0.0	intermediate	1	Ia no outbreak
+199	clade I	1	0.0	sporadic	1	Ia no outbreak
+200	clade I	1	0.0	sporadic	1	Ia no outbreak
+201	clade I	2	0.0	sporadic	1	Ia no outbreak
+202	clade I	1	0.0	sporadic	1	Ia no outbreak
+203	clade I	1	0.0	sporadic	1	Ia no outbreak
+204	clade I	3	0.005479452055169531	intermediate	1	Ia no outbreak
+205	clade I	3	0.005479452054714784	intermediate	1	Ia no outbreak
+206	clade I	1	0.0	sporadic	1	Ia no outbreak
+207	clade I	2	0.11780821917818685	sporadic	1	Ia no outbreak
+208	clade I	1	0.0	sporadic	1	Ia sh2024
+209	clade I	1	0.0	sporadic	1	Ia no outbreak
+210	clade I	1	0.0	sporadic	1	Ia no outbreak
+211	clade I	1	0.0	sporadic	1	Ia no outbreak
+212	clade I	1	0.0	sporadic	1	Ia no outbreak
+213	clade I	1	0.0	sporadic	1	Ia no outbreak
+214	clade I	1	0.0	sporadic	1	Ia no outbreak
+215	clade I	1	0.0	sporadic	1	Ia no outbreak
+216	clade I	3	0.0027397260275847657	intermediate	1	Ia no outbreak
+217	clade I	1	0.0	sporadic	1	Ia no outbreak
+218	clade I	2	0.0	sporadic	1	Ia no outbreak
+219	clade I	1	0.0	sporadic	1	Ia no outbreak
+220	clade I	1	0.0	sporadic	1	Ia no outbreak
+221	clade I	1	0.0	sporadic	1	Ia no outbreak
+222	clade I	1	0.0	sporadic	1	Ia no outbreak
+223	clade I	1	0.0	sporadic	1	Ia no outbreak
+224	clade I	1	0.0	sporadic	1	Ia no outbreak
+0	clade IIb	1	0.0	sporadic	1	IIb lineage A
+1	clade IIb	2	0.041095890411270375	sporadic	1	IIb lineage A
+2	clade IIb	1	0.0	sporadic	1	IIb lineage A
+3	clade IIb	5	0.23287671232878893	intermediate	1	IIb lineage A
+4	clade IIb	2	0.309589041095478	sporadic	1	IIb lineage A
+5	clade IIb	5	0.21917808219154722	intermediate	1	IIb lineage A
+6	clade IIb	1	0.0	sporadic	1	IIb lineage A
+7	clade IIb	4	0.30410958904076324	intermediate	1	IIb lineage A
+8	clade IIb	2	0.027397260274028667	sporadic	1	IIb lineage A
+9	clade IIb	1	0.0	sporadic	1	IIb lineage A
+10	clade IIb	1	0.0	sporadic	1	IIb lineage A
+11	clade IIb	1	0.0	sporadic	1	IIb lineage A
+12	clade IIb	1	0.0	sporadic	1	IIb lineage A
+13	clade IIb	1	0.0	sporadic	1	IIb lineage A
+14	clade IIb	1	0.0	sporadic	1	IIb lineage A
+15	clade IIb	2	0.0	sporadic	1	IIb lineage A
+16	clade IIb	6	0.10684931506830253	intermediate	1	IIb lineage A
+17	clade IIb	2	0.26027397260236285	sporadic	1	IIb lineage A
+18	clade IIb	1	0.0	sporadic	1	IIb lineage A
+19	clade IIb	1	0.0	sporadic	1	IIb lineage A
+20	clade IIb	1	0.0	sporadic	1	IIb lineage A
+21	clade IIb	2	0.0	sporadic	1	IIb lineage A
+22	clade IIb	1	0.0	sporadic	1	IIb lineage A
+23	clade IIb	1	0.0	sporadic	1	IIb lineage A
+24	clade IIb	3	0.47110562167790704	intermediate	2	IIb lineage A
+25	clade IIb	2	0.027397260273801294	sporadic	1	IIb lineage A
+26	clade IIb	1	0.0	sporadic	1	IIb lineage A
+27	clade IIb	1	0.0	sporadic	1	IIb lineage A
+28	clade IIb	16	8.317808219178005	sustained	3	IIb lineage A
+29	clade IIb	2	0.15342465753383294	sporadic	1	IIb lineage A
+30	clade IIb	17	6.947945205479755	sustained	4	IIb lineage A
+31	clade IIb	1	0.0	sporadic	1	IIb lineage A
+32	clade IIb	1	0.0	sporadic	1	IIb lineage A
+33	clade IIb	1	0.0	sporadic	1	IIb lineage A
+34	clade IIb	1	0.0	sporadic	1	IIb lineage A
+35	clade IIb	1	0.0	sporadic	1	IIb lineage A
+36	clade IIb	1	0.0	sporadic	1	IIb lineage A
+37	clade IIb	4	0.07671232876714384	intermediate	1	IIb lineage A
+38	clade IIb	1	0.0	sporadic	1	IIb lineage A
+39	clade IIb	1	0.0	sporadic	1	IIb lineage A
+40	clade IIb	1	0.0	sporadic	1	IIb lineage A
+41	clade IIb	1	0.0	sporadic	1	IIb lineage A
+42	clade IIb	1	0.0	sporadic	1	IIb lineage A
+43	clade IIb	1	0.0	sporadic	1	IIb lineage A
+44	clade IIb	1	0.0	sporadic	1	IIb lineage A
+45	clade IIb	3	0.06575342465816902	intermediate	1	IIb lineage A
+46	clade IIb	2	0.0	sporadic	1	IIb lineage A
+47	clade IIb	1	0.0	sporadic	1	IIb lineage A
+48	clade IIb	1	0.0	sporadic	1	IIb lineage A
+49	clade IIb	1	0.0	sporadic	1	IIb lineage A
+50	clade IIb	1	0.0	sporadic	1	IIb lineage A
+51	clade IIb	1	0.0	sporadic	1	IIb lineage A
+52	clade IIb	1	0.0	sporadic	1	IIb lineage A
+53	clade IIb	1	0.0	sporadic	1	IIb lineage A
+54	clade IIb	1	0.0	sporadic	1	IIb lineage A
+55	clade IIb	1	0.0	sporadic	1	IIb lineage A
+56	clade IIb	1	0.0	sporadic	1	IIb lineage A
+57	clade IIb	2	0.08493150684898865	sporadic	1	IIb lineage A
+58	clade IIb	2	0.0	sporadic	1	IIb lineage A
+59	clade IIb	1	0.0	sporadic	1	IIb lineage A
+60	clade IIb	1	0.0	sporadic	1	IIb lineage A
+61	clade IIb	1	0.0	sporadic	1	IIb lineage A
+62	clade IIb	6	0.08493150684876127	intermediate	1	IIb lineage A
+63	clade IIb	4	0.23013698630143153	intermediate	3	IIb lineage A
+64	clade IIb	1	0.0	sporadic	1	IIb lineage A
+65	clade IIb	30	0.008219178081844802	intermediate	1	IIb lineage A
+66	clade IIb	11	4.608219178082209	sustained	1	IIb lineage A
+67	clade IIb	1	0.0	sporadic	1	IIb lineage A
+68	clade IIb	1	0.0	sporadic	1	IIb lineage A
+69	clade IIb	1	0.0	sporadic	1	IIb lineage A
+70	clade IIb	2	0.0	sporadic	1	IIb lineage A
+71	clade IIb	2	0.0	sporadic	1	IIb lineage A
+72	clade IIb	4	0.2520547945207454	intermediate	1	IIb lineage A
+73	clade IIb	2	0.0	sporadic	1	IIb lineage A
+74	clade IIb	1	0.0	sporadic	1	IIb lineage A
+75	clade IIb	2	0.12602739726025902	sporadic	1	IIb lineage A
+76	clade IIb	4	0.16712328767107465	intermediate	2	IIb lineage A
+77	clade IIb	1	0.0	sporadic	1	IIb lineage A
+78	clade IIb	3	0.23013698630120416	intermediate	1	IIb lineage A
+79	clade IIb	1	0.0	sporadic	1	IIb lineage A
+80	clade IIb	1	0.0	sporadic	1	IIb lineage A
+81	clade IIb	4	0.07397260273955908	intermediate	1	IIb lineage A
+82	clade IIb	1	0.0	sporadic	1	IIb lineage A
+83	clade IIb	1	0.0	sporadic	1	IIb lineage A
+84	clade IIb	1	0.0	sporadic	1	IIb lineage A
+85	clade IIb	3	0.09572572797378598	intermediate	1	IIb lineage A
+86	clade IIb	1	0.0	sporadic	1	IIb lineage A
+87	clade IIb	943	1.9361703720339847	sustained	32	IIb B-J
+88	clade IIb	1	0.0	sporadic	1	IIb B-J
+89	clade IIb	5	0.16164383561635987	intermediate	1	IIb B-J
+90	clade IIb	5	0.290410958904431	intermediate	1	IIb B-J
+91	clade IIb	34	1.0153828879404045	sustained	2	IIb B-J
+92	clade IIb	1	0.0	sporadic	1	IIb B-J
+93	clade IIb	1	0.0	sporadic	1	IIb B-J
+94	clade IIb	3	0.12602739726025902	intermediate	1	IIb B-J
+95	clade IIb	1	0.0	sporadic	1	IIb B-J
+96	clade IIb	1	0.0	sporadic	1	IIb B-J
+97	clade IIb	8	0.7494123811661666	intermediate	1	IIb B-J
+98	clade IIb	2	0.0	sporadic	1	IIb B-J
+99	clade IIb	8	0.47397260273965003	intermediate	1	IIb B-J
+100	clade IIb	2	0.019125683060337906	sporadic	1	IIb B-J
+101	clade IIb	1	0.0	sporadic	1	IIb B-J
+102	clade IIb	21	0.814754098360936	sustained	2	IIb B-J
+103	clade IIb	1	0.0	sporadic	1	IIb B-J
+104	clade IIb	11	0.4656785687550382	intermediate	1	IIb B-J
+105	clade IIb	1	0.0	sporadic	1	IIb B-J
+106	clade IIb	1	0.0	sporadic	1	IIb B-J
+107	clade IIb	1	0.0	sporadic	1	IIb B-J
+108	clade IIb	1	0.0	sporadic	1	IIb B-J
+109	clade IIb	2	0.04931506849266043	sporadic	1	IIb B-J
+110	clade IIb	1	0.0	sporadic	1	IIb B-J
+111	clade IIb	1	0.0	sporadic	1	IIb B-J
+112	clade IIb	1	0.0	sporadic	1	IIb B-J
+113	clade IIb	1	0.0	sporadic	1	IIb B-J
+114	clade IIb	2	0.0	sporadic	1	IIb B-J
+115	clade IIb	4	0.027397260274028667	intermediate	2	IIb B-J
+116	clade IIb	1	0.0	sporadic	1	IIb B-J
+117	clade IIb	2	0.0	sporadic	1	IIb B-J
+118	clade IIb	1	0.0	sporadic	1	IIb B-J
+119	clade IIb	2	0.0	sporadic	1	IIb B-J
+120	clade IIb	8	0.16677146492997963	intermediate	1	IIb B-J
+121	clade IIb	1	0.0	sporadic	1	IIb B-J
+122	clade IIb	5	0.2876712328766189	intermediate	2	IIb B-J
+123	clade IIb	1	0.0	sporadic	1	IIb B-J
+124	clade IIb	1	0.0	sporadic	1	IIb B-J
+125	clade IIb	1	0.0	sporadic	1	IIb B-J
+126	clade IIb	1	0.0	sporadic	1	IIb B-J
+127	clade IIb	1	0.0	sporadic	1	IIb B-J
+128	clade IIb	5	0.3260273972603045	intermediate	1	IIb B-J
+129	clade IIb	1	0.0	sporadic	1	IIb B-J
+130	clade IIb	2	0.07123287671265643	sporadic	1	IIb B-J
+131	clade IIb	1	0.0	sporadic	1	IIb B-J
+132	clade IIb	1	0.0	sporadic	1	IIb B-J
+133	clade IIb	1	0.0	sporadic	1	IIb B-J
+134	clade IIb	2	0.7452054794521246	sporadic	2	IIb B-J
+135	clade IIb	1	0.0	sporadic	1	IIb B-J
+136	clade IIb	1	0.0	sporadic	1	IIb B-J
+137	clade IIb	2	0.584699453552048	sporadic	1	IIb B-J
+138	clade IIb	1	0.0	sporadic	1	IIb B-J
+139	clade IIb	2	0.2438356164382185	sporadic	1	IIb B-J
+140	clade IIb	4	0.09041095890438555	intermediate	1	IIb B-J
+141	clade IIb	3	0.04109589041036088	intermediate	1	IIb B-J
+142	clade IIb	8	1.2160865334230948	intermediate	3	IIb B-J
+143	clade IIb	1	0.0	sporadic	1	IIb B-J
+144	clade IIb	1	0.0	sporadic	1	IIb B-J
+145	clade IIb	1	0.0	sporadic	1	IIb B-J
+146	clade IIb	2	0.084699453552048	sporadic	1	IIb B-J
+147	clade IIb	2	0.36338797814255486	sporadic	1	IIb B-J
+148	clade IIb	1	0.0	sporadic	1	IIb B-J
+149	clade IIb	2	0.25147091848202763	sporadic	1	IIb B-J
+150	clade IIb	1	0.0	sporadic	1	IIb B-J
+151	clade IIb	1	0.0	sporadic	1	IIb B-J
+152	clade IIb	6	0.18630136986325851	intermediate	1	IIb B-J
+153	clade IIb	1	0.0	sporadic	1	IIb B-J
+154	clade IIb	2	0.1939890710382315	sporadic	1	IIb B-J
+155	clade IIb	2	0.046575342465757785	sporadic	1	IIb B-J
+156	clade IIb	4	0.5637173441127743	intermediate	2	IIb B-J
+157	clade IIb	1	0.0	sporadic	1	IIb B-J
+158	clade IIb	2	0.038251366120221064	sporadic	1	IIb B-J
+159	clade IIb	1	0.0	sporadic	1	IIb B-J
+160	clade IIb	2	0.05753424657541473	sporadic	1	IIb B-J
+161	clade IIb	3	0.23561643835614632	intermediate	1	IIb B-J
+162	clade IIb	1	0.0	sporadic	1	IIb B-J
+163	clade IIb	1	0.0	sporadic	1	IIb B-J
+164	clade IIb	1	0.0	sporadic	1	IIb B-J
+165	clade IIb	1	0.0	sporadic	1	IIb B-J
+166	clade IIb	1	0.0	sporadic	1	IIb B-J
+167	clade IIb	2	0.01917808219195649	sporadic	1	IIb B-J
+168	clade IIb	1	0.0	sporadic	1	IIb B-J
+169	clade IIb	1	0.0	sporadic	1	IIb B-J
+170	clade IIb	1	0.0	sporadic	1	IIb B-J
+171	clade IIb	1	0.0	sporadic	1	IIb B-J
+172	clade IIb	1	0.0	sporadic	1	IIb B-J
+173	clade IIb	2	0.18904109589038853	sporadic	1	IIb B-J
+174	clade IIb	1	0.0	sporadic	1	IIb B-J
+175	clade IIb	1	0.0	sporadic	1	IIb B-J
+176	clade IIb	2	0.5655737704914827	sporadic	1	IIb B-J
+177	clade IIb	1	0.0	sporadic	1	IIb B-J
+178	clade IIb	3	0.30958904109616014	intermediate	1	IIb B-J
+179	clade IIb	1	0.0	sporadic	1	IIb B-J
+180	clade IIb	1	0.0	sporadic	1	IIb B-J
+181	clade IIb	1	0.0	sporadic	1	IIb B-J
+182	clade IIb	1	0.0	sporadic	1	IIb B-J
+183	clade IIb	10	0.10958904109565992	intermediate	1	IIb B-J
+184	clade IIb	1	0.0	sporadic	1	IIb B-J
+185	clade IIb	1	0.0	sporadic	1	IIb B-J
+186	clade IIb	1	0.0	sporadic	1	IIb B-J
+187	clade IIb	5	0.11475409836020845	intermediate	2	IIb B-J
+188	clade IIb	2	0.0	sporadic	1	IIb B-J
+189	clade IIb	2	0.2164383561644172	sporadic	1	IIb B-J
+190	clade IIb	1	0.0	sporadic	1	IIb B-J
+191	clade IIb	1	0.0	sporadic	1	IIb B-J
+192	clade IIb	1	0.0	sporadic	1	IIb B-J
+193	clade IIb	1	0.0	sporadic	1	IIb B-J
+194	clade IIb	1	0.0	sporadic	1	IIb B-J
+195	clade IIb	1	0.0	sporadic	1	IIb B-J
+196	clade IIb	2	0.24043715847005842	sporadic	2	IIb B-J
+197	clade IIb	1	0.0	sporadic	1	IIb B-J
+198	clade IIb	1	0.0	sporadic	1	IIb B-J
+199	clade IIb	1	0.0	sporadic	1	IIb B-J
+200	clade IIb	1	0.0	sporadic	1	IIb B-J
+201	clade IIb	1	0.0	sporadic	1	IIb B-J
+202	clade IIb	1	0.0	sporadic	1	IIb B-J
+203	clade IIb	1	0.0	sporadic	1	IIb B-J
+204	clade IIb	1	0.0	sporadic	1	IIb B-J
+205	clade IIb	1	0.0	sporadic	1	IIb B-J
+206	clade IIb	1	0.0	sporadic	1	IIb B-J
+207	clade IIb	1	0.0	sporadic	1	IIb B-J
+208	clade IIb	2	0.0	sporadic	1	IIb B-J
+209	clade IIb	1	0.0	sporadic	1	IIb B-J
+210	clade IIb	1	0.0	sporadic	1	IIb B-J
+211	clade IIb	1	0.0	sporadic	1	IIb B-J
+212	clade IIb	1	0.0	sporadic	1	IIb B-J
+213	clade IIb	1	0.0	sporadic	1	IIb B-J
+214	clade IIb	1	0.0	sporadic	1	IIb B-J
+215	clade IIb	3	0.11780821917795947	intermediate	1	IIb B-J
+216	clade IIb	1	0.0	sporadic	1	IIb B-J
+217	clade IIb	1	0.0	sporadic	1	IIb B-J
+218	clade IIb	1	0.0	sporadic	1	IIb B-J
+219	clade IIb	1	0.0	sporadic	1	IIb B-J
+220	clade IIb	1	0.0	sporadic	1	IIb B-J
+221	clade IIb	1	0.0	sporadic	1	IIb B-J
+222	clade IIb	1	0.0	sporadic	1	IIb B-J
+223	clade IIb	1	0.0	sporadic	1	IIb B-J
+224	clade IIb	1	0.0	sporadic	1	IIb B-J
+225	clade IIb	1	0.0	sporadic	1	IIb B-J
+226	clade IIb	1	0.0	sporadic	1	IIb B-J
+227	clade IIb	1	0.0	sporadic	1	IIb B-J
+228	clade IIb	1	0.0	sporadic	1	IIb B-J
+229	clade IIb	1	0.0	sporadic	1	IIb B-J
+230	clade IIb	1	0.0	sporadic	1	IIb B-J
+231	clade IIb	4	0.24383561643844587	intermediate	1	IIb B-J
+232	clade IIb	1	0.0	sporadic	1	IIb B-J
+233	clade IIb	1	0.0	sporadic	1	IIb B-J
+234	clade IIb	1	0.0	sporadic	1	IIb B-J
+235	clade IIb	1	0.0	sporadic	1	IIb B-J
+236	clade IIb	1	0.0	sporadic	1	IIb B-J
+237	clade IIb	1	0.0	sporadic	1	IIb B-J
+238	clade IIb	1	0.0	sporadic	1	IIb B-J
+239	clade IIb	2	0.005479452054714784	sporadic	1	IIb B-J
+240	clade IIb	1	0.0	sporadic	1	IIb B-J
+241	clade IIb	1	0.0	sporadic	1	IIb B-J
+242	clade IIb	1	0.0	sporadic	1	IIb B-J
+243	clade IIb	1	0.0	sporadic	1	IIb B-J
+244	clade IIb	1	0.0	sporadic	1	IIb B-J
+245	clade IIb	1	0.0	sporadic	1	IIb B-J
+246	clade IIb	1	0.0	sporadic	1	IIb B-J
+247	clade IIb	1	0.0	sporadic	1	IIb B-J
+248	clade IIb	1	0.0	sporadic	1	IIb B-J
+249	clade IIb	1	0.0	sporadic	1	IIb B-J
+250	clade IIb	1	0.0	sporadic	1	IIb B-J
+251	clade IIb	1	0.0	sporadic	1	IIb B-J
+252	clade IIb	1	0.0	sporadic	1	IIb B-J
+253	clade IIb	1	0.0	sporadic	1	IIb B-J
+254	clade IIb	1	0.0	sporadic	1	IIb B-J
+255	clade IIb	2	0.0	sporadic	1	IIb B-J
+256	clade IIb	1	0.0	sporadic	1	IIb B-J
+257	clade IIb	1	0.0	sporadic	1	IIb B-J
+258	clade IIb	1	0.0	sporadic	1	IIb B-J
+259	clade IIb	1	0.0	sporadic	1	IIb B-J
+260	clade IIb	1	0.0	sporadic	1	IIb B-J
+261	clade IIb	1	0.0	sporadic	1	IIb B-J
+262	clade IIb	1	0.0	sporadic	1	IIb B-J
+263	clade IIb	1	0.0	sporadic	1	IIb B-J
+264	clade IIb	1	0.0	sporadic	1	IIb B-J
+265	clade IIb	1	0.0	sporadic	1	IIb B-J
+266	clade IIb	1	0.0	sporadic	1	IIb B-J
+267	clade IIb	1	0.0	sporadic	1	IIb B-J
+268	clade IIb	1	0.0	sporadic	1	IIb B-J
+269	clade IIb	1	0.0	sporadic	1	IIb B-J
+270	clade IIb	1	0.0	sporadic	1	IIb B-J
+271	clade IIb	1	0.0	sporadic	1	IIb B-J

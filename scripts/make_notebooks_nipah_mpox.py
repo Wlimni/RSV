@@ -173,7 +173,7 @@ md("""## 2. Is mpox CpG-suppressed?"""),
 code('''q = f[f.qc_pass].copy()
 rows = {"Mpox (this data)": [q.gc_content.mean(), q.oe_CG.mean(), q.oe_TA.mean(), q.oe_TC.mean()]}
 pd.DataFrame(rows, index=["GC content", "CpG O/E", "UpA (TpA) O/E", "TpC O/E"]).T.round(3)'''),
-md("""**No.** CpG O/E is **1.04**, i.e. CpG occurs as often as chance predicts. The RNA viruses we studied are all well below 1 (RSV genes mostly 0.2-0.4, Nipah about 0.44). That fits the idea that CpG depletion is the footprint of pressure on viral **RNA** (ZAP); a DNA virus that replicates in the nucleus is not shaped by it in the same way. So the RSV NS1/NS2 question does not transfer to mpox, because there is no CpG gap to explain.
+md("""**No.** CpG O/E is **1.04**, i.e. CpG occurs as often as chance predicts. The RNA viruses we studied are all well below 1 (RSV genes mostly 0.2-0.4, Nipah about 0.44). CpG depletion in RNA viruses is usually read as the footprint of host pressure on viral RNA (ZAP). Why a large DNA virus like mpox lacks it is **not something this data can answer** (poxviruses replicate in the cytoplasm and make their own mRNAs, so the simple explanation does not hold). What we can say is that the RSV NS1/NS2 question does not transfer to mpox, because there is no CpG gap to explain.
 
 TpC O/E is **1.13**: the APOBEC3 target dinucleotide is slightly over-represented, not depleted."""),
 
