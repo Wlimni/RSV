@@ -1,0 +1,470 @@
+<meta charset="utf-8">
+<title>Mpox 基因組學入門</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* 版面:單欄閱讀、編號章節、圖片置中附圖說 */
+  :root {
+    --bg: #fcfcfd;
+    --surface: #ffffff;
+    --ink: #15181e;
+    --ink-soft: #596273;
+    --rule: #e1e5ec;
+    --accent: #1F5C8B;
+    --accent-soft: #eaf1f7;
+    --warn: #8a5a00;
+    --warn-bg: #fdf6e8;
+    --key-bg: #f2f6fa;
+    --know: #0f6f72; --know-bg: #edf7f6;
+    --font-h: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+    --font-b: "Noto Serif TC", "PingFang TC", Georgia, serif;
+    --font-m: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1115; --surface: #161922; --ink: #e8ebf1; --ink-soft: #9aa3b4;
+      --rule: #272c38; --accent: #7ab3dc; --accent-soft: #16202b;
+      --warn: #e6bb6c; --warn-bg: #221c10; --key-bg: #171d26;
+      --know: #6fcfd0; --know-bg: #12211f;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1115; --surface: #161922; --ink: #e8ebf1; --ink-soft: #9aa3b4;
+    --rule: #272c38; --accent: #7ab3dc; --accent-soft: #16202b;
+    --warn: #e6bb6c; --warn-bg: #221c10; --key-bg: #171d26;
+    --know: #6fcfd0; --know-bg: #12211f;
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--font-b); font-size: 1.0625rem; line-height: 1.95;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 0 5rem;
+  }
+  .wrap { max-width: 44rem; margin: 0 auto; }
+
+  header.cover { padding-block: 3.5rem 2rem; border-bottom: 3px solid var(--ink); }
+  .kicker { font-family: var(--font-h); font-size: .78rem; font-weight: 700;
+            letter-spacing: .18em; color: var(--accent); margin: 0 0 1rem; }
+  h1 { font-family: var(--font-h); font-weight: 700; font-size: clamp(1.9rem, 6vw, 2.8rem);
+       line-height: 1.25; letter-spacing: -.01em; margin: 0 0 .8rem; text-wrap: balance; }
+  .sub { font-size: 1.12rem; color: var(--ink-soft); margin: 0 0 1.8rem;
+         line-height: 1.8; text-wrap: balance; }
+  .byline { font-family: var(--font-h); font-size: .85rem; color: var(--ink-soft); margin: 0; }
+
+  .part { margin-top: 4rem; padding: 1.4rem 0 .8rem; border-top: 2px solid var(--accent); }
+  .part .pn { font-family: var(--font-h); font-size: .78rem; font-weight: 700;
+              letter-spacing: .18em; color: var(--accent); }
+  .part h2 { font-family: var(--font-h); font-size: clamp(1.45rem, 4vw, 1.9rem); font-weight: 700;
+             margin: .35rem 0 .5rem; text-wrap: balance; }
+  .part p { color: var(--ink-soft); margin: 0; }
+
+  h3 { font-family: var(--font-h); font-size: 1.25rem; font-weight: 700;
+       margin: 2.6rem 0 .8rem; line-height: 1.5; text-wrap: balance; }
+  h3 .num { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: .5rem; }
+  h4 { font-family: var(--font-h); font-size: 1.02rem; font-weight: 500; margin: 1.8rem 0 .5rem; }
+  p { margin: 0 0 1.05rem; }
+  strong { font-weight: 700; }
+  .en { font-family: var(--font-h); font-weight: 500; color: var(--accent); }
+  code { font-family: var(--font-m); font-size: .88em; background: var(--key-bg);
+         padding: .1em .35em; border-radius: 3px; }
+
+  ul, ol { margin: 0 0 1.05rem; padding-left: 1.5rem; }
+  li { margin-bottom: .5rem; }
+
+  figure { margin: 1.8rem 0; }
+  figure img { width: 100%; max-width: 100%; display: block; border: 1px solid var(--rule);
+               border-radius: 3px; background: #fff; }
+  figcaption { font-family: var(--font-h); font-size: .84rem; color: var(--ink-soft);
+               margin-top: .6rem; line-height: 1.75; }
+  figcaption b { color: var(--ink); font-weight: 700; }
+
+  .scroll { overflow-x: auto; margin: 1.4rem 0; }
+  table { border-collapse: collapse; width: 100%; font-family: var(--font-h); font-size: .88rem; }
+  th, td { text-align: left; padding: .6rem .8rem; border-bottom: 1px solid var(--rule);
+           vertical-align: top; line-height: 1.7; }
+  th { font-weight: 700; font-size: .8rem; color: var(--ink-soft);
+       border-bottom: 1.5px solid var(--ink); }
+  td.n, th.n { text-align: right; font-family: var(--font-m); font-variant-numeric: tabular-nums; }
+
+  .key { background: var(--key-bg); border-left: 3px solid var(--accent);
+         padding: 1.1rem 1.25rem; margin: 1.5rem 0; border-radius: 0 3px 3px 0; }
+  .key .lbl { font-family: var(--font-h); font-size: .8rem; font-weight: 700;
+              color: var(--accent); margin: 0 0 .5rem; }
+  .key p:last-child { margin-bottom: 0; }
+
+  .warn { background: var(--warn-bg); border-left: 3px solid var(--warn);
+          padding: 1.1rem 1.25rem; margin: 1.5rem 0; border-radius: 0 3px 3px 0; }
+  .warn .lbl { font-family: var(--font-h); font-size: .8rem; font-weight: 700;
+               color: var(--warn); margin: 0 0 .5rem; }
+  .warn p:last-child { margin-bottom: 0; }
+
+  .know { background: var(--know-bg); border-left: 3px solid var(--know);
+          padding: 1.1rem 1.25rem; margin: 1.5rem 0; border-radius: 0 3px 3px 0; }
+  .know .lbl { font-family: var(--font-h); font-size: .8rem; font-weight: 700;
+               color: var(--know); margin: 0 0 .5rem; }
+  .know p:last-child { margin-bottom: 0; }
+
+  .toc { background: var(--surface); border: 1px solid var(--rule); border-radius: 4px;
+         padding: 1.3rem 1.5rem; margin: 2rem 0; }
+  .toc h4 { margin-top: 0; font-weight: 700; }
+  .toc ol { font-family: var(--font-h); font-size: .9rem; padding-left: 1.4rem; margin-bottom: 0; }
+  .toc > ol > li { margin-bottom: .55rem; font-weight: 700; }
+  .toc ol ol { font-weight: 400; margin-top: .35rem; padding-left: 1.2rem; }
+  .toc ol ol li { margin-bottom: .2rem; color: var(--ink-soft); }
+
+  .eq { font-family: var(--font-m); font-size: .97rem; text-align: center;
+        background: var(--key-bg); padding: .9rem 1rem; border-radius: 4px; margin: 1.2rem 0;
+        overflow-x: auto; line-height: 1.6; }
+
+  footer { margin-top: 4rem; padding-top: 1.4rem; border-top: 1px solid var(--rule);
+           font-family: var(--font-h); font-size: .85rem; color: var(--ink-soft); line-height: 1.8; }
+  a { color: var(--accent); }
+</style>
+
+<div class="wrap">
+
+<header class="cover">
+  <p class="kicker">零基礎入門指南</p>
+  <h1>Mpox 基因組學:從零開始</h1>
+  <p class="sub">這個病毒是什麼、怎樣用基因組判斷它是「零星傳播」還是「持續傳播」、以及這個項目到底量度了什麼 —— 不預設任何病毒學背景。</p>
+  <p class="byline">Mpox(猴痘)分支項目 &middot; github.com/Wlimni/RSV &middot; 延續 RSV 項目</p>
+</header>
+
+<div class="toc">
+  <h4>目錄</h4>
+  <ol>
+    <li>第一部分 —— 認識病毒
+      <ol>
+        <li>什麼是 mpox</li>
+        <li>病毒顆粒與基因組</li>
+        <li>分支:Clade I 與 Clade II</li>
+        <li>傳播:動物到人,人到人</li>
+        <li>為什麼從 RSV 轉到 mpox</li>
+      </ol>
+    </li>
+    <li>第二部分 —— 怎樣讀 mpox 的基因組
+      <ol start="6">
+        <li>成分:GC 含量與 CpG</li>
+        <li>突變譜:突變不是隨機的</li>
+        <li>APOBEC3:宿主留下的指紋</li>
+        <li>「近期突變」與 APOBEC3 佔比</li>
+        <li>把基因組分群:零星與持續</li>
+      </ol>
+    </li>
+    <li>第三部分 —— 怎樣看懂數字
+      <ol start="11">
+        <li>以「群」而不是以「基因組」重抽樣</li>
+        <li>循環論證的陷阱</li>
+        <li>為什麼數突變比量成分靈敏</li>
+      </ol>
+    </li>
+    <li>第四部分 —— 這個項目做了什麼
+      <ol start="14">
+        <li>數據:兩次下載</li>
+        <li>品質控制</li>
+        <li>分支與突變的標註(Nextclade)</li>
+        <li>結果一:成分,與 APOBEC3 時鐘</li>
+        <li>結果二:APOBEC3 佔比跟傳播方式</li>
+        <li>結果三:零星對持續的直接檢驗</li>
+        <li>我們發現了什麼、沒發現什麼</li>
+        <li>下一步</li>
+      </ol>
+    </li>
+    <li>名詞對照表</li>
+  </ol>
+</div>
+
+<!-- ===================== PART I ===================== -->
+<div class="part">
+  <div class="pn">第一部分</div>
+  <h2>認識病毒</h2>
+  <p>在任何基因組分析說得通之前,先知道 mpox 是什麼,以及它跟 RSV 有什麼不同。</p>
+</div>
+
+<h3><span class="num">1.</span>什麼是 mpox</h3>
+<p><span class="en">Mpox(猴痘)</span>由 <span class="en">monkeypox virus(猴痘病毒,MPXV)</span>引起,屬於 <span class="en">Orthopoxvirus(正痘病毒屬)</span>,跟天花病毒是遠親。1958 年首次在實驗室飼養的猴子身上發現,所以得了「猴痘」這個名字;1970 年在剛果民主共和國出現第一個人類病例。世界衛生組織在 2022 年把疾病改稱 <strong>mpox</strong>。</p>
+<p>它的天然宿主(<span class="en">reservoir</span>,病毒平時寄居的動物)<strong>至今不確定</strong>,一般認為是非洲的囓齒類動物。人類主要是被動物傳染,再經由密切接觸在人與人之間傳開;2022 年起的全球疫情是後者一個很大的例子。</p>
+<div class="know">
+  <p class="lbl">值得知道:這正是「零星」與「持續」的現成案例</p>
+  <p>mpox 同時有兩種局面。一種是<strong>動物傳給人之後,只傳幾個人就停</strong>(零星,<span class="en">sporadic</span>)。另一種是<strong>在人與人之間連續傳下去</strong>(持續,<span class="en">sustained</span>),2022 年的全球疫情就是這一種。這跟 Ye 等人研究的流感「從鳥跳到哺乳類,有的立足有的消失」是同一個問題,只是換成了另一種病毒。</p>
+</div>
+
+<h3><span class="num">2.</span>病毒顆粒與基因組</h3>
+<p>跟 RSV 相比,mpox 是完全不同類型的病毒:</p>
+<div class="scroll">
+<table>
+  <thead><tr><th></th><th>RSV</th><th>Mpox</th></tr></thead>
+  <tbody>
+    <tr><td>遺傳物質</td><td>單股 RNA</td><td>雙股 <strong>DNA</strong></td></tr>
+    <tr><td>基因組大小</td><td>約 15,000 個字母</td><td>約 <strong>197,000</strong> 個字母</td></tr>
+    <tr><td>基因數目</td><td>10 個</td><td>約 180 個</td></tr>
+    <tr><td>在細胞的哪裡複製</td><td>細胞質</td><td>細胞質(自帶複製酵素)</td></tr>
+    <tr><td>突變速度</td><td>快</td><td>慢</td></tr>
+  </tbody>
+</table>
+</div>
+<p>因為基因組有 197,000 個字母,而且基因接近兩百個,本項目<strong>不像 RSV 那樣逐個基因分析</strong>,而是以整條基因組為單位。</p>
+<div class="know">
+  <p class="lbl">值得知道:一個我們自己犯過、後來改正的說法</p>
+  <p>一份早期的筆記曾寫「mpox 是在細胞核裡複製的 DNA 病毒」。<strong>這是錯的。</strong>痘病毒是 DNA 病毒裡的例外:它們<strong>在細胞質裡複製</strong>,而且自己帶著製造 mRNA 的整套酵素,不依靠宿主細胞核。這個錯誤已經從筆記裡改掉。教訓是:在沒有查證之前,不要用「DNA 病毒在核內複製」這類一般規則去解釋一個特例。</p>
+</div>
+
+<h3><span class="num">3.</span>分支:Clade I 與 Clade II</h3>
+<p>Mpox 病毒分成幾個大支,叫 <span class="en">clade(演化分支)</span>:</p>
+<ul>
+  <li><strong>Clade I</strong>(中非,歷史上病情較重),再分 <strong>Ia</strong> 和 <strong>Ib</strong>。Ib 在 2023 年於剛果民主共和國南基伍省被發現,並在人與人之間傳開。</li>
+  <li><strong>Clade II</strong>(西非),再分 <strong>IIa</strong> 和 <strong>IIb</strong>。<strong>IIb</strong> 是 2022 年全球疫情的來源,疫情的主要譜系叫 <strong>B.1</strong>。</li>
+</ul>
+<p>每個 clade 之下有更細的 <span class="en">lineage(譜系)</span>,標籤像 RSV 一樣分層(例如 <code>B.1.2</code>)。Nextclade 的資料庫還有一個叫 <span class="en">outbreak(疫情)</span>的層級:<code>sh2017</code>(IIb 的人傳人疫情)、<code>sh2023</code>(Ib 的疫情)、<code>sh2024</code>(一個 Ia 的疫情)。這套命名專門留給<strong>已經確認有持續人傳人的疫情</strong>(Ruis et al. 2025, <em>Nature Medicine</em>)。</p>
+
+<h3><span class="num">4.</span>傳播:動物到人,人到人</h3>
+<p>用基因組去分辨傳播方式的想法很簡單:一次動物傳人事件(<strong>spillover</strong>)只產生很少的後代病毒,抽樣時很可能只見到<strong>一條孤立的基因組</strong>;持續的人傳人會留下<strong>一大群幾乎一樣的基因組</strong>,橫跨很長的時間。這是第 10 節的分群方法的出發點。</p>
+
+<h3><span class="num">5.</span>為什麼從 RSV 轉到 mpox</h3>
+<p>RSV 的趨勢分析得出否定的結果,而且 GISAID 的 RSV 序列<strong>全部來自人類</strong>,沒有宿主可以對比。跟導師討論之後,方向是換一個有「宿主、傳播、零星或持續」這幾個元素的病毒。幾個候選:</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>病毒</th><th>結果</th></tr></thead>
+  <tbody>
+    <tr><td>Nipah 病毒</td><td>只有 343 條,其中 110 條來自人類,完整基因組 106 條,不夠做趨勢分析。</td></tr>
+    <tr><td><strong>Mpox</strong></td><td>8,396 + 798 條基因組,宿主幾乎全是人類,<strong>但有現成的「零星對持續」案例和已發表的標記(APOBEC3)</strong>,所以選了它。</td></tr>
+    <tr><td>蟲媒病毒</td><td>導師建議避開(兩個宿主交替,混淆大)。</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="know">
+  <p class="lbl">值得知道:這次轉向有一個重要的轉變</p>
+  <p>RSV 項目量的是<strong>成分</strong>(GC 含量、二核苷酸),因為論文用它們。但 mpox 的成分幾乎沒有分別(第 13 節)。真正有信息的是<strong>突變譜</strong> —— 突變是哪一種。所以這個項目的核心問題從「成分有沒有改變」變成了「<strong>突變譜能不能分辨零星和持續傳播</strong>」。</p>
+</div>
+
+<!-- ===================== PART II ===================== -->
+<div class="part">
+  <div class="pn">第二部分</div>
+  <h2>怎樣讀 mpox 的基因組</h2>
+  <p>RSV 教材第二部分講過 GC 含量和二核苷酸。這裡只補 mpox 需要的新概念。</p>
+</div>
+
+<h3><span class="num">6.</span>成分:GC 含量與 CpG</h3>
+<p>Mpox 基因組的 GC 含量約 <strong>33%</strong>。更值得留意的是 <span class="en">CpG O/E</span>(RSV 教材第 16 節):RSV 的基因大多在 0.2–0.4(CpG 被大量壓抑),Nipah 約 0.44,而 <strong>mpox 是 1.04 —— 幾乎完全沒有被壓抑</strong>。</p>
+<p>為什麼一個大型 DNA 病毒沒有 CpG 缺失?<strong>這份數據回答不了。</strong>RNA 病毒的 CpG 缺失通常被解讀為宿主對病毒 RNA 的壓力(ZAP 蛋白),但痘病毒也在細胞質裡製造自己的 mRNA,所以不能簡單地用「它在細胞核裡複製」來解釋(見第 2 節的改正)。重要的是結果:RSV 那個「NS1/NS2 的 CpG 為什麼缺」的問題,在 mpox 身上<strong>根本沒有可解釋的缺口</strong>。</p>
+
+<h3><span class="num">7.</span>突變譜:突變不是隨機的</h3>
+<p>一條基因組跟祖先比,會有很多個字母不同,每一個叫一個 <span class="en">substitution(替換)</span>,例如 <code>C→T</code>。如果突變完全隨機,12 種可能的替換(4 個字母各變成另外 3 個)應該差不多均勻。實際上<strong>不是</strong>:不同的原因製造出不同的「<span class="en">mutation spectrum(突變譜)</span>」。</p>
+<ul>
+  <li>複製時的隨機錯誤:各種替換都有,偏向「轉換」(<code>A↔G</code>、<code>C↔T</code>)。</li>
+  <li>宿主酵素編輯:<strong>只製造特定的替換</strong>,留下很容易辨認的指紋(第 8 節)。</li>
+</ul>
+<p>所以數「是哪一種突變」,比數「有多少突變」更能說明病毒經歷過什麼。</p>
+
+<h3><span class="num">8.</span>APOBEC3:宿主留下的指紋</h3>
+<p><span class="en">APOBEC3</span> 是人類細胞裡一組抗病毒酵素。它們把 DNA 裡的 <strong>C 變成 U</strong>(複製之後在 DNA 上就是 <strong>C→T</strong>),而且<strong>偏好前面是 T 的 C</strong>,也就是 <code>TC → TT</code>(在另一條股上看就是 <code>GA → AA</code>)。</p>
+<p>病毒在<strong>人體裡複製的次數越多</strong>,這個酵素編輯的機會就越多。所以在人與人之間持續傳播的 mpox,基因組上會累積大量 <code>TC→TT</code> 和 <code>GA→AA</code>;剛從動物傳入、還沒在人體裡傳過幾代的病毒則很少。O'Toole 等人(<em>Science</em> 2023)用這個指紋做了兩件事:證明 2022 年疫情的病毒其實<strong>已經在人類之間傳播了至少六年</strong>(自 2016 年左右),並估計人類 mpox 每年累積約 <strong>6 個</strong> APOBEC3 類型的突變。</p>
+<div class="know">
+  <p class="lbl">值得知道:跟 Ye 等人(流感)的想法是同一種</p>
+  <p>流感那篇論文說:「在新宿主裡持續傳播的譜系,GC 含量會逐步下降」,用<strong>成分</strong>當標記。Mpox 的版本是:「在人類之間持續傳播的譜系,APOBEC3 類型的突變會累積」,用<strong>突變譜</strong>當標記。想法一樣:<strong>一個特徵標記出持續傳播</strong>;只是 mpox 的標記是突變譜,而不是成分。</p>
+</div>
+
+<h3><span class="num">9.</span>「近期突變」與 APOBEC3 佔比</h3>
+<p>一條基因組身上的突變有新有舊。那些<strong>定義整個譜系的老突變</strong>,是祖先留下來的,跟這條基因組自己的傳播歷史無關。我們要看的是<strong>這條基因組比它最近的親戚多出來的突變</strong>,稱為 <span class="en">recent mutations(近期突變)</span>。</p>
+<p>做法:用 Nextclade 把每條基因組放進一棵已建好的 mpox 家族樹,取出「相對於樹上最近的節點」多出來的替換(<span class="en">private mutations</span>)。然後數:</p>
+<div class="eq">APOBEC3 佔比 = 近期突變中屬於 APOBEC3 類型的數目 ÷ 近期突變總數</div>
+<p>APOBEC3 類型 = <code>C→T</code> 而前面一個字母是 T,或 <code>G→A</code> 而後面一個字母是 A。</p>
+<div class="know">
+  <p class="lbl">值得知道:為什麼要設兩個過濾</p>
+  <ul>
+    <li><strong>不明確鹼基(N)不超過 1%</strong>:太多 N 的序列品質不好,也容易有定序錯誤。</li>
+    <li><strong>近期突變不超過 30 個</strong>:突然多出幾十個「近期突變」,更可能是定序錯誤或一條很特別的基因組,而不是真的近期演化。定序錯誤是隨機的,<strong>不是 APOBEC3 類型</strong>,會把佔比拉低。</li>
+  </ul>
+</div>
+
+<h3><span class="num">10.</span>把基因組分群:零星與持續</h3>
+<p>怎樣定義「零星」和「持續」?如果直接用 APOBEC3 佔比去分類,再拿佔比去比較,是循環論證(第 12 節)。所以這個項目<strong>只用基因組之間的差異和採集日期</strong>來分類:</p>
+<ol>
+  <li>每兩條基因組,數它們<strong>有多少個替換不同</strong>,只計兩條都讀得清楚的位置(有空白的地方不當作差異)。</li>
+  <li>差異不超過 <strong>5 個</strong>替換的基因組,連成一個「群」(<span class="en">cluster</span>):一串幾乎一樣的基因組。</li>
+  <li>只有 <strong>1–2 條</strong>基因組的群 = <strong>零星</strong>(資料裡看不到後續傳播);<strong>10 條或以上、跨度至少半年</strong>的群 = <strong>持續</strong>;其餘 = 中間。</li>
+</ol>
+<p>只有一條基因組、沒有任何親戚的,叫 <span class="en">singleton(孤立基因組)</span>,是最典型的「零星」。</p>
+
+<!-- ===================== PART III ===================== -->
+<div class="part">
+  <div class="pn">第三部分</div>
+  <h2>怎樣看懂數字</h2>
+  <p>RSV 教材第三部分講過信賴區間、p 值失效、混淆。這裡補三個 mpox 特有的重點。</p>
+</div>
+
+<h3><span class="num">11.</span>以「群」而不是以「基因組」重抽樣</h3>
+<p>同一個群裡的基因組是近親,不是獨立的觀察(跟 RSV 教材第 30 節同一個理由)。如果把一個 943 條基因組的大群當成 943 個獨立證據,區間會窄得不真實。</p>
+<p>做法是 <span class="en">bootstrap(自助重抽樣)</span>:<strong>每次抽一整個群</strong>,重複幾千次,看佔比的變化範圍,得出 95% 區間。這樣,一個 943 條的大群只算「一個群」。</p>
+<div class="warn">
+  <p class="lbl">要小心的地方</p>
+  <p>「持續」的群很少:clade I 只有 4 個,clade IIb(抽樣後)只有 6 個。每個區間都由很少的群支撐,所以<strong>三類比較(零星/中間/持續)只能說「有提示」,不能說「已確定」</strong>。更可靠的是第 17 節的「孤立基因組 對 在群裡的基因組」。</p>
+</div>
+
+<h3><span class="num">12.</span>循環論證的陷阱</h3>
+<p>想像你<strong>先</strong>用 APOBEC3 佔比把譜系分成「持續」和「零星」,<strong>再</strong>證明「持續」的 GC 含量比較低。這個結果沒有意義:APOBEC3 把 C 變成 T,<strong>定義上</strong>就會降低 GC。你用 A 去分類,再用跟 A 直接相關的 B 去檢驗,必然得到「顯著」。</p>
+<p>Nextclade 的「outbreak」標籤也有同樣的問題:它是為<strong>已確認人傳人</strong>的疫情而設,很可能跟 APOBEC3 訊號有關,不能當作獨立的分類。所以這個項目用<strong>群的結構</strong>(第 10 節)做分類:它只看基因組之間差多少,不看是哪一種突變。</p>
+
+<h3><span class="num">13.</span>為什麼數突變比量成分靈敏</h3>
+<p>APOBEC3 每年只改變約 6 個位置,而基因組有 197,000 個字母。所以<strong>GC 含量預期每年只下降約 0.00003</strong>(一次 C→T 令 G+C 少 1 個,除以 197,000)。但不同基因組之間的 GC 含量隨機波動的標準差約是 <strong>0.0002</strong>,比每年的變化大七倍。</p>
+<p>結果是:直接量 GC,只有部分譜系達到統計顯著;<strong>直接數 APOBEC3 突變,B.1 的結果就清楚地顯著(p = 0.0001)</strong>。這是為什麼 mpox 上,我們把標記從「成分」換成「突變譜」。</p>
+
+<!-- ===================== PART IV ===================== -->
+<div class="part">
+  <div class="pn">第四部分</div>
+  <h2>這個項目做了什麼</h2>
+  <p>步驟、結果,以及對哪些部分真的成功了的誠實交代。代碼都在 <code>notebooks/Mpox/</code> 和 <code>notebooks/MpoxI/</code>。</p>
+</div>
+<div class="scroll">
+<table>
+  <thead><tr><th>步驟</th><th>做什麼</th><th class="n">關鍵數字</th><th>代碼在哪裡</th></tr></thead>
+  <tbody>
+    <tr><td>14 收集</td><td>兩次 GISAID 下載,合併</td><td class="n">8,396 + 798 條</td><td><code>scripts/merge_gisaid.py</code></td></tr>
+    <tr><td>15 品質控制</td><td>長度 190–200 kb,N ≤ 1%</td><td class="n">7,711 條完整</td><td><code>scripts/build_mpox_features.py</code></td></tr>
+    <tr><td>16 標註</td><td>Nextclade:分支、譜系、替換</td><td class="n">clade IIb 7,711;clade I 797</td><td><code>scripts/run_mpox_lineage_analysis.py</code></td></tr>
+    <tr><td>17 成分與時鐘</td><td>GC、CpG、APOBEC3 突變數 對 日期</td><td class="n">B.1:5.3 個/年</td><td><code>notebooks/Mpox/02</code></td></tr>
+    <tr><td>18–19 佔比與分群</td><td>APOBEC3 佔比、群結構、孤立基因組檢驗</td><td class="n">IIb:0.58 對 0.80</td><td><code>scripts/run_mpox_transmission.py</code></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3><span class="num">14.</span>數據:兩次下載</h3>
+<p>第一次下載 <strong>8,396 條</strong> mpox 基因組(GISAID EpiPox)。查看之後發現兩個問題:</p>
+<ul>
+  <li><strong>宿主幾乎全是人類</strong>(7,844 條)。所謂「非人類」的 525 條,是 220 條<strong>污水樣本</strong>(不是動物)、292 條宿主不明、以及只有 <strong>40 條真正的動物</strong>(29 條食蟹猴、8 條不明的猴、2 條黑猩猩、1 條狗)。</li>
+  <li><strong>動物和污水的序列,沒有一條是完整基因組</strong>,全是短片段,所以沒辦法比較。</li>
+</ul>
+<p>更重要的是,第一次下載裡<strong>完整的 clade I 基因組是零</strong>:Nextclade 辨認出的 86 條 clade I 序列全是片段(中位數只有 942 個字母,基因組有 197,000 個)。所以第二次下載專門抓 <strong>Ia 和 Ib</strong>,得到 <strong>798 條完整基因組</strong>(605 條 Ia、193 條 Ib,其中一條其實是 IIb,已排除),跟第一次沒有重疊。</p>
+<div class="know">
+  <p class="lbl">值得知道:為什麼第二次下載要放寬覆蓋度篩選</p>
+  <p>第一次把「覆蓋度高」篩選打開,然後再加上「完整 CDS」,clade I 只剩下 2 條。原因是剛果民主共和國的 clade I 基因組常有很多沒讀清楚的位置。我們自己的品質控制容許最多 1% 不明確鹼基,所以不需要 GISAID 替我們篩得那麼嚴。放寬之後得到 798 條。這個教訓適用於任何下載:<strong>篩選條件打得太嚴,可能把整個要研究的類別篩掉。</strong></p>
+</div>
+
+<h3><span class="num">15.</span>品質控制</h3>
+<p>第一次下載 8,396 條裡,<strong>7,711 條</strong>符合:長度在 190,000–200,000 之間、不明確鹼基不超過 1%;全部是人類或宿主不明。其餘 685 條是片段。Clade I 的 797 條完整基因組有另一個問題:很多條有大量空白(中位數 0.3–3%),只有 <strong>334 條</strong>空白不超過 1%。突變譜的分析只用這些。</p>
+
+<h3><span class="num">16.</span>分支與突變的標註(Nextclade)</h3>
+<p><span class="en">Nextclade</span> 是一套把序列放到參考家族樹上的軟體。它給每條基因組:<strong>clade、lineage、outbreak</strong>、相對於參考序列的全部替換,以及相對於樹上最近節點的「近期」替換。用了它的 <code>nextstrain/mpox/all-clades</code> 資料庫。</p>
+<p>結果:第一次下載的 7,711 條完整基因組<strong>全部是 clade IIb</strong>(其中最大的是 2022 年疫情的 B.1,5,326 條)。第二次的 797 條是 clade I(Ia 605、Ib 192)。</p>
+<div class="know">
+  <p class="lbl">值得知道:為什麼按「譜系」分析,不能把所有基因組混在一起</p>
+  <p>跟 RSV 同一個理由(辛普森悖論):整體趨勢可能純粹來自「一個譜系取代另一個」。Mpox 的資料裡,2022 年幾乎全是 B.1,之後 C、E、F 等譜系陸續取代它。如果把所有基因組混在一起看 GC 含量,「下降」可能只是不同譜系的 GC 本來就不同。所以時鐘要在<strong>每一個譜系之內</strong>做。</p>
+</div>
+
+<h3><span class="num">17.</span>結果一:成分,與 APOBEC3 時鐘</h3>
+<p><strong>成分:各組沒有差別。</strong>GC 含量 0.330 到 0.332、CpG O/E 約 1.04、UpA 約 0.99、TpC 約 1.13,每一組都是這樣。Clade I 的 GC 比 IIb 高一點點(0.331 對 0.330),是 clade 之間的差別,不是零星與持續之間的差別。</p>
+<p><strong>APOBEC3 時鐘:重現了已發表的結果。</strong>在 B.1 譜系之內,每條基因組累積的 APOBEC3 類型突變數隨採集日期上升:</p>
+<figure>
+  <img src="figures/m1.png" alt="左圖:B.1 譜系每季平均的 APOBEC3 類型突變數對採集日期,紅線是擬合斜率每年 5.3 個,灰色虛線是 O'Toole 等人的每年 6 個。右圖:五個譜系的斜率與 95% 信賴區間,B.1 和 C.1 約在每年 5 個,E.3、F.2、F.4 較高。">
+  <figcaption><b>圖 1.</b> APOBEC3 時鐘。<b>左</b>:B.1 每年增加 <strong>5.3</strong> 個(95% 區間 3.1–7.5),跟已發表的每年約 6 個一致。<b>右</b>:五個譜系的斜率。E.3、F.2、F.4 較高(9–14 個/年),但它們的標準誤只能按年份分群、群數只有 3–4 個,區間比較不可靠。</figcaption>
+</figure>
+<p>這是這個項目最穩的結果:用一套獨立的流程,重現了一個已知的數字。GC 含量跟著下降的方向(預期每年約 −0.00003),但太小,只有部分譜系達到顯著(C.1、E.3),整體仍然是<strong>成分雜訊太大、突變數才靈敏</strong>(第 13 節)。</p>
+
+<h3><span class="num">18.</span>結果二:APOBEC3 佔比跟傳播方式</h3>
+<p>這一節比較不同組別的「近期突變中 APOBEC3 類型佔多少」,資料包括 clade IIb 和 clade I:</p>
+<figure>
+  <img src="figures/m2.png" alt="長條圖:五組的 APOBEC3 佔比與 95% 區間。Ia 無疫情 0.11,Ia 疫情 sh2024 0.17,Ib 疫情 sh2023 0.48,IIb 早期譜系 A 0.67,IIb 2022 疫情 0.73。">
+  <figcaption><b>圖 2.</b> 各組近期突變中的 APOBEC3 佔比。由低到高:<b>Ia 無疫情 0.11</b>(類似動物傳人)→ Ia 疫情 0.17 → <b>Ib 疫情 0.48</b> → IIb 早期譜系 A 0.67 → <b>IIb 2022 疫情 0.73</b>(人傳人)。區間以基因組抽樣,偏窄。</figcaption>
+</figure>
+<p>順序跟文獻吻合:<strong>最像「動物傳人」的 Ia 佔比最低,人類疫情的佔比最高</strong>。有兩點對不上:</p>
+<ul>
+  <li><strong>Ia 的疫情(sh2024)只有 0.17</strong>,跟沒有疫情的 Ia 差不多。一個已確認人傳人的疫情,APOBEC3 訊號卻這麼弱,需要解釋。可能是疫情很新、突變還沒累積,也可能是這些剛果基因組的定序錯誤把佔比拉低。一份金沙薩的預印本報告 Ia 約 63%,但計算方式不同,而且我沒有核實它是否已正式發表。</li>
+  <li><strong>Ib(0.48)遠低於 IIb(0.73)</strong>,雖然兩者都在人類之間傳。一個可能的解讀是 clade I 在人類之間傳的時間較短,所以近期突變還是 APOBEC3 和其他突變的混合。這是假說,不是結果。</li>
+</ul>
+
+<h3><span class="num">19.</span>結果三:零星對持續的直接檢驗</h3>
+<p>按第 10 節的分群(差異 ≤ 5 個替換),把基因組分成「孤立」和「在群裡」,比較兩邊的 APOBEC3 佔比。分群本身沒有用到突變譜。</p>
+<figure>
+  <img src="figures/m3.png" alt="折線圖:橫軸是基因組所在群的大小(1、2、3–4、5–9、10 以上),縱軸是 APOBEC3 佔比。IIb 兩組在大小 1 時較低(0.58 和 0.42)然後升到 0.7 至 0.98;Ib 小幅上升;Ia 一直在 0.1 附近。">
+  <figcaption><b>圖 3.</b> APOBEC3 佔比按「基因組所在群的大小」。在 <b>clade IIb</b> 的兩組,孤立基因組(大小 1)的佔比明顯較低(0.58、0.42),<strong>一旦有親戚就跳升到 0.7–0.98</strong>。<b>Ib</b> 上升幅度較小。<b>Ia 在任何大小都在 0.1 附近。</b></figcaption>
+</figure>
+<div class="scroll">
+<table>
+  <thead><tr><th>組別</th><th class="n">孤立基因組</th><th class="n">在群裡(2 條以上)</th><th class="n">差異</th><th>區間是否排除 0</th></tr></thead>
+  <tbody>
+    <tr><td><strong>IIb 2022 疫情譜系</strong></td><td class="n">0.58</td><td class="n">0.80</td><td class="n"><strong>+0.23</strong>(0.13 至 0.29)</td><td><strong>是</strong></td></tr>
+    <tr><td><strong>IIb 譜系 A(2022 年之前)</strong></td><td class="n">0.42</td><td class="n">0.83</td><td class="n"><strong>+0.42</strong>(0.15 至 0.60)</td><td><strong>是</strong></td></tr>
+    <tr><td>Ib 疫情(sh2023)</td><td class="n">0.39</td><td class="n">0.60</td><td class="n">+0.20(−0.02 至 0.34)</td><td>邊緣</td></tr>
+    <tr><td>Ia 無疫情</td><td class="n">0.09</td><td class="n">0.12</td><td class="n">+0.02(−0.03 至 0.08)</td><td>否</td></tr>
+  </tbody>
+</table>
+</div>
+<p><strong>這是這個項目的正面結果:</strong>在 clade IIb(已適應人類的分支)裡,<strong>沒有看到後續傳播的孤立基因組,APOBEC3 佔比明顯低於在傳播鏈裡的基因組</strong>,區間不含 0。Ib 方向相同但區間碰到 0。Ia 沒有訊號,因為佔比到處都低。</p>
+<p>強健性:把距離閾值設為 3、5、10 個替換,再配合三種品質過濾共九種設定,clade IIb 的「零星」類<strong>每一種設定下都是最低</strong>(0.49–0.75 對 0.78–0.93)。Clade I 則<strong>不穩定</strong>:「持續」類在閾值 3、5 時最高(0.64–0.73),閾值 10 時卻掉到 0.24,所以 clade I 的三類結果不應當依賴。</p>
+
+<h3><span class="num">20.</span>我們發現了什麼、沒發現什麼</h3>
+<h4>發現了</h4>
+<ul>
+  <li><strong>APOBEC3 時鐘重現:</strong>B.1 每年 5.3 個(3.1–7.5),跟已發表的每年約 6 個一致。</li>
+  <li><strong>「孤立基因組 對 在群裡的基因組」:</strong>在 clade IIb,孤立基因組的 APOBEC3 佔比明顯較低(+0.23 與 +0.42,區間都不含 0)。分群沒有用到突變譜,所以不是循環論證。</li>
+  <li><strong>突變譜比成分靈敏。</strong>GC、CpG 在各組之間沒有分別;APOBEC3 佔比有。</li>
+</ul>
+<h4>沒發現 / 不確定</h4>
+<ul>
+  <li><strong>宿主對比:沒有。</strong>幾乎全是人類基因組,動物只有兩條完整基因組(一條黑猩猩、一條樹松鼠)。</li>
+  <li><strong>Clade I 的時鐘:</strong>沒有。Ib 每年 2.6 個、區間 −3.3 至 8.5(76 條),疫情只跨兩三年。</li>
+  <li><strong>Ia 的 APOBEC3 訊號偏弱</strong>(0.11–0.17),跟文獻不吻合,未解決。</li>
+  <li><strong>成分:</strong>沒有差別。</li>
+</ul>
+<div class="warn">
+  <p class="lbl">這個正面結果的局限</p>
+  <ul>
+    <li><strong>孤立基因組雜訊較多。</strong>沒有親戚的基因組,沒有鄰居去確認它的私有突變,所以定序錯誤(不是 APOBEC3 類型)會把它的佔比拉低。1% 與 30 個突變的過濾有幫助,但不能完全消除。</li>
+    <li><strong>抽樣密度。</strong>「資料裡沒有親戚」不等於「沒有後續傳播」,可能只是那一部分家族樹抽樣很稀。</li>
+    <li><strong>持續的群很少</strong>(4 個與 6 個),所以三類比較只是提示。</li>
+    <li><strong>「近期突變」依賴 Nextclade 的樹。</strong>換一棵樹,數字會動。</li>
+  </ul>
+</div>
+<div class="key">
+  <p class="lbl">怎樣看待這個結果</p>
+  <p>已發表的工作(O'Toole 2023)用 APOBEC3 指紋說明「<strong>一個譜系</strong>在人類之間傳播」。這裡的單位是<strong>一條基因組</strong>:在同一個譜系家族之內,沒有親戚的基因組,看起來比在傳播鏈裡的基因組更少受 APOBEC3 編輯。這是一個窄的、有限的新發現,不是全新的標記。</p>
+</div>
+
+<h3><span class="num">21.</span>下一步</h3>
+<h4>一、用我們自己的樹檢查孤立基因組的效應</h4>
+<p>把「近期突變」改成用自己建的樹(IQ-TREE 加祖先序列重建)得出的突變,看孤立基因組的差異是不是 Nextclade 那棵樹的抽樣造成的假象。這是把現有結果變得可以辯護的最關鍵一步。</p>
+<h4>二、解決 Ia 的疑問</h4>
+<p>為什麼 Ia 疫情的 APOBEC3 佔比這麼低?要檢查是疫情太新、還是定序錯誤。要看金沙薩與其他地區是否不同。</p>
+<h4>三、換一個有宿主轉換的病毒,測同一個兩步法</h4>
+<p>「先用群結構分類,再用突變譜比較」可以搬到有真實宿主變化的病毒:<strong>SARS-CoV-2</strong>(人、貂、鹿)或 <strong>H5N1</strong>(鳥、牛、人)。需要先從 GISAID 匯出元數據(宿主、日期、譜系、地點),評估每個宿主有多少條序列。</p>
+
+<!-- ===================== GLOSSARY ===================== -->
+<div class="part">
+  <div class="pn">附錄</div>
+  <h2>名詞對照表</h2>
+  <p>本指南用到的專業名詞。RSV 教材的名詞表也適用。</p>
+</div>
+<div class="scroll">
+<table>
+  <thead><tr><th>English</th><th>中文</th><th>說明</th></tr></thead>
+  <tbody>
+    <tr><td>APOBEC3</td><td>APOBEC3 酵素</td><td>人類細胞裡把 DNA 的 C 變成 U 的抗病毒酵素家族,偏好 TC 位置。在病毒基因組上留下 C→T(另一股上是 G→A)的指紋。</td></tr>
+    <tr><td>APOBEC3 share</td><td>APOBEC3 佔比</td><td>近期突變中屬於 APOBEC3 類型的比例。</td></tr>
+    <tr><td>Bootstrap</td><td>自助重抽樣</td><td>反覆從數據裡抽樣,看估計值的變化範圍。本項目每次抽一整個「群」。</td></tr>
+    <tr><td>Clade</td><td>演化分支</td><td>病毒家族樹上的大分支。Mpox 有 I(Ia、Ib)和 II(IIa、IIb)。</td></tr>
+    <tr><td>Cluster</td><td>群</td><td>差異不超過 5 個替換的一串基因組。</td></tr>
+    <tr><td>Cytoplasm</td><td>細胞質</td><td>細胞核以外的細胞內容。痘病毒在這裡複製。</td></tr>
+    <tr><td>Mutation spectrum</td><td>突變譜</td><td>各種替換(C→T、G→A 等)的相對數量。不同成因留下不同的譜。</td></tr>
+    <tr><td>Nextclade</td><td>Nextclade 軟體</td><td>把序列放進參考家族樹,給出 clade、lineage 與替換的軟體。</td></tr>
+    <tr><td>Orthopoxvirus</td><td>正痘病毒屬</td><td>包括天花病毒與猴痘病毒的病毒屬。</td></tr>
+    <tr><td>Outbreak (Nextclade)</td><td>疫情(命名層級)</td><td>Nextclade 為已確認持續人傳人的疫情設的標籤:sh2017、sh2023、sh2024。</td></tr>
+    <tr><td>Private mutation / recent mutation</td><td>私有突變 / 近期突變</td><td>一條基因組相對於樹上最近節點多出來的替換。</td></tr>
+    <tr><td>Reservoir</td><td>天然宿主</td><td>病毒平時寄居的動物。</td></tr>
+    <tr><td>Singleton</td><td>孤立基因組</td><td>在所用數據裡沒有任何一條差異 ≤ 5 個替換的基因組。</td></tr>
+    <tr><td>Spillover</td><td>跨物種傳入</td><td>病毒從動物傳到人。</td></tr>
+    <tr><td>Sporadic / Sustained</td><td>零星 / 持續</td><td>病毒傳幾個個案就停(零星),或在新宿主裡連續傳下去(持續)。</td></tr>
+    <tr><td>Substitution</td><td>替換</td><td>一個位置的字母變成另一個,例如 C→T。</td></tr>
+  </tbody>
+</table>
+</div>
+
+<footer>
+  <p>結果圖以 matplotlib 繪製。程式碼、匯總表格與全部圖片見 <a href="https://github.com/Wlimni/RSV">github.com/Wlimni/RSV</a>。GISAID 序列數據只儲存在本機,不上傳。</p>
+  <p>參照文獻:O'Toole et al. (2023), <em>APOBEC3 deaminase editing in mpox virus as evidence for sustained human transmission since at least 2016</em>, Science 382:595–600。Ruis et al. (2025), <em>A systematic nomenclature for mpox viruses causing outbreaks with sustained human-to-human transmission</em>, Nature Medicine, doi:10.1038/s41591-025-03820-6。流感論文:Ye et al. (2026), Nature Microbiology, doi:10.1038/s41564-025-02257-4。</p>
+</footer>
+
+</div>
