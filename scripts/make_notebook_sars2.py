@@ -143,14 +143,14 @@ This repeats the mpox lesson: **the mutation spectrum, not composition, is the i
 
 ### Limits
 
-- **No human comparison yet.** The baseline is the reference tree, which has different lineages and sampling from the animal data. A fair test needs **human genomes of the same lineages, countries and months** (next step).
+- **No human comparison yet.** The baseline is the reference tree, which has different lineages and sampling from the animal data. A fair test needs **human genomes of the same lineages, countries and months** (next step). **Done in notebook 02** (`SARS2/02_human_comparison.ipynb`): the deer C>T excess holds within three matched lineages, so it is not a lineage-sampling artefact.
 - **"Recent mutations" depend on the Nextclade tree**, and singletons carry more noise.
 - **Deer spectrum could reflect the lineages sampled**, not the host: deer genomes come from a few lineages (AY.103, B.1.1.7 and B.1.2 are the most common here). A human comparison within the same lineages answers this.
 - **Sampling** drives cluster size; counts of genomes are not counts of spillovers.
 
 ### Next steps
 
-1. **Pull a human comparison set**: genomes of the lineages seen in deer and mink (AY.103, B.1.1.7, B.1.2, AY.39, B.1.1.298, B.1.8, B.1) from the same countries and months, a few hundred each, as the Augur download from hCoV-19 with Host = Human. Then test the spectrum **within lineage, deer against human**.
+1. ~~Pull a human comparison set and test the spectrum within lineage, deer against human.~~ **Done — see notebook 02.** Result: the deer C>T excess holds in all three matched lineages; mink shows no consistent direction.
 2. **Test the deer C>T excess against known effects**: positions (silent versus not), and APOBEC-type context (a C after a U), as in the mpox analysis.
 3. **Build our own tree** (IQ-TREE) to count independent spillover events per host, instead of relying on cluster size."""),
 ]

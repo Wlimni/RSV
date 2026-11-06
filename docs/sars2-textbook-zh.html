@@ -1,0 +1,435 @@
+<meta charset="utf-8">
+<title>SARS-CoV-2 動物宿主入門</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* 版面:單欄閱讀、編號章節、圖片置中附圖說 */
+  :root {
+    --bg: #fcfcfd;
+    --surface: #ffffff;
+    --ink: #15181e;
+    --ink-soft: #596273;
+    --rule: #e1e5ec;
+    --accent: #1F5C8B;
+    --accent-soft: #eaf1f7;
+    --warn: #8a5a00;
+    --warn-bg: #fdf6e8;
+    --key-bg: #f2f6fa;
+    --know: #0f6f72; --know-bg: #edf7f6;
+    --font-h: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+    --font-b: "Noto Serif TC", "PingFang TC", Georgia, serif;
+    --font-m: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1115; --surface: #161922; --ink: #e8ebf1; --ink-soft: #9aa3b4;
+      --rule: #272c38; --accent: #7ab3dc; --accent-soft: #16202b;
+      --warn: #e6bb6c; --warn-bg: #221c10; --key-bg: #171d26;
+      --know: #6fcfd0; --know-bg: #12211f;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1115; --surface: #161922; --ink: #e8ebf1; --ink-soft: #9aa3b4;
+    --rule: #272c38; --accent: #7ab3dc; --accent-soft: #16202b;
+    --warn: #e6bb6c; --warn-bg: #221c10; --key-bg: #171d26;
+    --know: #6fcfd0; --know-bg: #12211f;
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--font-b); font-size: 1.0625rem; line-height: 1.95;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 0 5rem;
+  }
+  .wrap { max-width: 44rem; margin: 0 auto; }
+
+  header.cover { padding-block: 3.5rem 2rem; border-bottom: 3px solid var(--ink); }
+  .kicker { font-family: var(--font-h); font-size: .78rem; font-weight: 700;
+            letter-spacing: .18em; color: var(--accent); margin: 0 0 1rem; }
+  h1 { font-family: var(--font-h); font-weight: 700; font-size: clamp(1.9rem, 6vw, 2.8rem);
+       line-height: 1.25; letter-spacing: -.01em; margin: 0 0 .8rem; text-wrap: balance; }
+  .sub { font-size: 1.12rem; color: var(--ink-soft); margin: 0 0 1.8rem;
+         line-height: 1.8; text-wrap: balance; }
+  .byline { font-family: var(--font-h); font-size: .85rem; color: var(--ink-soft); margin: 0; }
+
+  .part { margin-top: 4rem; padding: 1.4rem 0 .8rem; border-top: 2px solid var(--accent); }
+  .part .pn { font-family: var(--font-h); font-size: .78rem; font-weight: 700;
+              letter-spacing: .18em; color: var(--accent); }
+  .part h2 { font-family: var(--font-h); font-size: clamp(1.45rem, 4vw, 1.9rem); font-weight: 700;
+             margin: .35rem 0 .5rem; text-wrap: balance; }
+  .part p { color: var(--ink-soft); margin: 0; }
+
+  h3 { font-family: var(--font-h); font-size: 1.25rem; font-weight: 700;
+       margin: 2.6rem 0 .8rem; line-height: 1.5; text-wrap: balance; }
+  h3 .num { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: .5rem; }
+  h4 { font-family: var(--font-h); font-size: 1.02rem; font-weight: 500; margin: 1.8rem 0 .5rem; }
+  p { margin: 0 0 1.05rem; }
+  strong { font-weight: 700; }
+  .en { font-family: var(--font-h); font-weight: 500; color: var(--accent); }
+  code { font-family: var(--font-m); font-size: .88em; background: var(--key-bg);
+         padding: .1em .35em; border-radius: 3px; }
+
+  ul, ol { margin: 0 0 1.05rem; padding-left: 1.5rem; }
+  li { margin-bottom: .5rem; }
+
+  figure { margin: 1.8rem 0; }
+  figure img { width: 100%; max-width: 100%; display: block; border: 1px solid var(--rule);
+               border-radius: 3px; background: #fff; }
+  figcaption { font-family: var(--font-h); font-size: .84rem; color: var(--ink-soft);
+               margin-top: .6rem; line-height: 1.75; }
+  figcaption b { color: var(--ink); font-weight: 700; }
+
+  .scroll { overflow-x: auto; margin: 1.4rem 0; }
+  table { border-collapse: collapse; width: 100%; font-family: var(--font-h); font-size: .88rem; }
+  th, td { text-align: left; padding: .6rem .8rem; border-bottom: 1px solid var(--rule);
+           vertical-align: top; line-height: 1.7; }
+  th { font-weight: 700; font-size: .8rem; color: var(--ink-soft);
+       border-bottom: 1.5px solid var(--ink); }
+  td.n, th.n { text-align: right; font-family: var(--font-m); font-variant-numeric: tabular-nums; }
+
+  .key { background: var(--key-bg); border-left: 3px solid var(--accent);
+         padding: 1.1rem 1.25rem; margin: 1.5rem 0; border-radius: 0 3px 3px 0; }
+  .key .lbl { font-family: var(--font-h); font-size: .8rem; font-weight: 700;
+              color: var(--accent); margin: 0 0 .5rem; }
+  .key p:last-child { margin-bottom: 0; }
+
+  .warn { background: var(--warn-bg); border-left: 3px solid var(--warn);
+          padding: 1.1rem 1.25rem; margin: 1.5rem 0; border-radius: 0 3px 3px 0; }
+  .warn .lbl { font-family: var(--font-h); font-size: .8rem; font-weight: 700;
+               color: var(--warn); margin: 0 0 .5rem; }
+  .warn p:last-child { margin-bottom: 0; }
+
+  .know { background: var(--know-bg); border-left: 3px solid var(--know);
+          padding: 1.1rem 1.25rem; margin: 1.5rem 0; border-radius: 0 3px 3px 0; }
+  .know .lbl { font-family: var(--font-h); font-size: .8rem; font-weight: 700;
+               color: var(--know); margin: 0 0 .5rem; }
+  .know p:last-child { margin-bottom: 0; }
+
+  .toc { background: var(--surface); border: 1px solid var(--rule); border-radius: 4px;
+         padding: 1.3rem 1.5rem; margin: 2rem 0; }
+  .toc h4 { margin-top: 0; font-weight: 700; }
+  .toc ol { font-family: var(--font-h); font-size: .9rem; padding-left: 1.4rem; margin-bottom: 0; }
+  .toc > ol > li { margin-bottom: .55rem; font-weight: 700; }
+  .toc ol ol { font-weight: 400; margin-top: .35rem; padding-left: 1.2rem; }
+  .toc ol ol li { margin-bottom: .2rem; color: var(--ink-soft); }
+
+  .eq { font-family: var(--font-m); font-size: .97rem; text-align: center;
+        background: var(--key-bg); padding: .9rem 1rem; border-radius: 4px; margin: 1.2rem 0;
+        overflow-x: auto; line-height: 1.6; }
+
+  footer { margin-top: 4rem; padding-top: 1.4rem; border-top: 1px solid var(--rule);
+           font-family: var(--font-h); font-size: .85rem; color: var(--ink-soft); line-height: 1.8; }
+  a { color: var(--accent); }
+</style>
+
+<div class="wrap">
+
+<header class="cover">
+  <p class="kicker">零基礎入門指南</p>
+  <h1>SARS-CoV-2 動物宿主:從零開始</h1>
+  <p class="sub">這個病毒在動物身上做了什麼、怎樣用基因組判斷宿主之間的差異、以及這個項目到底量度了什麼 —— 不預設任何病毒學背景。</p>
+  <p class="byline">SARS-CoV-2 動物宿主分支項目 &middot; github.com/Wlimni/RSV &middot; 延續 RSV / mpox 項目</p>
+</header>
+
+<div class="toc">
+  <h4>目錄</h4>
+  <ol>
+    <li>第一部分 —— 認識病毒與宿主
+      <ol>
+        <li>什麼是 SARS-CoV-2</li>
+        <li>病毒顆粒與基因組</li>
+        <li>Pango 譜系:另一套分層命名</li>
+        <li>三種動物宿主:貓、水貂、白尾鹿</li>
+        <li>為什麼從 mpox 轉到 SARS-CoV-2</li>
+      </ol>
+    </li>
+    <li>第二部分 —— 這次用到的新方法
+      <ol start="6">
+        <li>用「群」量度傳播,而不是用宿主標籤</li>
+        <li>突變譜,再溫習一次</li>
+        <li>「配對」比較:把譜系和地點都固定住</li>
+      </ol>
+    </li>
+    <li>第三部分 —— 怎樣看懂數字
+      <ol start="9">
+        <li>群的大小反映的是抽樣,不是傳播</li>
+        <li>p 值在配對比較裡一樣會失效</li>
+        <li>「95% 區間」為什麼可能太樂觀</li>
+      </ol>
+    </li>
+    <li>第四部分 —— 這個項目做了什麼
+      <ol start="12">
+        <li>數據:三種動物加六個配對的人類樣本</li>
+        <li>品質控制與標註</li>
+        <li>結果一:成分再一次沒有分別</li>
+        <li>結果二:群結構——鹿的樣本太稀疏</li>
+        <li>結果三:混合基線下鹿的 C→T 偏高</li>
+        <li>結果四(確認):同譜系配對下,鹿仍然偏高</li>
+        <li>我們發現了什麼、沒發現什麼</li>
+        <li>下一步</li>
+      </ol>
+    </li>
+    <li>名詞對照表</li>
+  </ol>
+</div>
+
+<!-- ===================== PART I ===================== -->
+<div class="part">
+  <div class="pn">第一部分</div>
+  <h2>認識病毒與宿主</h2>
+  <p>在任何基因組分析說得通之前,先知道 SARS-CoV-2 是什麼,以及它在動物身上做了什麼。</p>
+</div>
+
+<h3><span class="num">1.</span>什麼是 SARS-CoV-2</h3>
+<p><span class="en">SARS-CoV-2</span>(嚴重急性呼吸系統綜合症冠狀病毒 2 型)是 2019 年底在中國武漢被發現的冠狀病毒,引發 <span class="en">COVID-19</span> 疫情。它屬於 <span class="en">Coronavirus(冠狀病毒)</span>家族,跟 SARS(2003 年)、MERS(2012 年)是遠親。</p>
+<p>它的天然宿主被認為是<strong>蝙蝠</strong>,很可能經由一種中間宿主傳入人類,細節至今仍有爭議。但跟 RSV 和 mpox 不同,SARS-CoV-2 在<strong>疫情爆發之後,又從人類傳回好幾種動物</strong> —— 這正是本項目要用的機會:同一個病毒,在不同動物身上,看它的基因組有沒有留下不同的痕跡。</p>
+
+<h3><span class="num">2.</span>病毒顆粒與基因組</h3>
+<p>跟 RSV(RNA,約 15,000 字母,10 個基因)和 mpox(DNA,約 197,000 字母,180 個基因)相比,SARS-CoV-2 是第三種規模:</p>
+<div class="scroll">
+<table>
+  <thead><tr><th></th><th>RSV</th><th>Mpox</th><th>SARS-CoV-2</th></tr></thead>
+  <tbody>
+    <tr><td>遺傳物質</td><td>單股 RNA</td><td>雙股 DNA</td><td>單股 <strong>RNA</strong></td></tr>
+    <tr><td>基因組大小</td><td>約 15,000</td><td>約 197,000</td><td>約 <strong>29,800</strong></td></tr>
+    <tr><td>基因數目</td><td>10</td><td>約 180</td><td>約 <strong>11</strong></td></tr>
+    <tr><td>GC 含量</td><td>約 33–38%</td><td>約 33%</td><td>約 <strong>38%</strong></td></tr>
+    <tr><td>CpG O/E</td><td>多數基因 0.2–0.4</td><td>約 1.04(沒被壓抑)</td><td>約 <strong>0.41</strong>(強烈壓抑)</td></tr>
+  </tbody>
+</table>
+</div>
+<p>跟 RSV 一樣,SARS-CoV-2 的 CpG(第 15 節,RSV 教材)被明顯壓抑,所以這個項目同樣可以問「CpG、GC 成分有沒有跟宿主一起變」。但結果會顯示:答案是沒有(第 14 節)。</p>
+
+<h3><span class="num">3.</span>Pango 譜系:另一套分層命名</h3>
+<p>SARS-CoV-2 的譜系用 <span class="en">Pango nomenclature(Pango 命名法)</span>,標籤同樣分層,但跟 RSV 的字母數字(A.D.1.5)不同,常見的是英文字母開頭,例如 <code>B.1</code>、<code>B.1.1.7</code>(Alpha 變異株的其中一個標籤)、<code>AY.103</code>(Delta 變異株的一個分支)。數字越多代表分支越細。</p>
+<p>這個項目用到的六個譜系,全部是 2020–2022 年、Alpha 或 Delta 爆發期間的常見譜系,不是 2022 年後的 Omicron 類譜系。</p>
+
+<h3><span class="num">4.</span>三種動物宿主:貓、水貂、白尾鹿</h3>
+<p>人類把 SARS-CoV-2 傳給了很多種動物,這個項目選了三種,目的是形成一個傳播強度的「光譜」:</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>宿主</th><th>基因組數</th><th>預期角色</th><th>為什麼</th></tr></thead>
+  <tbody>
+    <tr><td><strong>貓</strong>(Felis catus)</td><td>112</td><td>死胡同式跨物種傳入</td><td>家貓由主人傳染,據了解不太會貓傳貓。</td></tr>
+    <tr><td><strong>水貂</strong>(Neovison vison / Neogale vison)</td><td>1,442</td><td>被撲殺結束的爆發</td><td>2020 年起多國的水貂養殖場爆發疫情,之後場場被撲殺,留下很多株「短命但激烈」的爆發。</td></tr>
+    <tr><td><strong>白尾鹿</strong>(Odocoileus virginianus)</td><td>308</td><td>可能持續循環</td><td>野生動物,沒有被撲殺;美國的監測報告過鹿傳鹿的情況。</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="know">
+  <p class="lbl">值得知道:水貂有兩個學名</p>
+  <p>水貂在 GISAID 底下用了兩個不同的拉丁學名:<code>Neovison vison</code>(較舊,1,219 條)和 <code>Neogale vison</code>(較新的分類修訂,223 條)。兩者是<strong>同一種動物</strong>,所以本項目把它們合併成同一個「mink(水貂)」組別。這 223 條全部來自美國俄亥俄州立大學的同一組研究,全部是 2022 年、同一個譜系(AY.39)—— 等於一次單一事件,不是獨立的多個樣本。</p>
+</div>
+
+<h3><span class="num">5.</span>為什麼從 mpox 轉到 SARS-CoV-2</h3>
+<p>Mpox 的突破(見 mpox 教材)是找到「孤立基因組 對 在傳播鏈裡的基因組」APOBEC3 佔比有分別,但<strong>宿主本身沒有對比</strong> —— 幾乎全部基因組都是人類。導師的關鍵詞「宿主、傳播、零星、持續」裡,「宿主」這一項 mpox 給不了。SARS-CoV-2 正好補上:<strong>同一個病毒,三種動物,傳播強度完全不同</strong>。</p>
+<div class="know">
+  <p class="lbl">值得知道:這次把 mpox 的教訓用上了</p>
+  <p>Mpox 項目學到最重要的一課是:<strong>成分(GC、CpG)量不到差異,突變譜才量得到</strong>。所以 SARS-CoV-2 這一輪從一開始就把重點放在突變譜,而不是重複量 GC 含量(雖然還是量了一次,用來確認同一個結論,見第 14 節)。</p>
+</div>
+
+<!-- ===================== PART II ===================== -->
+<div class="part">
+  <div class="pn">第二部分</div>
+  <h2>這次用到的新方法</h2>
+  <p>大部分概念(GC content、CpG O/E、突變譜、APOBEC3、近期突變)已經在 RSV 和 mpox 教材講過。這裡只補三個新用法。</p>
+</div>
+
+<h3><span class="num">6.</span>用「群」量度傳播,而不是用宿主標籤</h3>
+<p>跟 mpox 一樣(mpox 教材第 10 節),把<strong>差異不超過 3 個替換</strong>的基因組連成一個「群」(<span class="en">cluster</span>),群的大小和跨度用來判斷像不像持續傳播。這次多加一步:<strong>分開在每一種宿主之內做群</strong>(貓只跟貓比,水貂只跟水貂比,鹿只跟鹿比),這樣群的大小才反映「這種宿主裡有沒有長鏈傳播」,不會被跨宿主的差異干擾。</p>
+
+<h3><span class="num">7.</span>突變譜,再溫習一次</h3>
+<p>跟 mpox 教材第 7–9 節一樣的概念:一條基因組的<strong>近期突變</strong>(相對於 Nextclade 家族樹上最近節點多出來的替換),看裡面哪一種替換(<code>C→T</code>、<code>G→T</code> 等)佔比特別高。</p>
+<p>不同之處是:mpox 用 <strong>APOBEC3 類型</strong>(<code>C→T</code> 在 T 後面)當指標,因為那是已發表、有明確機制的指紋。SARS-CoV-2 這裡先看<strong>單純的 <code>C→T</code> 佔比</strong>,不預設機制 —— 因為這次的問題是「鹿跟人類的突變譜有沒有不同」,而不是驗證一個已知機制。</p>
+
+<h3><span class="num">8.</span>「配對」比較:把譜系和地點都固定住</h3>
+<p>這是本項目最關鍵的新方法。第一輪(第 16 節)只是把每種動物的突變譜,跟 Nextclade 參考樹上<strong>全部分支</strong>(混合了各種譜系、各種人口)的平均突變譜相比。這個「基線」有一個漏洞:如果鹿剛好採到的是本來就比較偏向 <code>C→T</code> 的譜系,基線比較會錯誤地把「譜系的差異」當成「宿主的差異」。</p>
+<p>修正方法:<strong>只拿同一個譜系、同一個國家的人類基因組來比</strong>。例如鹿的 55 條 AY.103(美國)就只跟人類的 502 條 AY.103(美國、同期)比,不混進其他譜系或國家的人類基因組。這樣,唯一還在變的變量就是「宿主」。</p>
+<div class="key">
+  <p class="lbl">為什麼這一步是必要的</p>
+  <p>如果只看「鹿 vs 混合基線」就下結論,等於犯了跟 RSV 項目早期一樣的錯誤類型 —— 把「分組方式造成的差異」當成「生物學上的差異」(RSV 教材第 29 節講過同一個陷阱,叫辛普森悖論的親戚)。配對比較是唯一能把這個漏洞堵住的辦法。</p>
+</div>
+
+<!-- ===================== PART III ===================== -->
+<div class="part">
+  <div class="pn">第三部分</div>
+  <h2>怎樣看懂數字</h2>
+  <p>RSV 和 mpox 教材已經講過信賴區間、p 值失效、分群重抽樣。這裡補三個這次特別碰到的重點。</p>
+</div>
+
+<h3><span class="num">9.</span>群的大小反映的是抽樣,不是傳播</h3>
+<p>這次最重要的教訓:<strong>鹿的群幾乎全部是孤立的</strong>(308 條裡 220 條沒有任何近親),乍看像是「鹿沒有持續傳播」。但更合理的解讀是:鹿的 308 條基因組橫跨 5 年、33 個不同譜系、遍及美國各地 —— 對一個龐大的野生鹿群來說,這是<strong>非常稀疏的抽樣</strong>,不是因為鹿群裡真的沒有傳播鏈。相反,水貂的群又大又多,是因為幾個養殖場被<strong>密集地</strong>定序,不代表水貂「傳播得更廣」,只代表那幾場疫情被看得更仔細。</p>
+<div class="warn">
+  <p class="lbl">要小心的地方</p>
+  <p>這正是為什麼第 15 節(群結構)得不出乾淨的結論,而要另外做第 16–17 節(突變譜)。<strong>群的大小只有在抽樣密度相近的時候才能互相比較。</strong>貓、水貂、鹿的抽樣密度差很遠,所以群結構這個指標在這份數據裡失效了。</p>
+</div>
+
+<h3><span class="num">10.</span>p 值在配對比較裡一樣會失效</h3>
+<p>配對比較(第 15 節)裡,GC 含量的差異常常 p &lt; 0.0001 —— 但實際差距只在<strong>小數點第四位</strong>(例如 0.3787 對 0.3796)。這跟 RSV 教材第 21 節講的一模一樣:<strong>樣本數一大,再小的差距都會顯著</strong>。所以這個項目一律同時報告「差距有多大」和「p 值」,只看 p 值會被誤導。</p>
+
+<h3><span class="num">11.</span>「95% 區間」為什麼可能太樂觀</h3>
+<p>這次的突變佔比區間,用的是<strong>逐條基因組重抽樣</strong>(bootstrap),不是像 mpox 那樣按「群」重抽樣。原因是這裡要比較的本來就是「群結構」失效之後的突變譜,如果再按群重抽樣,水貂某幾個大群會主宰整個區間。逐條基因組重抽樣比較均衡,但代價是:<strong>同一條傳播鏈裡的基因組不是真正獨立的</strong>,所以這些區間很可能比真正的不確定性要窄。讀的時候,把它當成「最樂觀的區間」,不要當成最終答案。</p>
+
+<!-- ===================== PART IV ===================== -->
+<div class="part">
+  <div class="pn">第四部分</div>
+  <h2>這個項目做了什麼</h2>
+  <p>步驟、結果,以及對哪些部分真的成功了的誠實交代。代碼都在 <code>notebooks/SARS2/</code>。</p>
+</div>
+<div class="scroll">
+<table>
+  <thead><tr><th>步驟</th><th>做什麼</th><th class="n">關鍵數字</th><th>代碼在哪裡</th></tr></thead>
+  <tbody>
+    <tr><td>12 收集</td><td>GISAID hCoV-19,動物 3 種 + 配對人類 6 批</td><td class="n">4,145 條</td><td><code>scripts/merge_gisaid_augur.py</code></td></tr>
+    <tr><td>13 標註</td><td>Nextclade:分支、譜系、替換</td><td class="n">全部標註</td><td><code>scripts/build_sars2_features.py</code></td></tr>
+    <tr><td>14 成分</td><td>GC、CpG、UpA、TpC O/E,按宿主比較</td><td class="n">各組 0.379–0.380</td><td><code>notebooks/SARS2/01</code></td></tr>
+    <tr><td>15 群結構</td><td>每種宿主之內,按替換差異分群</td><td class="n">鹿:220/308 孤立</td><td><code>scripts/run_sars2_hosts.py</code></td></tr>
+    <tr><td>16 混合基線突變譜</td><td>近期突變對 Nextclade 參考樹整體</td><td class="n">鹿 C→T 0.63 對 0.37</td><td><code>notebooks/SARS2/01</code></td></tr>
+    <tr><td>17 同譜系配對確認</td><td>動物對同譜系、同國家人類</td><td class="n">鹿三個譜系全部偏高</td><td><code>scripts/run_sars2_human_compare.py</code>、<code>notebooks/SARS2/02</code></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3><span class="num">12.</span>數據:三種動物加六個配對的人類樣本</h3>
+<p>從 GISAID hCoV-19 下載,篩選條件全程保持 <strong>Complete</strong>、<strong>High coverage</strong>、<strong>Collection date complete</strong>:</p>
+<ul>
+  <li><strong>動物:</strong>貓(Felis catus,112 條)、水貂(Neovison vison + Neogale vison,1,442 條)、白尾鹿(Odocoileus virginianus + White-tailed deer,308 條)。</li>
+  <li><strong>配對人類:</strong>六個搜尋,各自鎖定<strong>同一個譜系、同一個國家、相近的時間窗</strong>,用 GISAID 的 <span class="en">Subsample(子抽樣)</span>功能按月份平均抽 500 條,再用「Input for the Augur pipeline」下載(一次下載同時給metadata 和序列)。</li>
+</ul>
+<div class="scroll">
+<table>
+  <thead><tr><th>配對</th><th>動物基因組</th><th>人類基因組</th></tr></thead>
+  <tbody>
+    <tr><td>鹿,AY.103,美國</td><td class="n">55</td><td class="n">502</td></tr>
+    <tr><td>鹿,B.1.1.7,美國</td><td class="n">45</td><td class="n">68</td></tr>
+    <tr><td>鹿,B.1.2,美國</td><td class="n">40</td><td class="n">501</td></tr>
+    <tr><td>水貂,B.1.1.298,丹麥</td><td class="n">320</td><td class="n">622</td></tr>
+    <tr><td>水貂,B.1.8,荷蘭</td><td class="n">290</td><td class="n">96</td></tr>
+    <tr><td>水貂,B.1,美國</td><td class="n">215</td><td class="n">494</td></tr>
+  </tbody>
+</table>
+</div>
+<p>合計 <strong>4,145 條</strong>完整基因組,全部有完整採集日期。</p>
+
+<h3><span class="num">13.</span>品質控制與標註</h3>
+<p>GISAID 的篩選已經保證了完整度和覆蓋度,本項目另外量度每條序列的<strong>不明確鹼基比例</strong>,突變譜的分析只用不超過 1% 的序列,而且「近期突變」不超過 30 個(理由跟 mpox 教材第 9 節一樣:太多的話更可能是定序錯誤)。用 <span class="en">Nextclade</span> 的 <code>nextstrain/sars-cov-2/wuhan-hu-1/orfs</code> 資料庫標註每條序列的分支、譜系,以及相對於參考序列和最近樹節點的全部替換。</p>
+
+<h3><span class="num">14.</span>結果一:成分再一次沒有分別</h3>
+<p>延續 RSV、Nipah、mpox 的結果,SARS-CoV-2 在動物宿主之間<strong>成分也沒有分別</strong>:</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>宿主</th><th class="n">GC 含量</th><th class="n">CpG O/E</th><th class="n">UpA O/E</th><th class="n">TpC O/E</th></tr></thead>
+  <tbody>
+    <tr><td>貓</td><td class="n">0.3796</td><td class="n">0.4073</td><td class="n">0.8292</td><td class="n">0.8002</td></tr>
+    <tr><td>水貂</td><td class="n">0.3797</td><td class="n">0.4068</td><td class="n">0.8292</td><td class="n">0.8002</td></tr>
+    <tr><td>鹿</td><td class="n">0.3792</td><td class="n">0.4073</td><td class="n">0.8300</td><td class="n">0.7984</td></tr>
+    <tr><td>人類</td><td class="n">0.3797</td><td class="n">0.4075</td><td class="n">0.8290</td><td class="n">0.8001</td></tr>
+  </tbody>
+</table>
+</div>
+<p>就算在同譜系配對比較裡,p 值常常顯著,但<strong>實際差距只在第四位小數</strong>(第 10 節)。四種病毒、四個不同的病毒家族,成分這條路線<strong>一直都量不到宿主差異</strong>。這本身已經是一個穩定的、跨病毒的結論。</p>
+
+<h3><span class="num">15.</span>結果二:群結構——鹿的樣本太稀疏</h3>
+<figure>
+  <img src="figures/s1.png" alt="三組橫條圖,顯示貓、水貂、鹿各自基因組按所在群大小(1、2、3–9、10–49、50+)分佈的比例。貓幾乎全是 1–2;水貂大部分在 10–49 和 50+;鹿幾乎全是 1–2。">
+  <figcaption><b>圖 1.</b> 每種宿主的基因組,按所在群的大小分類(差異 ≤ 3 個替換算同一群)。<strong>貓</strong>幾乎全部孤立(94/112)。<strong>水貂</strong>有 84% 的基因組落在 10 條或以上的群裡,最大一群 311 條。<strong>鹿</strong>幾乎全部孤立(220/308),最大一群只有 9 條。</figcaption>
+</figure>
+<p>表面上看,鹿「沒有傳播鏈」。但如第 9 節解釋,這更可能反映<strong>抽樣稀疏</strong>:308 條橫跨 5 年、33 個譜系、美國各地,密度遠低於水貂(集中在幾個養殖場的密集定序)。<strong>群結構在這份數據裡,量到的是抽樣強度,不是傳播強度。</strong>所以本項目轉向突變譜。</p>
+
+<h3><span class="num">16.</span>結果三:混合基線下鹿的 C→T 偏高</h3>
+<p>先用 Nextclade 參考樹（混合各種譜系、大多是人類）的整體突變譜當「基線」,跟三種動物的近期突變譜比較:</p>
+<figure>
+  <img src="figures/s2.png" alt="長條圖,橫軸是五種替換類型（C→T、G→T、A→G、T→C、G→A），分組顯示基線、貓、水貂、鹿各自的佔比。鹿的 C→T 條明顯高過其他三組。">
+  <figcaption><b>圖 2.</b> 近期突變裡每種替換類型的佔比。基線（參考樹整體）C→T 佔 0.37;<strong>鹿是 0.63</strong>,貓 0.42,水貂 0.39。鹿同時在 A→G、T→C、G→A 偏低 —— C→T 佔比升高,其他類型自然被擠低。</figcaption>
+</figure>
+<p>鹿的訊號很突出,但這時還有一個漏洞沒堵住:鹿只採到了少數幾個譜系(AY.103、B.1.1.7、B.1.2),如果<strong>這些譜系本身</strong>剛好偏向 C→T(跟鹿無關,純粹是哪個譜系在哪裡流行),基線比較就會把「譜系的差異」誤判成「宿主的差異」。第 17 節就是用來堵這個漏洞的。</p>
+
+<h3><span class="num">17.</span>結果四(確認):同譜系配對下,鹿仍然偏高</h3>
+<p>這是本項目目前最乾淨的正面結果。把第 12 節表格裡的六對(動物 對 同譜系、同國家的人類)分別算 C→T 佔比,用逐條基因組重抽樣給出 95% 區間:</p>
+<figure>
+  <img src="figures/s3.png" alt="森林圖,六對比較的 C→T 佔比與 95% 區間。三對鹿（綠色）全部明顯高於配對的人類（灰色）,區間不重疊。三對水貂（紫色）跟人類的區間互相重疊或方向不一致。">
+  <figcaption><b>圖 3.</b> 同譜系、同國家配對下,C→T 佔比與 95% 區間。<strong>鹿在三個獨立譜系裡全部高於配對人類,區間都不重疊</strong>:AY.103(0.64 對 0.40)、B.1.1.7(0.76 對 0.53)、B.1.2(0.64 對 0.40)。<strong>水貂沒有一致的方向</strong>:B.1.1.298 區間重疊,B.1.8 水貂略高,B.1 水貂反而略低於人類。</figcaption>
+</figure>
+<div class="scroll">
+<table>
+  <thead><tr><th>配對</th><th class="n">動物 C→T</th><th class="n">人類 C→T</th><th>區間是否重疊</th></tr></thead>
+  <tbody>
+    <tr><td><strong>鹿,AY.103,美國</strong></td><td class="n">0.637</td><td class="n">0.401</td><td><strong>否(鹿偏高)</strong></td></tr>
+    <tr><td><strong>鹿,B.1.1.7,美國</strong></td><td class="n">0.761</td><td class="n">0.525</td><td><strong>否(鹿偏高)</strong></td></tr>
+    <tr><td><strong>鹿,B.1.2,美國</strong></td><td class="n">0.644</td><td class="n">0.401</td><td><strong>否(鹿偏高)</strong></td></tr>
+    <tr><td>水貂,B.1.1.298,丹麥</td><td class="n">0.626</td><td class="n">0.604</td><td>重疊</td></tr>
+    <tr><td>水貂,B.1.8,荷蘭</td><td class="n">0.458</td><td class="n">0.392</td><td>幾乎不重疊(水貂略高)</td></tr>
+    <tr><td>水貂,B.1,美國</td><td class="n">0.416</td><td class="n">0.442</td><td>重疊(水貂略低)</td></tr>
+  </tbody>
+</table>
+</div>
+<p><strong>為什麼這個結果站得住腳:</strong></p>
+<ul>
+  <li><strong>三個獨立的譜系</strong>(不同爆發、不同時間),<strong>方向完全一致</strong>,倍數也相近(鹿大約是配對人類的 1.5–1.6 倍)。</li>
+  <li><strong>堵住了「譜系抽樣」這個漏洞。</strong>譜系和國家都固定住了,唯一還在變的是宿主。</li>
+  <li><strong>水貂沒有同樣的訊號</strong>,代表這不是「跨物種傳播」本身的通用效應,而是<strong>鹿特有</strong>的。</li>
+</ul>
+
+<h3><span class="num">18.</span>我們發現了什麼、沒發現什麼</h3>
+<h4>發現了</h4>
+<ul>
+  <li><strong>鹿的 C→T 突變佔比,在三個獨立譜系裡都明顯高於同譜系、同國家的人類</strong>(約 1.5–1.6 倍),這不能用「鹿碰巧採到 C→T 偏高的譜系」來解釋。</li>
+  <li><strong>水貂沒有這個訊號</strong>,所以這不是所有跨物種傳播都有的通用效應。</li>
+  <li>成分(GC、CpG、UpA、TpC)<strong>完全沒有分別</strong>,再一次確認「突變譜比成分靈敏」這條 mpox 項目學到的教訓。</li>
+</ul>
+<h4>沒發現 / 不確定</h4>
+<ul>
+  <li><strong>機制未知。</strong>鹿的 C→T 偏高像不像 mpox 的 APOBEC3 指紋(前一個字母是 T),這份數據還沒測試。</li>
+  <li><strong>群結構(零星/持續)在這份數據裡量不到</strong>,因為抽樣密度在宿主之間差太遠。</li>
+  <li><strong>貓沒有配對人類比較</strong>,目前只有混合基線的結果可用。</li>
+</ul>
+<div class="warn">
+  <p class="lbl">這個結果的局限</p>
+  <ul>
+    <li><strong>不是機制證明。</strong>C→T 偏高符合某種宿主編輯酵素的指紋,但本項目還沒確認是哪一種、作用在什麼序列脈絡。</li>
+    <li><strong>B.1.1.7 鹿的樣本小</strong>(只有 11 條品質合格的基因組),方向清楚但估計值最不精確。</li>
+    <li><strong>重抽樣是逐條基因組做的,不是逐條傳播鏈</strong>,同一條鏈裡的基因組不是真正獨立,區間可能比實際偏窄(第 11 節)。</li>
+    <li><strong>地理只配到「國家」這一層</strong>,州或地區層級的殘餘混淆仍然可能存在。</li>
+  </ul>
+</div>
+<div class="key">
+  <p class="lbl">怎樣看待這個結果</p>
+  <p>這是這一整輪(RSV → Nipah → mpox → SARS-CoV-2)裡,<strong>唯一一個同時有宿主對比、有獨立重複(三個譜系)、而且排除了明顯替代解釋(譜系抽樣)</strong>的正面發現。值得正式整理,拿去跟導師討論。</p>
+</div>
+
+<h3><span class="num">19.</span>下一步</h3>
+<h4>一、序列脈絡檢驗</h4>
+<p>仿照 mpox 教材第 19 節的做法:鹿的 C→T 突變是不是集中在「前一個字母是 T」的位置(APOBEC 的指紋),還是平均分布在各種脈絡?這能分辨是不是已知的宿主酵素機制。</p>
+<h4>二、貓的配對比較</h4>
+<p>如果能找到足夠多的配對人類基因組,把貓也納入第 17 節的配對檢驗,補齊三種動物的全貌。</p>
+<h4>三、自建家族樹</h4>
+<p>用 IQ-TREE 建自己的樹、做祖先序列重建,取代依賴 Nextclade 現成的樹,驗證這個結果不是樹本身造成的假象。</p>
+
+<!-- ===================== GLOSSARY ===================== -->
+<div class="part">
+  <div class="pn">附錄</div>
+  <h2>名詞對照表</h2>
+  <p>本指南用到的專業名詞。RSV 和 mpox 教材的名詞表也適用。</p>
+</div>
+<div class="scroll">
+<table>
+  <thead><tr><th>English</th><th>中文</th><th>說明</th></tr></thead>
+  <tbody>
+    <tr><td>Bootstrap (per-genome)</td><td>逐條基因組重抽樣</td><td>本項目這一輪用逐條基因組（不是逐條群）重抽樣求區間,較均衡但可能低估真正的不確定性。</td></tr>
+    <tr><td>Coronavirus</td><td>冠狀病毒</td><td>SARS-CoV-2、SARS、MERS 所屬的病毒家族。</td></tr>
+    <tr><td>Matched comparison</td><td>配對比較</td><td>把譜系、地點、時期都固定住,只讓宿主這一個變量不同的比較方法。</td></tr>
+    <tr><td>Pango lineage</td><td>Pango 譜系</td><td>SARS-CoV-2 的分層命名系統,例如 B.1.1.7、AY.103。</td></tr>
+    <tr><td>Subsample (GISAID)</td><td>子抽樣</td><td>GISAID 下載前的功能,可按月份等條件平均抽取一定數量的基因組。</td></tr>
+  </tbody>
+</table>
+</div>
+
+<footer>
+  <p>結果圖以 matplotlib 繪製。程式碼、匯總表格與全部圖片見 <a href="https://github.com/Wlimni/RSV">github.com/Wlimni/RSV</a>。GISAID 序列數據只儲存在本機,不上傳。</p>
+  <p>參照文獻:流感論文 Ye et al. (2026), Nature Microbiology, doi:10.1038/s41564-025-02257-4。Mpox APOBEC3:O'Toole et al. (2023), Science 382:595–600。</p>
+</footer>
+
+</div>

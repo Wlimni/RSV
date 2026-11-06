@@ -1,0 +1,25 @@
+pair	feature	p	n_animal	n_human
+deer vs human, AY.103, USA	gc_content	2.6706555988416864e-14	55	502
+deer vs human, AY.103, USA	oe_CG	0.017614478212597484	55	502
+deer vs human, AY.103, USA	oe_TA	1.4537231680497657e-16	55	502
+deer vs human, AY.103, USA	oe_TC	4.935737082206537e-17	55	502
+deer vs human, B.1.1.7, USA	gc_content	1.9296892379103164e-16	45	68
+deer vs human, B.1.1.7, USA	oe_CG	0.21916482145146132	45	68
+deer vs human, B.1.1.7, USA	oe_TA	0.002403632458819596	45	68
+deer vs human, B.1.1.7, USA	oe_TC	8.064007289664847e-14	45	68
+deer vs human, B.1.2, USA	gc_content	6.265379770710867e-05	40	501
+deer vs human, B.1.2, USA	oe_CG	0.08772831272775149	40	501
+deer vs human, B.1.2, USA	oe_TA	0.3203149872975921	40	501
+deer vs human, B.1.2, USA	oe_TC	6.682072122852567e-05	40	501
+mink vs human, B.1.1.298, Denmark	gc_content	0.6135497904303011	320	622
+mink vs human, B.1.1.298, Denmark	oe_CG	0.04949420748504565	320	622
+mink vs human, B.1.1.298, Denmark	oe_TA	0.8549054974584991	320	622
+mink vs human, B.1.1.298, Denmark	oe_TC	0.24446640766470984	320	622
+mink vs human, B.1.8, Netherlands	gc_content	8.1152697826688e-23	290	96
+mink vs human, B.1.8, Netherlands	oe_CG	9.343739492632874e-07	290	96
+mink vs human, B.1.8, Netherlands	oe_TA	1.9758742596042222e-07	290	96
+mink vs human, B.1.8, Netherlands	oe_TC	0.0004959959256157887	290	96
+mink vs human, B.1, USA	gc_content	0.5849872664285926	215	494
+mink vs human, B.1, USA	oe_CG	1.7438626556313923e-08	215	494
+mink vs human, B.1, USA	oe_TA	0.4424220519597869	215	494
+mink vs human, B.1, USA	oe_TC	0.0033525278736023807	215	494
